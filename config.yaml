@@ -1,0 +1,20 @@
+---
+######## Params influxDB necessary if true
+  influxDB_activated: "true"
+  influxDB_server: "localhost"
+  influxDB_server_port: "8086"
+  influxDB_username: "root"
+  influxDB_password: "root"
+  influxDB_database: "bloomsky"
+######## If true display informations on console
+  console_activated: "true"
+######## Refresh time, be not to small because you are blocked by openweather and bloomsky (in second)
+  refresh_timer: "60"
+######## Params for bloomsky
+# Normally don't change
+  bloomsky_url: "https://api.bloomsky.com/api/skydata/"
+# the key, it's free : https://dashboard.bloomsky.com/
+  bloomsky_access_token: "yourToken"
+# 1 info  -> 4 trace
+  log_level: 1
+#########
