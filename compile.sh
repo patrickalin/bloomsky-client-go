@@ -1,11 +1,19 @@
 #!/bin/bash
 echo "compile each binary"
+
+if [ -z "$TRAVIS_BUILD_DIR" ]
+then
+	TRAVIS_BUILD_DIR=$PWD
+fi
+
+echo $TRAVIS_BUILD_DIR
+
 for GOOS in darwin linux windows; do
   for GOARCH in 386 amd64; do
     echo "Building $GOOS-$GOARCH"
     export GOOS=$GOOS
     export GOARCH=$GOARCH
-    go build -o bin/goBloomsky-$GOOS-$GOARCH
+    go build -o $TRAVIS_BUILD_DIR/bin/goBloomsky-$GOOS-$GOARCH
   done
 done
 mv bin/goBloomsky-darwin-386 bin/goBloomsky-darwin-386.bin
