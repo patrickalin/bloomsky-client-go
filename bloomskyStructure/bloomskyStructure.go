@@ -12,20 +12,8 @@ import (
 )
 
 // generate by http://mervine.net/json2struct
-// you must replace your ThermostatID and you structure ID
 
-/*type BloomskyStructure struct {
-	Devices struct {
-		Thermostats struct {
-			ThermostatID ThermostatID `json:"noNeeded"`
-		} `json:"thermostats"`
-	} `json:"devices"`
-	Metadata   Metadata `json:"metadata"`
-	Structures struct {
-		StructureID StructureID `json:"noNeeded"`
-	} `json:"structures"`
-}*/
-
+// BloomskyStructure represent the structure of the JSON return by the API 
 type BloomskyStructure struct {
 	UTC              float64                `json:"UTC"`
 	CityName         string                 `json:"CityName"`
@@ -49,6 +37,7 @@ type BloomskyStructure struct {
 	PreviewImageList []string               `json:"PreviewImageList"`
 }
 
+// BloomskyStructure represent the structure STORM of the JSON return by the API
 type BloomskyStormStructure struct {
 	UVIndex            string  `json:"UVIndex"`
 	WindDirection      string  `json:"WindDirection"`
@@ -59,6 +48,7 @@ type BloomskyStormStructure struct {
 	Rain               float64 `json:"24hRain"`
 }
 
+// BloomskyStructure represent the structure SKY of the JSON return by the API
 type BloomskyDataStructure struct {
 	Luminance   float64 `json:"Luminance"`
 	Temperature float64 `json:"Temperature"`
@@ -96,6 +86,7 @@ func (e *bloomskyError) Error() string {
 	return fmt.Sprintf("\n \t bloomskyError :> %s \n\t Advice :> %s", e.message, e.advice)
 }
 
+// ShowPrettyAll prints to the console the JSON
 func (bloomskyInfo BloomskyStructure) ShowPrettyAll() int {
 	out, err := json.Marshal(bloomskyInfo)
 	if err != nil {
@@ -106,34 +97,42 @@ func (bloomskyInfo BloomskyStructure) ShowPrettyAll() int {
 	return 0
 }
 
+//GetTimeStamp returns the timestamp give by Bloomsky
 func (bloomskyInfo BloomskyStructure) GetTimeStamp() time.Time {
 	tm := time.Unix(int64(bloomskyInfo.Data.TS), 0)
 	return tm
 }
 
+//GetCity returns the city name
 func (bloomskyInfo BloomskyStructure) GetCity() string {
 	return bloomskyInfo.CityName
 }
 
+//GetDevideId returns the Device Id
 func (bloomskyInfo BloomskyStructure) GetDeviceID() string {
 	return bloomskyInfo.DeviceID
 }
 
+//GetNumOfFollowers returns the number of followers
 func (bloomskyInfo BloomskyStructure) GetNumOfFollowers() int {
 	return int(bloomskyInfo.NumOfFollowers)
 }
 
+//GetIndexUV returns the UV index from 1 to 11
 func (bloomskyInfo BloomskyStructure) GetIndexUV() string {
 	return bloomskyInfo.Storm.UVIndex
 }
 
+//IsNight returns true if it's the night 
 func (bloomskyInfo BloomskyStructure) IsNight() bool {
 	return bloomskyInfo.Data.Night
 }
 
+//GetTemperatureFahrenheit returns temperature in Fahrenheit
 func (bloomskyInfo BloomskyStructure) GetTemperatureFahrenheit() float64 {
 	return bloomskyInfo.Data.Temperature
 }
+
 
 func (bloomskyInfo BloomskyStructure) GetTemperatureCelcius() float64 {
 	return ((bloomskyInfo.Data.Temperature - 32.00) * 5.00 / 9.00)
