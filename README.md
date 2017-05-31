@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/patrickalin/bloomsky-client-go-source.svg?branch=master)](https://travis-ci.org/patrickalin/bloomsky-client-go-source)
 
+![Build size](https://reposs.herokuapp.com/?path=patrickalin/bloomsky-client-go-source)
+
 This library calls the bloomsky API Thermostat in Go (Golang) and export information in the console or in in Time Series Database InfluxData.
 
 #Example : result in the standard console.
