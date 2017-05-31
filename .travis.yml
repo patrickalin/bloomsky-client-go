@@ -10,7 +10,7 @@ go:
 before_deploy:
 - "./compile.sh"
 - ls
-- ls ./bin
+- pwd 
 deploy:
   provider: releases
   api_key:
