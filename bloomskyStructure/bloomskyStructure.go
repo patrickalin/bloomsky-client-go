@@ -251,12 +251,15 @@ func NewBloomsky(oneConfig config.ConfigStructure) BloomskyStructure {
 		mylog.Error.Fatal(&bloomskyError{err, "Problem with call rest, check the URL and the secret ID in the config file"})
 	}
 
-	var bloomskyInfo []BloomskyStructure
-
 	body := myRest.GetBody()
+	return NewBloomskyFromBody(body)
+}
 
+// NewBloomskyFromBody to test with String
+func NewBloomskyFromBody(body []byte) BloomskyStructure {
+	var bloomskyInfo []BloomskyStructure
 	mylog.Trace.Printf("Unmarshal the response")
-	err = json.Unmarshal(body, &bloomskyInfo)
+	err := json.Unmarshal(body, &bloomskyInfo)
 
 	if err != nil {
 		mylog.Error.Fatal(&bloomskyError{err, "Problem with json to struct, problem in the struct ?"})
