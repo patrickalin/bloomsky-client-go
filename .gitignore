@@ -6,3 +6,4 @@ goBloomsky-windows-386
 goBloomsky-windows-amd64
 bin
 tag.sh
+bloomsky-client-go-source
