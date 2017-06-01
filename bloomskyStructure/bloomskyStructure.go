@@ -133,8 +133,8 @@ func (bloomskyInfo BloomskyStructure) GetTemperatureFahrenheit() float64 {
 	return bloomskyInfo.Data.Temperature
 }
 
-//GetTemperatureCelcius returns temperature in Celcius
-func (bloomskyInfo BloomskyStructure) GetTemperatureCelcius() float64 {
+//GetTemperatureCelsius returns temperature in Celsius
+func (bloomskyInfo BloomskyStructure) GetTemperatureCelsius() float64 {
 	return ((bloomskyInfo.Data.Temperature - 32.00) * 5.00 / 9.00)
 }
 
