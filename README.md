@@ -4,6 +4,8 @@
 
 ![Build size](https://reposs.herokuapp.com/?path=patrickalin/bloomsky-client-go-source)
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/patrickalin/bloomsky-client-go-source)](https://goreportcard.com/report/github.com/patrickalin/bloomsky-client-go-source)
+
 This library calls the bloomsky API Thermostat in Go (Golang) and export information in the console or in in Time Series Database InfluxData.
 
 #Example : result in the standard console.
@@ -109,3 +111,7 @@ https://github.com/tixu for testing and review
 http://mervine.net/json2struct "transform JSON to Go struct library"
 
 http://github.com/spf13/viper "read config library"
+
+### License
+
+The code is licensed under the permissive Apache v2.0 licence. This means you can do what you like with the software, as long as you include the required notices. [Read this](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)) for a summary.
