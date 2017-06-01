@@ -6,6 +6,8 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/patrickalin/bloomsky-client-go)](https://goreportcard.com/report/github.com/patrickalin/bloomsky-client-go)
 
+[![Coverage Status](https://coveralls.io/repos/github/patrickalin/bloomsky-client-go/badge.svg)](https://coveralls.io/github/patrickalin/bloomsky-client-go)
+
 A simple Go client for the BloomSky API.
 I's possible to export informations in the console or in in Time Series Database InfluxData.
 
