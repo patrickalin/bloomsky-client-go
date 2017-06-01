@@ -3,8 +3,8 @@ package export
 import (
 	"fmt"
 
-	bloomskyStructure "github.com/patrickalin/GoBloomsky/bloomskyStructure"
 	mylog "github.com/patrickalin/GoMyLog"
+	bloomskyStructure "github.com/patrickalin/bloomsky-client-go-source/bloomskyStructure"
 )
 
 //print major informations from a bloomsky JSON to console
@@ -29,7 +29,7 @@ func displayToConsole(onebloomsky bloomskyStructure.BloomskyStructure) {
 	fmt.Printf("24h Rain : \t \t%.2f mm\n", onebloomsky.GetRainMm())
 	fmt.Printf("Rain Rate : \t \t%.2f mm\n", onebloomsky.GetRainRateMm())
 	fmt.Printf("Temperature F : \t \t%.1f °F\n", onebloomsky.GetTemperatureFahrenheit())
-	fmt.Printf("Temperature C : \t \t%.1f °C\n", onebloomsky.GetTemperatureCelcius())
+	fmt.Printf("Temperature C : \t \t%.1f °C\n", onebloomsky.GetTemperatureCelsius())
 	fmt.Printf("Humidity : \t \t%.f %%\n", onebloomsky.GetHumidity())
 	fmt.Printf("Pressure InHg : \t \t%.1f inHg\n", onebloomsky.GetPressureInHg())
 	fmt.Printf("Pressure HPa : \t \t%.1f hPa\n", onebloomsky.GetPressureHPa())

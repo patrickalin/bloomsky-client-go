@@ -14,7 +14,7 @@
 # Normally don't change
   bloomsky_url: "https://api.bloomsky.com/api/skydata/"
 # the key, it's free : https://dashboard.bloomsky.com/
-  bloomsky_access_token: "yourToken"
+  bloomsky_access_token: "***REMOVED***"
 # 1 info  -> 4 trace
   log_level: 1
 #########
