@@ -8,9 +8,9 @@ install:
 - go get github.com/mattn/goveralls
 - go get .
 
-#script:
-#- go test -v -covermode=count -coverprofile=coverage.out
-#- "$HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN"
+script:
+- go test -v -covermode=count -coverprofile=coverage.out
+- "$HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN"
 
 before_deploy:
    - "./compile.sh"
