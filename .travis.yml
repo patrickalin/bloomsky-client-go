@@ -27,8 +27,8 @@ deploy:
      - bin/goBloomsky-windows-386.exe
      - bin/goBloomsky-windows-amd64.exe
   skip_cleanup: true
-#  on:
-#    tags: true
-#    all_branches: true
+  on:
+    tags: true
+    all_branches: true
 env:
   COVERALLS_TOKEN: VZATjZzePvtZV1qPaa/JUcZyQ+hMh50UO9asPmhQbyerDhr3XUPJKNejjkkzUMfBQ+Az3JKRExH6buJ+cXEIlTirQauSXCCi3kR90c0DaaZFUrW2z5dd4G94fk5nMc7AQ/bK1hfTpbjLroffTCruPS+z+BjVu8HKshaerPL+EpupF/GfSd/HtBWVLb0MTK7Cm4OkBBtjgIyUpCZr+9jFQLsnXFDMOwG85HVJ91QD+Y8f9fTuNxh3Sf+C15LyX92or8Pcv6t/TTWnC55rWsCW57Wk3R2KmFnV7SGv9TC46w/xpc6u13s4L9tHv5lLLfu/OO0Soj/xuv4llBSP8NWHVi1/McI/A+S0XgQtJmhg+mU0cVCE/nI9Ev0mJ4Zpd5mle/5aTM+TJj8P0QfacL3Iox+2ixPIOOwWlL6xGjuLujVRLXriN1mE/wgNhWhElaskXTRMoMdMS8+182/QNhGp662DilRBrH8GCVwXLgUVj3PlwWtb+04Lw4XppctYn3ZtB7JZZcfS5QYA1PgrlAJayvkghSvhJaVQbiASOKUk4dNpGf4vMy3k/3PDYupMGGrGqDn1n4Rgsv4t/gNViVDp0zh4GN8fRaAKAUnA16pyNqQMS2SszoWEWsszCib0N5mT/Vv4iyojZb3edHjKUVIoGmCnVAHvxkgDBUxiSQN3fwQ=
