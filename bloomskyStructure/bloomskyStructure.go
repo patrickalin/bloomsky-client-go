@@ -239,7 +239,7 @@ func MakeNew(oneConfig config.ConfigStructure) BloomskyStructure {
 
 	body := myRest.GetBody()
 
-	mylog.Trace.Printf("Unmarshal the responce")
+	mylog.Trace.Printf("Unmarshal the response")
 	err = json.Unmarshal(body, &bloomskyInfo)
 
 	if err != nil {
