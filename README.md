@@ -42,7 +42,7 @@ This library calls the bloomsky API Thermostat in Go (Golang) and export informa
 
 You can display the result with Chronograph
 
-![InfluxDB Image ](https://github.com/patrickalin/GobloomskyThermostatAPIRest/blob/master/img/Chronograph.png)
+![Chronograph Image ](https://github.com/patrickalin/bloomsky-client-go-source/blob/master/img/Chronograph.png)
 
 You can display the result with Grafana
 
