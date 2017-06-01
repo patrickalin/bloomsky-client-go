@@ -26,7 +26,7 @@ type BloomskyStructure struct {
 	LON              float64                `json:"LON"`
 	Point            interface{}            `json:"Point"`
 	VideoList        []string               `json:"VideoList"`
-	VideoList_C      []string               `json:"VideoList_C"`
+	VideoListC       []string               `json:"VideoList_C"`
 	DeviceID         string                 `json:"DeviceID"`
 	NumOfFollowers   float64                `json:"NumOfFollowers"`
 	LAT              float64                `json:"LAT"`
@@ -37,7 +37,7 @@ type BloomskyStructure struct {
 	PreviewImageList []string               `json:"PreviewImageList"`
 }
 
-// BloomskyStructure represent the structure STORM of the JSON return by the API
+// BloomskyStormStructure represent the structure STORM of the JSON return by the API
 type BloomskyStormStructure struct {
 	UVIndex            string  `json:"UVIndex"`
 	WindDirection      string  `json:"WindDirection"`
@@ -48,7 +48,7 @@ type BloomskyStormStructure struct {
 	Rain               float64 `json:"24hRain"`
 }
 
-// BloomskyStructure represent the structure SKY of the JSON return by the API
+// BloomskyDataStructure represent the structure SKY of the JSON return by the API
 type BloomskyDataStructure struct {
 	Luminance   float64 `json:"Luminance"`
 	Temperature float64 `json:"Temperature"`
@@ -64,7 +64,7 @@ type BloomskyDataStructure struct {
 	ImageTS     float64 `json:"ImageTS"`
 }
 
-// bloomskyStructure is the Interface bloomskyStructure
+// bloomskyStructure is the interface bloomskyStructure
 type bloomskyStructure interface {
 	GetDeviceID() string
 	GetSoftwareVersion() string
@@ -133,66 +133,82 @@ func (bloomskyInfo BloomskyStructure) GetTemperatureFahrenheit() float64 {
 	return bloomskyInfo.Data.Temperature
 }
 
+//GetTemperatureCelcius returns temperature in Celcius
 func (bloomskyInfo BloomskyStructure) GetTemperatureCelcius() float64 {
 	return ((bloomskyInfo.Data.Temperature - 32.00) * 5.00 / 9.00)
 }
 
+//GetHumidity returns hulidity %
 func (bloomskyInfo BloomskyStructure) GetHumidity() float64 {
 	return bloomskyInfo.Data.Humidity
 }
 
+//GetPressureHPa returns pressure in HPa
 func (bloomskyInfo BloomskyStructure) GetPressureHPa() float64 {
 	return (bloomskyInfo.Data.Pressure * 33.8638815)
 }
 
+//GetPressureInHg returns pressure in InHg
 func (bloomskyInfo BloomskyStructure) GetPressureInHg() float64 {
 	return bloomskyInfo.Data.Pressure
 }
 
+//GetWindDirection returns wind direction (N,S,W,E, ...)
 func (bloomskyInfo BloomskyStructure) GetWindDirection() string {
 	return bloomskyInfo.Storm.WindDirection
 }
 
+//GetWindGustMph returns Wind in Mph
 func (bloomskyInfo BloomskyStructure) GetWindGustMph() float64 {
 	return bloomskyInfo.Storm.WindGust
 }
 
+//GetWindGustMs returns Wind in Ms
 func (bloomskyInfo BloomskyStructure) GetWindGustMs() float64 {
 	return (bloomskyInfo.Storm.WindGust * 1.61)
 }
 
+//GetSustainedWindSpeedMph returns Sustained Wind Speed in Mph
 func (bloomskyInfo BloomskyStructure) GetSustainedWindSpeedMph() float64 {
 	return bloomskyInfo.Storm.SustainedWindSpeed
 }
 
+//GetSustainedWindSpeedMs returns Sustained Wind Speed in Ms
 func (bloomskyInfo BloomskyStructure) GetSustainedWindSpeedMs() float64 {
 	return (bloomskyInfo.Storm.SustainedWindSpeed * 1.61)
 }
 
+//IsRain returns true if it's rain
 func (bloomskyInfo BloomskyStructure) IsRain() bool {
 	return bloomskyInfo.Data.Rain
 }
 
+//GetRainDailyIn returns rain daily in In
 func (bloomskyInfo BloomskyStructure) GetRainDailyIn() float64 {
 	return bloomskyInfo.Storm.RainDaily
 }
 
+//GetRainIn returns total rain in In
 func (bloomskyInfo BloomskyStructure) GetRainIn() float64 {
 	return bloomskyInfo.Storm.Rain
 }
 
+//GetRainRateIn returns rain in In
 func (bloomskyInfo BloomskyStructure) GetRainRateIn() float64 {
 	return bloomskyInfo.Storm.RainRate
 }
 
+//GetRainDailyMm returns rain daily in mm
 func (bloomskyInfo BloomskyStructure) GetRainDailyMm() float64 {
 	return bloomskyInfo.Storm.RainDaily
 }
 
+//GetRainMm returns total rain in mm
 func (bloomskyInfo BloomskyStructure) GetRainMm() float64 {
 	return bloomskyInfo.Storm.Rain
 }
 
+//GetRainRateMm returns rain in mm
 func (bloomskyInfo BloomskyStructure) GetRainRateMm() float64 {
 	return bloomskyInfo.Storm.RainRate
 }
