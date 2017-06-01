@@ -5,3 +5,4 @@ goBloomsky-linux-amd64
 goBloomsky-windows-386
 goBloomsky-windows-amd64
 bin
+tag.sh
