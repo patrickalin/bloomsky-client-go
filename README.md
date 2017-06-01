@@ -1,10 +1,10 @@
 # BloomSky Client in Go
 
-[![Build Status](https://travis-ci.org/patrickalin/bloomsky-client-go-source.svg?branch=master)](https://travis-ci.org/patrickalin/bloomsky-client-go-source)
+[![Build Status](https://travis-ci.org/patrickalin/bloomsky-client-go.svg?branch=master)](https://travis-ci.org/patrickalin/bloomsky-client-go)
 
-![Build size](https://reposs.herokuapp.com/?path=patrickalin/bloomsky-client-go-source)
+![Build size](https://reposs.herokuapp.com/?path=patrickalin/bloomsky-client-go)
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/patrickalin/bloomsky-client-go-source)](https://goreportcard.com/report/github.com/patrickalin/bloomsky-client-go-source)
+[![Go Report Card](https://goreportcard.com/badge/github.com/patrickalin/bloomsky-client-go)](https://goreportcard.com/report/github.com/patrickalin/bloomsky-client-go)
 
 A simple Go client for the BloomSky API.
 I's possible to export informations in the console or in in Time Series Database InfluxData.
