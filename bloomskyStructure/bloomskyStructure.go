@@ -13,7 +13,7 @@ import (
 
 // generate by http://mervine.net/json2struct
 
-// BloomskyStructure represent the structure of the JSON return by the API 
+// BloomskyStructure represent the structure of the JSON return by the API
 type BloomskyStructure struct {
 	UTC              float64                `json:"UTC"`
 	CityName         string                 `json:"CityName"`
@@ -123,7 +123,7 @@ func (bloomskyInfo BloomskyStructure) GetIndexUV() string {
 	return bloomskyInfo.Storm.UVIndex
 }
 
-//IsNight returns true if it's the night 
+//IsNight returns true if it's the night
 func (bloomskyInfo BloomskyStructure) IsNight() bool {
 	return bloomskyInfo.Data.Night
 }
@@ -132,7 +132,6 @@ func (bloomskyInfo BloomskyStructure) IsNight() bool {
 func (bloomskyInfo BloomskyStructure) GetTemperatureFahrenheit() float64 {
 	return bloomskyInfo.Data.Temperature
 }
-
 
 func (bloomskyInfo BloomskyStructure) GetTemperatureCelcius() float64 {
 	return ((bloomskyInfo.Data.Temperature - 32.00) * 5.00 / 9.00)
