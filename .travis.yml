@@ -1,37 +1,34 @@
 language: go
-
 go:
-    - master
-
+- master
 install:
 - go get golang.org/x/tools/cmd/cover
 - go get github.com/mattn/goveralls
 - go get .
-
 script:
 - go test -v -covermode=count -coverprofile=coverage.out
 - echo $COVERALLS_TOKEN
-- $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
-
+- "$HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken
+  $COVERALLS_TOKEN"
 before_deploy:
-   - "./compile.sh"
-   - ls bin/goBloomsky-darwin-amd64.bin 
-
+- "./compile.sh"
+- ls bin/goBloomsky-darwin-amd64.bin
 deploy:
   provider: releases
   api_key:
     secure: vIq3WGL3RPhqE583zzrO1db73pmfkFtFfLbsHPtHFwLjNNxjjO3IOuS6TsJu3ZMYshseZkRj1B7fmsBAXjchNVwaKvz2pyX8euU/TFEP5tlIag1Uh5/guJvWI3mRdCE/AXjyIqAVzjyqnrFWIP5OQ65di7yelL3uAt6xo3/gESpfvrhrrOtH3ENBn0jnptFkCpJMMHHe1MptmBMgP87x5rJX1mIPHypLVp7Z4LOvA2IAzL34yN1sql2Td0zItSLGhAS+pViYdsSP6mgCi3vkiQxZ4oWBoUf/b8GN202FQofV78Fy/P3X9vmwp3g6MD8tj2xhXfQmVVDX1hpDOuC8PQpU0v23vTLgFgHRG6EQI/tPvqa+rgoTpGsLtSJpkv787VfVfMRTBUBVZJg6Of44cGPQj+JXCML3Iczfn7OyWd0goytvHXdjgNFkhoAPEDXQRheYDMh0nlFxwFv+S4M6N5ZgWh/81NdHl17eJ5g7cGwQzli0eABra2NriNBzPiARSewtl46aIZlQvMz2v6M7+G/HHI1vzablsnAC+DheWo9CXj5lWJzTau+JB75dp1swgBONZUloyl1jAmTBr6OVPAD2KxFVYzuvbYUQy3UvMxdibEl8ATWmM+2AZfBztYd96e0E7axwVMJq8Kw9rwSTkHQyhMJ+K4TpIgGNHaZFz4E=
-  file: 
-     - bin/goBloomsky-darwin-386.bin
-     - bin/goBloomsky-darwin-amd64.bin
-     - bin/goBloomsky-linux-386.bin
-     - bin/goBloomsky-linux-amd64.bin
-     - bin/goBloomsky-windows-386.exe
-     - bin/goBloomsky-windows-amd64.exe
-     - config.yaml
+  file:
+  - bin/goBloomsky-darwin-386.bin
+  - bin/goBloomsky-darwin-amd64.bin
+  - bin/goBloomsky-linux-386.bin
+  - bin/goBloomsky-linux-amd64.bin
+  - bin/goBloomsky-windows-386.exe
+  - bin/goBloomsky-windows-amd64.exe
+  - config.yaml
   skip_cleanup: true
   on:
     tags: true
     all_branches: true
 env:
-  COVERALLS_TOKEN: VZATjZzePvtZV1qPaa/JUcZyQ+hMh50UO9asPmhQbyerDhr3XUPJKNejjkkzUMfBQ+Az3JKRExH6buJ+cXEIlTirQauSXCCi3kR90c0DaaZFUrW2z5dd4G94fk5nMc7AQ/bK1hfTpbjLroffTCruPS+z+BjVu8HKshaerPL+EpupF/GfSd/HtBWVLb0MTK7Cm4OkBBtjgIyUpCZr+9jFQLsnXFDMOwG85HVJ91QD+Y8f9fTuNxh3Sf+C15LyX92or8Pcv6t/TTWnC55rWsCW57Wk3R2KmFnV7SGv9TC46w/xpc6u13s4L9tHv5lLLfu/OO0Soj/xuv4llBSP8NWHVi1/McI/A+S0XgQtJmhg+mU0cVCE/nI9Ev0mJ4Zpd5mle/5aTM+TJj8P0QfacL3Iox+2ixPIOOwWlL6xGjuLujVRLXriN1mE/wgNhWhElaskXTRMoMdMS8+182/QNhGp662DilRBrH8GCVwXLgUVj3PlwWtb+04Lw4XppctYn3ZtB7JZZcfS5QYA1PgrlAJayvkghSvhJaVQbiASOKUk4dNpGf4vMy3k/3PDYupMGGrGqDn1n4Rgsv4t/gNViVDp0zh4GN8fRaAKAUnA16pyNqQMS2SszoWEWsszCib0N5mT/Vv4iyojZb3edHjKUVIoGmCnVAHvxkgDBUxiSQN3fwQ=
+  global:
+    secure: OnelAxGwR9hD1Qzl5/olfyWpIcFUdjn7UBpXEY5x6jRcThCb0DtSidBCQnRbESX89D9Sii7b2inh0/uhEWXqE+ZZG9Ld66bcWdnLb2GB48swZJ4c7LEZrCobIG7lE2u04nH+Iw09fdf93R/s28VeCDdGsiUGlFZxnPwxje1SCvyZvwJcNHvk8+9+tGl3ddvuvk5/+7mH2H/+Ai/xp4foTN73KqwIzphsJfcgpAfpJRnN6l5pmiwq8kqLVvbZJTjqJJNw5xcXen1jn5itUXSBxCjwpTjf6eAZIVlHND08R0vqRjDStzp+yx8/1mgT9XZPj+SXtagTLfvL665wZuL2iy0ALOa2NVN5++LLLx9SaXgBE2a7SH2CRZ5dKpCqhUFlUragwH3fk2vdgeBuZawAJ8OcTkL2LqyZals9JjAKYtT0cC7ZE3Ae5bxBUrbCc3MjDN1IfSqkzvQfhsisKh9A7I7IV+Q+5WhAmPRb/uxZ5Pt8oCw8Ju0szG0wSrkU/Z+a71HErt8ZCWYFC2xWlj4wUOXGFzzcPyBT/tCv6mjATq50nNZWkb/TraAeWMGXJ0nwRX+Z3qeewNduatSAAX52nU70tIEm0eKtKLGglqBvP0I44AMG5tSnDTygcPa26SWQ6n9JxSRYmbt7w7Y2ZOW+cvKyKA9XdyW5+GlGkqpCOvM=
