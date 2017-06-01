@@ -36,9 +36,9 @@ This library calls the bloomsky API Thermostat in Go (Golang) and export informa
     Pressure InHg : 	 	29.4 inHg
     Pressure HPa : 	 	993.9 hPa
 
-#Example : result in a influxData.
+# Example : result in a influxData.
 
-![InfluxData Image ](https://github.com/patrickalin/GobloomskyThermostatAPIRest/blob/master/img/InfluxDB.png)
+![InfluxData Image ](https://github.com/patrickalin/bloomsky-client-go-source/blob/master/img/InfluxDB.png)
 
 You can display the result with Chronograph
 
@@ -51,7 +51,7 @@ You can display the result with Grafana
 If you want I have a similar code for openweather to save the temperature of you location.
 [GoOpenWeatherToInfluxDB](https://github.com/patrickalin/GoOpenWeatherToInfluxDB)
 
-#Pre installation
+# Pre installation
 
 install git
 
