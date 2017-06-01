@@ -12,16 +12,20 @@ go:
 #- "$HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN"
 
 before_deploy:
-- "./compile.sh"
-- ls bin/goBloomsky-darwin-amd64.bin 
+   - "./compile.sh"
+   - ls bin/goBloomsky-darwin-amd64.bin 
 
 deploy:
   provider: releases
   api_key:
     secure: vIq3WGL3RPhqE583zzrO1db73pmfkFtFfLbsHPtHFwLjNNxjjO3IOuS6TsJu3ZMYshseZkRj1B7fmsBAXjchNVwaKvz2pyX8euU/TFEP5tlIag1Uh5/guJvWI3mRdCE/AXjyIqAVzjyqnrFWIP5OQ65di7yelL3uAt6xo3/gESpfvrhrrOtH3ENBn0jnptFkCpJMMHHe1MptmBMgP87x5rJX1mIPHypLVp7Z4LOvA2IAzL34yN1sql2Td0zItSLGhAS+pViYdsSP6mgCi3vkiQxZ4oWBoUf/b8GN202FQofV78Fy/P3X9vmwp3g6MD8tj2xhXfQmVVDX1hpDOuC8PQpU0v23vTLgFgHRG6EQI/tPvqa+rgoTpGsLtSJpkv787VfVfMRTBUBVZJg6Of44cGPQj+JXCML3Iczfn7OyWd0goytvHXdjgNFkhoAPEDXQRheYDMh0nlFxwFv+S4M6N5ZgWh/81NdHl17eJ5g7cGwQzli0eABra2NriNBzPiARSewtl46aIZlQvMz2v6M7+G/HHI1vzablsnAC+DheWo9CXj5lWJzTau+JB75dp1swgBONZUloyl1jAmTBr6OVPAD2KxFVYzuvbYUQy3UvMxdibEl8ATWmM+2AZfBztYd96e0E7axwVMJq8Kw9rwSTkHQyhMJ+K4TpIgGNHaZFz4E=
-#  file: "/home/travis/gopath/src/github.com/patrickalin/bloomsky-client-go-source/bin/*"
   file: 
+     - bin/goBloomsky-darwin-386.bin
      - bin/goBloomsky-darwin-amd64.bin
+     - bin/goBloomsky-linux-386.bin
+     - bin/goBloomsky-linux-amd64.bin
+     - bin/goBloomsky-windows-386.exe
+     - bin/goBloomsky-windows-amd64.exe
   skip_cleanup: true
 #  on:
 #    tags: true
