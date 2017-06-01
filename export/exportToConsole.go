@@ -20,7 +20,7 @@ func displayToConsole(onebloomsky bloomskyStructure.BloomskyStructure) {
 	fmt.Printf("Wind Gust : \t \t%.2f mPh\n", onebloomsky.GetWindGustMph())
 	fmt.Printf("Sustained Wind Speed : \t%.2f mPh\n", onebloomsky.GetSustainedWindSpeedMph())
 	fmt.Printf("Wind Gust : \t \t%.2f km/h\n", onebloomsky.GetWindGustMs())
-	fmt.Printf("Sustained Wind Speed : \t \t%.2f m/s\n", onebloomsky.GetSustainedWindSpeedMs())
+	fmt.Printf("Sustained Wind Speed : \t%.2f m/s\n", onebloomsky.GetSustainedWindSpeedMs())
 	fmt.Printf("Rain : \t \t \t%t\n", onebloomsky.IsRain())
 	fmt.Printf("Rain Daily : \t \t%.2f in\n", onebloomsky.GetRainDailyIn())
 	fmt.Printf("24h Rain : \t \t%.2f in\n", onebloomsky.GetRainIn())
