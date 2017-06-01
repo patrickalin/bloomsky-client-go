@@ -20,8 +20,8 @@ Get bloomsky Thermostat Information
 //configName name of the config file
 const configName = "config"
 
-//VERSION version of the code
-const VERSION = "0.1"
+//VERSION of the code
+const VERSION = "0.2"
 
 var (
 	bloomskyMessageToConsole  = make(chan bloomskyStructure.BloomskyStructure)
@@ -66,6 +66,7 @@ func main() {
 	schedule()
 }
 
+// The scheduler
 func schedule() {
 	ticker := time.NewTicker(myTime)
 	quit := make(chan struct{})
@@ -81,7 +82,7 @@ func schedule() {
 	}
 }
 
-//principal function which loops
+//Principal function which one loops
 func repeat() {
 	mylog.Trace.Println("Repeat actions each Time Variable")
 
