@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"time"
 
-	bloomskyStructure "github.com/patrickalin/GoBloomsky/bloomskyStructure"
-	config "github.com/patrickalin/GoBloomsky/config"
-	export "github.com/patrickalin/GoBloomsky/export"
+	bloomskyStructure "github.com/patrickalin/bloomsky-client-go-source/bloomskyStructure"
+	config "github.com/patrickalin/bloomsky-client-go-source/config"
+	export "github.com/patrickalin/bloomsky-client-go-source/export"
 
 	mylog "github.com/patrickalin/GoMyLog"
 )
