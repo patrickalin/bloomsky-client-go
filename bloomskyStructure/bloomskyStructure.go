@@ -219,8 +219,8 @@ func (bloomskyInfo BloomskyStructure) GetRainRateMm() float64 {
 	Voltage     float64 `json:"Voltage"`
 */
 
-// MakeNew calls bloomsky and get structurebloomsky
-func MakeNew(oneConfig config.ConfigStructure) BloomskyStructure {
+// NewBloomsky calls bloomsky and get structurebloomsky
+func NewBloomsky(oneConfig config.ConfigStructure) BloomskyStructure {
 
 	var retry = 0
 	var err error

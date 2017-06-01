@@ -87,7 +87,7 @@ func repeat() {
 	mylog.Trace.Println("Repeat actions each Time Variable")
 
 	// get bloomsky JSON and parse information in bloomsky Go Structure
-	mybloomsky := bloomskyStructure.MakeNew(myConfig)
+	mybloomsky := bloomskyStructure.NewBloomsky(myConfig)
 
 	go func() {
 		// display major informations to console
