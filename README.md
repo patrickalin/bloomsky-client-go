@@ -25,25 +25,23 @@ Download the [binary](https://github.com/patrickalin/bloomsky-client-go/releases
 
 You have to change the API Key in the config.yaml.
 
-###Example : result in the standard console.
-
-Example : result in the standard console.
+### Example : result in the standard console.
 
     Tuesday, 30-May-17 16:14:43 CEST :> Bloomsky API 0.1 in Go
    
     Tuesday, 30-May-17 16:14:47 CEST :> Send bloomsky Data to InfluxDB
     
     Timestamp : 	 	2017-05-30 16:08:49 +0200 CEST
-    City : 	 	Thuin
+    City : 	 	    Thuin
     Device Id : 	 	442C05954A59
-    Num Of Followers : 	 	2
+    Num Of Followers : 	 2
     Index UV : 	 	1
     Night : 	 	false
-    Wind Direction : 	 	SW
+    Wind Direction : 	 SW
     Wind Gust : 	 	7.40 mPh
-    Sustained Wind Speed : 	 	4.47 mPh
+    Sustained Wind Speed : 	 4.47 mPh
     Wind Gust : 	 	11.91 km/h
-    Sustained Wind Speed : 	 	7.20 m/s
+    Sustained Wind Speed : 	 7.20 m/s
     Rain : 	 	false
     Rain Daily : 	 	0.00 in
     24h Rain : 	 	0.00 in
@@ -51,10 +49,10 @@ Example : result in the standard console.
     Rain Daily : 	 	0.00 mm
     24h Rain : 	 	0.00 mm
     Rain Rate : 	 	0.00 mm
-    Temperature F : 	 	67.9 °F
-    Temperature C : 	 	20.0 °C
+    Temperature F : 	 67.9 °F
+    Temperature C : 	 20.0 °C
     Humidity : 	 	62 %
-    Pressure InHg : 	 	29.4 inHg
+    Pressure InHg : 	 29.4 inHg
     Pressure HPa : 	 	993.9 hPa
 
 ### Example : result in a influxData.
