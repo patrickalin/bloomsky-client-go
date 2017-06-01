@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	config "github.com/patrickalin/bloomsky-client-go-source/config"
+	config "github.com/patrickalin/bloomsky-client-go/config"
 
 	mylog "github.com/patrickalin/GoMyLog"
 	rest "github.com/patrickalin/GoRest"
