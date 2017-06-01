@@ -7,3 +7,4 @@ goBloomsky-windows-amd64
 bin
 tag.sh
 bloomsky-client-go-source
+config.yaml
