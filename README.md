@@ -1,4 +1,4 @@
-# Go Bloomsky API
+# BloomSky Client in Go
 
 [![Build Status](https://travis-ci.org/patrickalin/bloomsky-client-go-source.svg?branch=master)](https://travis-ci.org/patrickalin/bloomsky-client-go-source)
 
@@ -6,9 +6,26 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/patrickalin/bloomsky-client-go-source)](https://goreportcard.com/report/github.com/patrickalin/bloomsky-client-go-source)
 
-This library calls the bloomsky API Thermostat in Go (Golang) and export information in the console or in in Time Series Database InfluxData.
+A simple Go client for the BloomSky API.
+I's possible to export informations in the console or in in Time Series Database InfluxData.
 
-#Example : result in the standard console.
+## Prerequisites
+
+* BloomSky API key (get it here: https://dashboard.bloomsky.com/)
+
+## Getting Started
+
+### Installation
+
+Download the [binary](https://github.com/patrickalin/bloomsky-client-go/releases) for your OS and the [config.yaml](https://github.com/patrickalin/bloomsky-client-go/blob/master/config.yaml) in the same folder.
+
+### Usage
+
+You have to change the API Key in the config.yaml.
+
+###Example : result in the standard console.
+
+Example : result in the standard console.
 
     Tuesday, 30-May-17 16:14:43 CEST :> Bloomsky API 0.1 in Go
    
@@ -38,7 +55,7 @@ This library calls the bloomsky API Thermostat in Go (Golang) and export informa
     Pressure InHg : 	 	29.4 inHg
     Pressure HPa : 	 	993.9 hPa
 
-# Example : result in a influxData.
+### Example : result in a influxData.
 
 ![InfluxData Image ](https://github.com/patrickalin/bloomsky-client-go-source/blob/master/img/InfluxDB.png)
 
@@ -53,7 +70,9 @@ You can display the result with Grafana
 If you want I have a similar code for openweather to save the temperature of you location.
 [GoOpenWeatherToInfluxDB](https://github.com/patrickalin/GoOpenWeatherToInfluxDB)
 
-# Pre installation
+## Compilation
+
+### Pre installation
 
 install git
 
