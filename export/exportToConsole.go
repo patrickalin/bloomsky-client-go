@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	mylog "github.com/patrickalin/GoMyLog"
-	bloomskyStructure "github.com/patrickalin/bloomsky-client-go-source/bloomskyStructure"
+	bloomskyStructure "github.com/patrickalin/bloomsky-client-go/bloomskyStructure"
 )
 
 //print major informations from a bloomsky JSON to console

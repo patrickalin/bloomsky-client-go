@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	bloomskyStructure "github.com/patrickalin/bloomsky-client-go-source/bloomskyStructure"
-	config "github.com/patrickalin/bloomsky-client-go-source/config"
+	bloomskyStructure "github.com/patrickalin/bloomsky-client-go/bloomskyStructure"
+	config "github.com/patrickalin/bloomsky-client-go/config"
 
 	clientinfluxdb "github.com/influxdata/influxdb/client/v2"
 
