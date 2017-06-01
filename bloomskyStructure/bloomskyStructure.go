@@ -108,7 +108,7 @@ func (bloomskyInfo BloomskyStructure) GetCity() string {
 	return bloomskyInfo.CityName
 }
 
-//GetDevideId returns the Device Id
+//GetDeviceID returns the Device Id
 func (bloomskyInfo BloomskyStructure) GetDeviceID() string {
 	return bloomskyInfo.DeviceID
 }
