@@ -224,7 +224,6 @@ func (bloomskyInfo BloomskyStructure) GetRainRateMm() float64 {
 func NewBloomsky(oneConfig config.ConfigStructure) BloomskyStructure {
 
 	var retry = 0
-	var err error
 	var duration = time.Minute * 5
 
 	// get body from Rest API
@@ -238,18 +237,13 @@ func NewBloomsky(oneConfig config.ConfigStructure) BloomskyStructure {
 	m["Authorization"] = b
 
 	for retry < 5 {
-		err = myRest.GetWithHeaders(oneConfig.BloomskyURL, m)
-		if err != nil {
+		if err := myRest.GetWithHeaders(oneConfig.BloomskyURL, m); err != nil {
 			mylog.Error.Println(&bloomskyError{err, "Problem with call rest, check the URL and the secret ID in the config file"})
 			retry++
 			time.Sleep(duration)
 		} else {
 			retry = 5
 		}
-	}
-
-	if err != nil {
-		mylog.Error.Fatal(&bloomskyError{err, "Problem with call rest, check the URL and the secret ID in the config file"})
 	}
 
 	body := myRest.GetBody()
@@ -260,9 +254,7 @@ func NewBloomsky(oneConfig config.ConfigStructure) BloomskyStructure {
 func NewBloomskyFromBody(body []byte) BloomskyStructure {
 	var bloomskyInfo []BloomskyStructure
 	mylog.Trace.Printf("Unmarshal the response")
-	err := json.Unmarshal(body, &bloomskyInfo)
-
-	if err != nil {
+	if err := json.Unmarshal(body, &bloomskyInfo); err != nil {
 		mylog.Error.Fatal(&bloomskyError{err, "Problem with json to struct, problem in the struct ?"})
 	}
 
