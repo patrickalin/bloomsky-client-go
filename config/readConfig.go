@@ -50,6 +50,7 @@ func (configInfo ConfigStructure) ReadConfig(configName string) ConfigStructure 
 	viper.AddConfigPath("./config/")
 
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+
 	if err != nil {
 		mylog.Error.Fatal(err)
 	}
@@ -58,8 +59,7 @@ func (configInfo ConfigStructure) ReadConfig(configName string) ConfigStructure 
 
 	dir = dir + "/" + configName
 
-	err = viper.ReadInConfig()
-	if err != nil {
+	if err := viper.ReadInConfig(); err != nil {
 		fmt.Printf("File not found:> %s/%s \n \n", dir, configName)
 		mylog.Error.Fatal(err)
 	}
