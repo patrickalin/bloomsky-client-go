@@ -75,6 +75,7 @@ type bloomskyStructure interface {
 	GetTargetTemperatureF() float64
 	GetHumidity() float64
 	GetAway() string
+	GetCity() string
 	ShowPrettyAll() int
 }
 
