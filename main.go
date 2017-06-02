@@ -1,3 +1,4 @@
+// Bloomsky application to export Data bloomsky to console or to influxdb
 package main
 
 import (
@@ -27,11 +28,9 @@ var (
 	bloomskyMessageToConsole  = make(chan bloomskyStructure.BloomskyStructure)
 	bloomskyMessageToInfluxDB = make(chan bloomskyStructure.BloomskyStructure)
 
-	myTime time.Duration
-
+	myTime   time.Duration
 	myConfig config.ConfigStructure
-
-	debug = flag.String("debug", "", "Error=1, Warning=2, Info=3, Trace=4")
+	debug    = flag.String("debug", "", "Error=1, Warning=2, Info=3, Trace=4")
 )
 
 func main() {
@@ -82,7 +81,7 @@ func schedule() {
 	}
 }
 
-//Principal function which one loops
+//Principal function which one loops each Time Variable
 func repeat() {
 	mylog.Trace.Println("Repeat actions each Time Variable")
 
@@ -91,7 +90,6 @@ func repeat() {
 
 	go func() {
 		// display major informations to console
-
 		if myConfig.ConsoleActivated == "true" {
 			bloomskyMessageToConsole <- mybloomsky
 		}
