@@ -4,12 +4,10 @@ import (
 	"fmt"
 	"time"
 
+	clientinfluxdb "github.com/influxdata/influxdb/client/v2"
+	mylog "github.com/patrickalin/GoMyLog"
 	bloomskyStructure "github.com/patrickalin/bloomsky-client-go/bloomskyStructure"
 	config "github.com/patrickalin/bloomsky-client-go/config"
-
-	clientinfluxdb "github.com/influxdata/influxdb/client/v2"
-
-	mylog "github.com/patrickalin/GoMyLog"
 )
 
 type influxDBStruct struct {
@@ -18,16 +16,7 @@ type influxDBStruct struct {
 	Points  [][]interface{} `json:"points"`
 }
 
-type influxDBError struct {
-	message error
-	advice  string
-}
-
 var clientInflux clientinfluxdb.Client
-
-func (e *influxDBError) Error() string {
-	return fmt.Sprintf("\n \t InfluxDBError :> %s \n\t InfluxDB Advice:> %s", e.message, e.advice)
-}
 
 func sendbloomskyToInfluxDB(onebloomsky bloomskyStructure.BloomskyStructure, oneConfig config.ConfigStructure) {
 
@@ -46,7 +35,7 @@ func sendbloomskyToInfluxDB(onebloomsky bloomskyStructure.BloomskyStructure, one
 	})
 
 	if err != nil {
-		mylog.Error.Fatal(&influxDBError{err, "Error sent Data to Influx DB"})
+		mylog.Error.Fatal(fmt.Errorf("Error sent Data to Influx DB : %v", err))
 	}
 
 	pt, err := clientinfluxdb.NewPoint("bloomskyData", tags, fields, time.Now())
@@ -58,10 +47,9 @@ func sendbloomskyToInfluxDB(onebloomsky bloomskyStructure.BloomskyStructure, one
 	if err != nil {
 		err2 := createDB(oneConfig)
 		if err2 != nil {
-			mylog.Error.Fatal(&influxDBError{err, "Error with Post : Check if InfluxData is running or if the database bloomsky exists"})
+			mylog.Error.Fatal(fmt.Errorf("Check if InfluxData is running or if the database bloomsky exists : %v", err))
 		}
 	}
-
 }
 
 func createDB(oneConfig config.ConfigStructure) error {
@@ -74,7 +62,7 @@ func createDB(oneConfig config.ConfigStructure) error {
 
 	_, err := clientInflux.Query(q)
 	if err != nil {
-		return &influxDBError{err, "Error with : Create database bloomsky, check if InfluxDB is running"}
+		return fmt.Errorf("Error with : Create database bloomsky, check if InfluxDB is running : %v", err)
 	}
 	fmt.Println("Database bloomsky created in InfluxDB")
 	return nil
@@ -89,7 +77,7 @@ func makeClient(oneConfig config.ConfigStructure) (client clientinfluxdb.Client,
 		})
 
 	if err != nil || client == nil {
-		return nil, &influxDBError{err, "Error with creating InfluxDB Client : , check if InfluxDB is running"}
+		return nil, fmt.Errorf("Error creating database bloomsky, check if InfluxDB is running : %v", err)
 	}
 	return client, nil
 }
