@@ -18,7 +18,7 @@ type influxDBStruct struct {
 
 var clientInflux clientinfluxdb.Client
 
-func sendbloomskyToInfluxDB(onebloomsky bloomskyStructure.BloomskyStructure, oneConfig config.ConfigStructure) {
+func sendbloomskyToInfluxDB(onebloomsky bloomskyStructure.BloomskyStructure, oneConfig config.Configuration) {
 
 	fmt.Printf("\n%s :> Send bloomsky Data to InfluxDB\n", time.Now().Format(time.RFC850))
 
@@ -52,7 +52,7 @@ func sendbloomskyToInfluxDB(onebloomsky bloomskyStructure.BloomskyStructure, one
 	}
 }
 
-func createDB(oneConfig config.ConfigStructure) error {
+func createDB(oneConfig config.Configuration) error {
 	fmt.Println("Create Database bloomsky in InfluxData")
 
 	query := fmt.Sprint("CREATE DATABASE ", oneConfig.InfluxDBDatabase)
@@ -68,7 +68,7 @@ func createDB(oneConfig config.ConfigStructure) error {
 	return nil
 }
 
-func makeClient(oneConfig config.ConfigStructure) (client clientinfluxdb.Client, err error) {
+func makeClient(oneConfig config.Configuration) (client clientinfluxdb.Client, err error) {
 	client, err = clientinfluxdb.NewHTTPClient(
 		clientinfluxdb.HTTPConfig{
 			Addr:     fmt.Sprintf("http://%s:%s", oneConfig.InfluxDBServer, oneConfig.InfluxDBServerPort),
@@ -85,7 +85,7 @@ func makeClient(oneConfig config.ConfigStructure) (client clientinfluxdb.Client,
 // InitInfluxDB initiate the client influxDB
 // Arguments bloomsky informations, configuration from config file
 // Wait events to send to influxDB
-func InitInfluxDB(messagesbloomsky chan bloomskyStructure.BloomskyStructure, oneConfig config.ConfigStructure) {
+func InitInfluxDB(messagesbloomsky chan bloomskyStructure.BloomskyStructure, oneConfig config.Configuration) {
 
 	clientInflux, _ = makeClient(oneConfig)
 
