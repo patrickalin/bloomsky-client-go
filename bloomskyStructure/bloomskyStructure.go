@@ -84,19 +84,13 @@ type bloomskyError struct {
 	advice  string
 }
 
-func (e *bloomskyError) Error() string {
-	return fmt.Sprintf("\n \t bloomskyError :> %s \n\t Advice :> %s", e.message, e.advice)
-}
-
 // ShowPrettyAll prints to the console the JSON
-func (bloomskyInfo BloomskyStructure) ShowPrettyAll() int {
+func (bloomskyInfo BloomskyStructure) ShowPrettyAll() {
 	out, err := json.Marshal(bloomskyInfo)
 	if err != nil {
-		fmt.Println("Error with parsing Json")
-		mylog.Error.Fatal(err)
+		mylog.Error.Fatal(fmt.Errorf("Error with parsing Json"))
 	}
 	mylog.Trace.Printf("Decode:> \n %s \n\n", out)
-	return 0
 }
 
 //GetTimeStamp returns the timestamp give by Bloomsky
@@ -215,13 +209,8 @@ func (bloomskyInfo BloomskyStructure) GetRainRateMm() float64 {
 	return bloomskyInfo.Storm.RainRate
 }
 
-/*
-	DeviceType  string  `json:"DeviceType"`
-	Voltage     float64 `json:"Voltage"`
-*/
-
 // NewBloomsky calls bloomsky and get structurebloomsky
-func NewBloomsky(oneConfig config.ConfigStructure) BloomskyStructure {
+func NewBloomsky(oneConfig config.Configuration) BloomskyStructure {
 
 	var retry = 0
 	var duration = time.Minute * 5
