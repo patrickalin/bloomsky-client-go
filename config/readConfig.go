@@ -20,11 +20,15 @@ const consoleActivated = "console_activated"
 const influxDBActivated = "influxDB_activated"
 const refreshTimer = "refresh_timer"
 const logLevel = "log_level"
+const httpActivated = "http_activated"
+const httpPort = "http_port"
 
-//ConfigStructure is the structure of the config YAML file
+//Configuration is the structure of the config YAML file
 //use http://mervine.net/json2struct
-type ConfigStructure struct {
+type Configuration struct {
 	ConsoleActivated    string `json:"console_activated"`
+	HTTPActivated       string `json:"http_activated"`
+	HTTPPort            string `json:"http_port"`
 	InfluxDBActivated   string `json:"influxDB_activated"`
 	InfluxDBDatabase    string `json:"influxDB_database"`
 	InfluxDBPassword    string `json:"influxDB_password"`
@@ -44,36 +48,32 @@ type Config interface {
 
 // ReadConfig read config from config.json
 // with the package viper
-func (configInfo ConfigStructure) ReadConfig(configName string) ConfigStructure {
+func ReadConfig(configName string) (conf Configuration, err error) {
+	var configInfo Configuration
 	viper.SetConfigName(configName)
 	viper.AddConfigPath(".")
-	viper.AddConfigPath("./config/")
 
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-
 	if err != nil {
 		mylog.Error.Fatal(err)
 	}
-
-	mylog.Trace.Printf("The config file loaded is :> %s/%s \n \n", dir, configName)
-
 	dir = dir + "/" + configName
+	fmt.Printf("The config file loaded is :> %s/%s \n \n", dir, configName)
 
 	if err := viper.ReadInConfig(); err != nil {
-		fmt.Printf("File not found:> %s/%s \n \n", dir, configName)
-		mylog.Error.Fatal(err)
+		return configInfo, err
 	}
 
 	configInfo.BloomskyURL = viper.GetString(bloomskyURL)
 	if configInfo.BloomskyURL == "" {
-		mylog.Error.Fatal("Check if the key :> " + bloomskyURL + " is present in the file " + dir)
+		return configInfo, fmt.Errorf("Check if the key " + bloomskyURL + " is present in the file " + dir)
 	}
 
 	configInfo.BloomskyAccessToken = os.Getenv("bloomsky_secretid")
 	if configInfo.BloomskyAccessToken == "" {
 		configInfo.BloomskyAccessToken = viper.GetString(bloomskyAccessToken)
 		if configInfo.BloomskyURL == "" {
-			mylog.Error.Fatal("Check if the key :> " + bloomskyAccessToken + " is present in the file " + dir)
+			return configInfo, fmt.Errorf("Check if the key " + bloomskyAccessToken + " is present in the file " + dir)
 		}
 	}
 
@@ -81,7 +81,7 @@ func (configInfo ConfigStructure) ReadConfig(configName string) ConfigStructure 
 
 	configInfo.InfluxDBDatabase = viper.GetString(influxDBDatabase)
 	if configInfo.InfluxDBDatabase == "" {
-		mylog.Error.Fatal("Check if the key " + influxDBDatabase + " is present in the file " + dir)
+		return configInfo, fmt.Errorf("Check if the key " + influxDBDatabase + " is present in the file " + dir)
 	}
 
 	configInfo.InfluxDBPassword = viper.GetString(influxDBPassword)
@@ -124,17 +124,29 @@ func (configInfo ConfigStructure) ReadConfig(configName string) ConfigStructure 
 		mylog.Error.Fatal("Check if the key " + logLevel + " is present in the file " + dir)
 	}
 
-	return configInfo
+	configInfo.HTTPActivated = viper.GetString(httpActivated)
+	if configInfo.HTTPActivated == "" {
+		mylog.Error.Fatal("Check if the key " + httpActivated + " is present in the file " + dir)
+	}
+
+	configInfo.HTTPPort = viper.GetString(httpPort)
+	if configInfo.HTTPPort == "" {
+		mylog.Error.Fatal("Check if the key " + httpPort + " is present in the file " + dir)
+	}
+
+	return configInfo, nil
 }
 
 //New create the configStructure and fill in
-func New(configName string) ConfigStructure {
-	var configInfo ConfigStructure
-	configInfo = configInfo.ReadConfig(configName)
+func New(configName string) Configuration {
+	configInfo, err := ReadConfig(configName)
+	if err != nil {
+		mylog.Error.Fatal(fmt.Sprintf("%v", err))
+	}
 	return configInfo
 }
 
 // GetURL return bloomskyURL
-func (configInfo ConfigStructure) GetURL() string {
+func (configInfo Configuration) GetURL() string {
 	return configInfo.BloomskyURL
 }
