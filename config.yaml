@@ -8,6 +8,9 @@
   influxDB_database: "bloomsky"
 ######## If true display informations on console
   console_activated: "true"
+######## If true display informations on webpage
+  http_activated: "false"
+  http_port : ":1111"
 ######## Refresh time, be not to small because you are blocked by openweather and bloomsky (in second)
   refresh_timer: "60"
 ######## Params for bloomsky
