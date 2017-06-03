@@ -1,4 +1,4 @@
-// Bloomsky application to export Data bloomsky to console or to influxdb
+// Bloomsky application to export Data bloomsky to console or to influxdb.
 package main
 
 import (
@@ -27,9 +27,10 @@ const VERSION = "0.2"
 var (
 	bloomskyMessageToConsole  = make(chan bloomskyStructure.BloomskyStructure)
 	bloomskyMessageToInfluxDB = make(chan bloomskyStructure.BloomskyStructure)
+	bloomskyMessageToHTTP     = make(chan bloomskyStructure.BloomskyStructure)
 
 	myTime   time.Duration
-	myConfig config.ConfigStructure
+	myConfig config.Configuration
 	debug    = flag.String("debug", "", "Error=1, Warning=2, Info=3, Trace=4")
 )
 
@@ -61,8 +62,13 @@ func main() {
 	if myConfig.InfluxDBActivated == "true" {
 		export.InitInfluxDB(bloomskyMessageToInfluxDB, myConfig)
 	}
-
-	schedule()
+	if myConfig.HTTPActivated == "true" {
+		export.InitHTTP(bloomskyMessageToHTTP)
+	}
+	go func() {
+		schedule()
+	}()
+	export.NewServer(myConfig)
 }
 
 // The scheduler
@@ -102,4 +108,10 @@ func repeat() {
 		}
 	}()
 
+	go func() {
+		// display major informations to http
+		if myConfig.HTTPActivated == "true" {
+			bloomskyMessageToHTTP <- mybloomsky
+		}
+	}()
 }
