@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"time"
 
-	config "github.com/patrickalin/bloomsky-client-go/config"
-
 	mylog "github.com/patrickalin/GoMyLog"
 	rest "github.com/patrickalin/GoRest"
 )
@@ -210,23 +208,23 @@ func (bloomskyInfo BloomskyStructure) GetRainRateMm() float64 {
 }
 
 // NewBloomsky calls bloomsky and get structurebloomsky
-func NewBloomsky(oneConfig config.Configuration) BloomskyStructure {
+func NewBloomsky(bloomskyURL, bloomskyToken string) BloomskyStructure {
 
 	var retry = 0
 	var duration = time.Minute * 5
 
 	// get body from Rest API
-	mylog.Trace.Printf("Get from Rest bloomsky API")
+	mylog.Trace.Printf("Get from Rest bloomsky API %s %s", bloomskyURL, bloomskyToken)
 	myRest := rest.MakeNew()
 
-	b := []string{oneConfig.BloomskyAccessToken}
+	b := []string{bloomskyToken}
 
 	var m map[string][]string
 	m = make(map[string][]string)
 	m["Authorization"] = b
 
 	for retry < 5 {
-		if err := myRest.GetWithHeaders(oneConfig.BloomskyURL, m); err != nil {
+		if err := myRest.GetWithHeaders(bloomskyURL, m); err != nil {
 			mylog.Error.Println(&bloomskyError{err, "Problem with call rest, check the URL and the secret ID in the config file"})
 			retry++
 			time.Sleep(duration)

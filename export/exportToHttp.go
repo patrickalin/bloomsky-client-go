@@ -7,7 +7,6 @@ import (
 
 	mylog "github.com/patrickalin/GoMyLog"
 	bloomskyStructure "github.com/patrickalin/bloomsky-client-go/bloomskyStructure"
-	config "github.com/patrickalin/bloomsky-client-go/config"
 )
 
 var mybloomsky bloomskyStructure.BloomskyStructure
@@ -35,14 +34,14 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 //NewServer create web server
-func NewServer(oneConfig config.Configuration) {
-	mylog.Trace.Printf("Init server http %s", oneConfig.HTTPPort)
+func NewServer(HTTPPort string) {
+	mylog.Trace.Printf("Init server http port %s", HTTPPort)
 	http.HandleFunc("/", handler)
-	err := http.ListenAndServe(oneConfig.HTTPPort, nil)
+	err := http.ListenAndServe(HTTPPort, nil)
 	if err != nil {
 		mylog.Error.Fatal(fmt.Errorf("Error when I create the server : %v", err))
 	}
-	mylog.Trace.Printf("Server ok on http %s", oneConfig.HTTPPort)
+	mylog.Trace.Printf("Server ok on http %s", HTTPPort)
 }
 
 //InitHTTP listen on the chanel
@@ -52,8 +51,8 @@ func InitHTTP(messages chan bloomskyStructure.BloomskyStructure) {
 		mylog.Trace.Println("Init the queue to receive message to export to http")
 
 		for {
-			mylog.Trace.Println("Receive message to export to http")
 			msg := <-messages
+			mylog.Trace.Println("Receive message to export to http")
 			displayToHTTP(msg)
 		}
 	}()
