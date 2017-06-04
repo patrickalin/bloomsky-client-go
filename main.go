@@ -14,10 +14,6 @@ import (
 	mylog "github.com/patrickalin/GoMyLog"
 )
 
-/*
-Get bloomsky Thermostat Information
-*/
-
 //configName name of the config file
 const configName = "config"
 

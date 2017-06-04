@@ -8,3 +8,8 @@ bin
 tag.sh
 bloomsky-client-go
 config.yaml
+.vscode/
+bloomskyStructure/coverage.out
+bloomskyStructure/test.sh
+err.sh
+test.sh
