@@ -1,3 +1,4 @@
+//Package export bloomsky to console, to html or to influxdb
 package export
 
 import (

@@ -2,6 +2,7 @@ package export
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
 
 	mylog "github.com/patrickalin/GoMyLog"
@@ -17,34 +18,20 @@ func displayToHTTP(onebloomsky bloomskyStructure.BloomskyStructure) {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-
 	mylog.Trace.Println("Handle")
-	fmt.Fprintln(w, "Bloomsky")
-	fmt.Fprintln(w, "")
-	//fmt.Fprintln(w, mybloomsky.GetTimeStamp())
-	fmt.Fprintf(w, "\nTimestamp : \t \t%s\n", mybloomsky.GetTimeStamp())
-	fmt.Fprintf(w, "City : \t \t \t%s\n", mybloomsky.GetCity())
-	fmt.Fprintf(w, "Device Id : \t \t%s\n", mybloomsky.GetDeviceID())
-	fmt.Fprintf(w, "Num Of Followers : \t%d\n", mybloomsky.GetNumOfFollowers())
-	fmt.Fprintf(w, "Index UV : \t \t%s\n", mybloomsky.GetIndexUV())
-	fmt.Fprintf(w, "Night : \t \t%t\n", mybloomsky.IsNight())
-	fmt.Fprintf(w, "Wind Direction : \t%s\n", mybloomsky.GetWindDirection())
-	fmt.Fprintf(w, "Wind Gust : \t \t%.2f mPh\n", mybloomsky.GetWindGustMph())
-	fmt.Fprintf(w, "Sustained Wind Speed : \t%.2f mPh\n", mybloomsky.GetSustainedWindSpeedMph())
-	fmt.Fprintf(w, "Wind Gust : \t \t%.2f km/h\n", mybloomsky.GetWindGustMs())
-	fmt.Fprintf(w, "Sustained Wind Speed : \t%.2f m/s\n", mybloomsky.GetSustainedWindSpeedMs())
-	fmt.Fprintf(w, "Rain : \t \t \t%t\n", mybloomsky.IsRain())
-	fmt.Fprintf(w, "Rain Daily : \t \t%.2f in\n", mybloomsky.GetRainDailyIn())
-	fmt.Fprintf(w, "24h Rain : \t \t%.2f in\n", mybloomsky.GetRainIn())
-	fmt.Fprintf(w, "Rain Rate : \t \t%.2f in\n", mybloomsky.GetRainRateIn())
-	fmt.Fprintf(w, "Rain Daily : \t \t%.2f mm\n", mybloomsky.GetRainDailyMm())
-	fmt.Fprintf(w, "24h Rain : \t \t%.2f mm\n", mybloomsky.GetRainMm())
-	fmt.Fprintf(w, "Rain Rate : \t \t%.2f mm\n", mybloomsky.GetRainRateMm())
-	fmt.Fprintf(w, "Temperature F : \t%.1f °F\n", mybloomsky.GetTemperatureFahrenheit())
-	fmt.Fprintf(w, "Temperature C : \t%.1f °C\n", mybloomsky.GetTemperatureCelsius())
-	fmt.Fprintf(w, "Humidity : \t \t%.f %%\n", mybloomsky.GetHumidity())
-	fmt.Fprintf(w, "Pressure InHg : \t%.1f inHg\n", mybloomsky.GetPressureInHg())
-	fmt.Fprintf(w, "Pressure HPa : \t \t%.1f hPa\n", mybloomsky.GetPressureHPa())
+
+	//t := template.New("bloomsky") // Create a template.
+	//t = t.Funcs(template.FuncMap{"GetTimeStamp": mybloomsky.GetTimeStamp()})
+
+	t, err := template.ParseFiles("tmpl/bloomsky.html") // Parse template file.
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
+	err = t.Execute(w, mybloomsky) // merge.
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
+
 }
 
 //NewServer create web server

@@ -1,4 +1,4 @@
-// Package bloomskyStructure calls rest API Bloomsky, puts it in the structure and gives some function
+// Package bloomskyStructure calls rest API Bloomsky, puts it in the structure and gives somes functions
 package bloomskyStructure
 
 import (

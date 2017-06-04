@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+    "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>Bloomsky</title>
+</head>
+
+<script src="tmpl/js/raphael-2.1.4.min.js"></script>
+<script src="tmpl/js/justgage.js"></script>
+
+<body>
+
+    <h1> Bloomsky </h1>
+    <br>Timestamp : {{.GetTimeStamp}}
+    <br>City : {{.GetCity}}
+    <br>Device Id : {{.GetDeviceID}}
+    <br>Num Of Followers : {{.GetNumOfFollowers}}
+    <br>Index UV : {{.GetIndexUV}}
+    <br>Night : {{.IsNight}}
+    <br>Wind Direction : {{.GetWindDirection}}
+    <br>Wind Gust : {{.GetWindGustMph}}
+    <br>Sustained Wind Speed : {{.GetSustainedWindSpeedMph}}
+    <br>Wind Gust : {{.GetWindGustMs}}
+    <br>Sustained Wind Speed {{.GetSustainedWindSpeedMs}}
+    <br>Rain : {{.IsRain}} Daily : {{.GetRainDailyIn}}
+    <br>24h Rain : {{.GetRainIn}}
+    <br>Rain Rate : {{.GetRainRateIn}}
+    <br>Rain Daily : {{.GetRainDailyMm}}
+    <br>24h Rain : {{.GetRainMm}}
+    <br>Rain Rate : {{.GetRainRateMm}}
+    <br>Temperature F : {{.GetTemperatureFahrenheit}}
+    <br>Temperature C : {{.GetTemperatureCelsius}}
+    <br>Humidity : {{.GetHumidity}}
+    <br>Pressure InHg : {{.GetPressureInHg}}
+    <br>Pressure HPa : {{.GetPressureHPa}}
+
+    <div id="gauge" class="200x160px"></div>
+</body>
+
+<script>
+    var g = new JustGage({
+        id: "gauge",
+        value: 20,
+        min: -40,
+        max: 40,
+        title: "Temperature"
+    });
+</script>
+
+</html>
