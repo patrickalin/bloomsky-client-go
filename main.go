@@ -14,7 +14,7 @@ import (
 
 	clientinfluxdb "github.com/influxdata/influxdb/client/v2"
 	mylog "github.com/patrickalin/GoMyLog"
-	bloomskyStructure "github.com/patrickalin/bloomsky-client-go/bloomskyStructure"
+	bloomskyStructure "github.com/patrickalin/bloomsky-api-go"
 	"github.com/spf13/viper"
 )
 
