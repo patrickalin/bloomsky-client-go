@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	mylog "github.com/patrickalin/GoMyLog"
+	bloomskyStructure "github.com/patrickalin/bloomsky-client-go/bloomskyStructure"
 	"github.com/spf13/viper"
 )
 
@@ -33,3 +34,20 @@ func TestReadConfigFound(t *testing.T) {
 		fmt.Printf("%v", err)
 	}
 }*/
+
+func Test_displayToConsole(t *testing.T) {
+	type args struct {
+		onebloomsky bloomskyStructure.BloomskyStructure
+	}
+	tests := []struct {
+		name string
+		args args
+	}{
+	// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			displayToConsole(tt.args.onebloomsky)
+		})
+	}
+}
