@@ -1,0 +1,3 @@
+gofmt -d main.go 
+go list -f '{{ .Name }}: {{ .Doc }}'
+$GOPATH/bin/errcheck ./...
