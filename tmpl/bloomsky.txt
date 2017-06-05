@@ -18,8 +18,8 @@ Rain Rate :         {{.GetRainRateIn}}
 Rain Daily :        {{.GetRainDailyMm}}
 24h Rain :          {{.GetRainMm}}
 Rain Rate :         {{.GetRainRateMm}}
-Temperature F :     {{.GetTemperatureFahrenheit}}
-Temperature C :     {{.GetTemperatureCelsius}}
+Temperature F :     {{.GetTemperatureFahrenheit}} °F
+Temperature C :     {{.GetTemperatureCelsius}} °C
 Humidity :          {{.GetHumidity}}
 Pressure InHg :     {{.GetPressureInHg}}
 Pressure HPa :      {{.GetPressureHPa}}
