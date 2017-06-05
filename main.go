@@ -12,9 +12,9 @@ import (
 	"strconv"
 	"time"
 
+	clientinfluxdb "github.com/influxdata/influxdb/client/v2"
 	mylog "github.com/patrickalin/GoMyLog"
 	bloomskyStructure "github.com/patrickalin/bloomsky-client-go/bloomskyStructure"
-	export "github.com/patrickalin/bloomsky-client-go/export"
 	"github.com/spf13/viper"
 )
 
@@ -27,19 +27,19 @@ const VERSION = "0.2"
 // Configuration is the structure of the config YAML file
 //use http://mervine.net/json2struct
 type configuration struct {
-	ConsoleActivated    string
-	HTTPActivated       string
-	HTTPPort            string
-	InfluxDBActivated   string
-	InfluxDBDatabase    string
-	InfluxDBPassword    string
-	InfluxDBServer      string
-	InfluxDBServerPort  string
-	InfluxDBUsername    string
-	LogLevel            string
-	BloomskyAccessToken string
-	BloomskyURL         string
-	RefreshTimer        string
+	consoleActivated    string
+	hTTPActivated       string
+	hTTPPort            string
+	influxDBActivated   string
+	influxDBDatabase    string
+	influxDBPassword    string
+	influxDBServer      string
+	influxDBServerPort  string
+	influxDBUsername    string
+	logLevel            string
+	bloomskyAccessToken string
+	bloomskyURL         string
+	refreshTimer        string
 }
 
 var config configuration
@@ -70,25 +70,25 @@ func readConfig(configName string) (err error) {
 		return err
 	}
 
-	config.BloomskyURL = viper.GetString("BloomskyURL")
-	config.BloomskyAccessToken = viper.GetString("BloomskyAccessToken")
-	config.InfluxDBDatabase = viper.GetString("InfluxDBDatabase")
-	config.InfluxDBPassword = viper.GetString("InfluxDBPassword")
-	config.InfluxDBServer = viper.GetString("InfluxDBServer")
-	config.InfluxDBServerPort = viper.GetString("InfluxDBServerPort")
-	config.InfluxDBUsername = viper.GetString("InfluxDBUsername")
-	config.ConsoleActivated = viper.GetString("ConsoleActivated")
-	config.InfluxDBActivated = viper.GetString("InfluxDBActivated")
-	config.RefreshTimer = viper.GetString("RefreshTimer")
-	config.HTTPActivated = viper.GetString("HTTPActivated")
-	config.HTTPPort = viper.GetString("HTTPPort")
-	config.LogLevel = viper.GetString("LogLevel")
+	config.bloomskyURL = viper.GetString("BloomskyURL")
+	config.bloomskyAccessToken = viper.GetString("BloomskyAccessToken")
+	config.influxDBDatabase = viper.GetString("InfluxDBDatabase")
+	config.influxDBPassword = viper.GetString("InfluxDBPassword")
+	config.influxDBServer = viper.GetString("InfluxDBServer")
+	config.influxDBServerPort = viper.GetString("InfluxDBServerPort")
+	config.influxDBUsername = viper.GetString("InfluxDBUsername")
+	config.consoleActivated = viper.GetString("ConsoleActivated")
+	config.influxDBActivated = viper.GetString("InfluxDBActivated")
+	config.refreshTimer = viper.GetString("RefreshTimer")
+	config.hTTPActivated = viper.GetString("HTTPActivated")
+	config.hTTPPort = viper.GetString("HTTPPort")
+	config.logLevel = viper.GetString("LogLevel")
 
 	// Check if one value of the structure is empty
 	v := reflect.ValueOf(config)
 	values := make([]interface{}, v.NumField())
 	for i := 0; i < v.NumField(); i++ {
-		values[i] = v.Field(i).Interface()
+		values[i] = v.Field(i)
 		//v.Field(i).SetString(viper.GetString(v.Type().Field(i).Name))
 		if values[i] == "" {
 			return fmt.Errorf("Check if the key " + v.Type().Field(i).Name + " is present in the file " + dir)
@@ -173,6 +173,87 @@ func initWebServer(messages chan bloomskyStructure.BloomskyStructure) {
 	}()
 }
 
+func sendbloomskyToInfluxDB(onebloomsky bloomskyStructure.BloomskyStructure, clientInflux clientinfluxdb.Client, InfluxDBDatabase string) {
+
+	fmt.Printf("\n%s :> Send bloomsky Data to InfluxDB\n", time.Now().Format(time.RFC850))
+
+	// Create a point and add to batch
+	tags := map[string]string{"bloomsky": "living"}
+	fields := map[string]interface{}{
+		"NumOfFollowers": onebloomsky.GetNumOfFollowers(),
+	}
+
+	// Create a new point batch
+	bp, err := clientinfluxdb.NewBatchPoints(clientinfluxdb.BatchPointsConfig{
+		Database:  InfluxDBDatabase,
+		Precision: "s",
+	})
+
+	if err != nil {
+		mylog.Error.Fatal(fmt.Errorf("Error sent Data to Influx DB : %v", err))
+	}
+
+	pt, err := clientinfluxdb.NewPoint("bloomskyData", tags, fields, time.Now())
+	bp.AddPoint(pt)
+
+	// Write the batch
+	err = clientInflux.Write(bp)
+
+	if err != nil {
+		err2 := createDB(clientInflux, InfluxDBDatabase)
+		if err2 != nil {
+			mylog.Error.Fatal(fmt.Errorf("Check if InfluxData is running or if the database bloomsky exists : %v", err))
+		}
+	}
+}
+
+func createDB(clientInflux clientinfluxdb.Client, InfluxDBDatabase string) error {
+	fmt.Println("Create Database bloomsky in InfluxData")
+
+	query := fmt.Sprint("CREATE DATABASE ", InfluxDBDatabase)
+	q := clientinfluxdb.NewQuery(query, "", "")
+
+	fmt.Println("Query: ", query)
+
+	_, err := clientInflux.Query(q)
+	if err != nil {
+		return fmt.Errorf("Error with : Create database bloomsky, check if InfluxDB is running : %v", err)
+	}
+	fmt.Println("Database bloomsky created in InfluxDB")
+	return nil
+}
+
+func makeClientInfluxDB(InfluxDBServer, InfluxDBServerPort, InfluxDBUsername, InfluxDBPassword string) (client clientinfluxdb.Client, err error) {
+	client, err = clientinfluxdb.NewHTTPClient(
+		clientinfluxdb.HTTPConfig{
+			Addr:     fmt.Sprintf("http://%s:%s", InfluxDBServer, InfluxDBServerPort),
+			Username: InfluxDBUsername,
+			Password: InfluxDBPassword,
+		})
+
+	if err != nil || client == nil {
+		return nil, fmt.Errorf("Error creating database bloomsky, check if InfluxDB is running : %v", err)
+	}
+	return client, nil
+}
+
+// InitInfluxDB initiate the client influxDB
+// Arguments bloomsky informations, configuration from config file
+// Wait events to send to influxDB
+func initInfluxDB(messagesbloomsky chan bloomskyStructure.BloomskyStructure, influxDBServer, influxDBServerPort, influxDBUsername, influxDBPassword, influxDBDatabase string) {
+
+	clientInflux, _ := makeClientInfluxDB(influxDBServer, influxDBServerPort, influxDBUsername, influxDBPassword)
+
+	go func() {
+		mylog.Trace.Println("Receive messagesbloomsky to export InfluxDB")
+		for {
+			msg := <-messagesbloomsky
+			sendbloomskyToInfluxDB(msg, clientInflux, influxDBDatabase)
+		}
+	}()
+
+}
+
 func main() {
 
 	flag.Parse()
@@ -187,29 +268,32 @@ func main() {
 	}
 
 	if *debug != "" {
-		config.LogLevel = *debug
+		config.logLevel = *debug
 	}
 
-	level, _ := strconv.Atoi(config.LogLevel)
+	level, _ := strconv.Atoi(config.logLevel)
 	mylog.Init(mylog.Level(level))
 
-	i, _ := strconv.Atoi(config.RefreshTimer)
+	i, _ := strconv.Atoi(config.refreshTimer)
 	myTime = time.Duration(i) * time.Second
 
 	//init listeners
-	if config.ConsoleActivated == "true" {
+	if config.consoleActivated == "true" {
 		initConsole(bloomskyMessageToConsole)
 	}
-	if config.InfluxDBActivated == "true" {
-		export.InitInfluxDB(bloomskyMessageToInfluxDB, config.InfluxDBServer, config.InfluxDBServerPort, config.InfluxDBUsername, config.InfluxDBPassword, config.InfluxDBDatabase)
+	if config.influxDBActivated == "true" {
+		initInfluxDB(bloomskyMessageToInfluxDB, config.influxDBServer, config.influxDBServerPort, config.influxDBUsername, config.influxDBPassword, config.influxDBDatabase)
 	}
-	if config.HTTPActivated == "true" {
-		export.InitHTTP(bloomskyMessageToHTTP)
+	if config.hTTPActivated == "true" {
+		fmt.Printf("cici %s", config.hTTPActivated)
+		initWebServer(bloomskyMessageToHTTP)
 	}
 	go func() {
 		schedule()
 	}()
-	export.NewServer(config.HTTPPort)
+	if config.hTTPActivated == "true" {
+		newWebServer(config.hTTPPort)
+	}
 }
 
 // The scheduler
@@ -230,28 +314,28 @@ func schedule() {
 
 //Principal function which one loops each Time Variable
 func repeat() {
-	mylog.Trace.Printf("Repeat actions each Time Variable %s secondes", config.RefreshTimer)
+	mylog.Trace.Printf("Repeat actions each Time Variable %s secondes", config.refreshTimer)
 
 	// get bloomsky JSON and parse information in bloomsky Go Structure
-	mybloomsky := bloomskyStructure.NewBloomsky(config.BloomskyURL, config.BloomskyAccessToken)
+	mybloomsky := bloomskyStructure.NewBloomsky(config.bloomskyURL, config.bloomskyAccessToken)
 
 	go func() {
 		// display major informations to console
-		if config.ConsoleActivated == "true" {
+		if config.consoleActivated == "true" {
 			bloomskyMessageToConsole <- mybloomsky
 		}
 	}()
 
 	go func() {
 		// display major informations to console to influx DB
-		if config.InfluxDBActivated == "true" {
+		if config.influxDBActivated == "true" {
 			bloomskyMessageToInfluxDB <- mybloomsky
 		}
 	}()
 
 	go func() {
 		// display major informations to http
-		if config.HTTPActivated == "true" {
+		if config.hTTPActivated == "true" {
 			bloomskyMessageToHTTP <- mybloomsky
 		}
 	}()
