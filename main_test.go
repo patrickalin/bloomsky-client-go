@@ -23,13 +23,13 @@ func TestMain(m *testing.M) {
 }
 
 func TestReadConfigFound(t *testing.T) {
-	if err := ReadConfig("configForTest"); err != nil {
+	if err := readConfig("configForTest"); err != nil {
 		fmt.Printf("%v", err)
 	}
 }
 
 /*func TestReadConfigNotFound(t *testing.T) {
-	if err := ReadConfig("configError"); err != nil {
+	if err := readConfig("configError"); err != nil {
 		fmt.Printf("%v", err)
 	}
 }*/
