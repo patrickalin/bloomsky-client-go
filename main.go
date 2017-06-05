@@ -4,6 +4,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"html/template"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -25,7 +26,7 @@ const VERSION = "0.2"
 
 // Configuration is the structure of the config YAML file
 //use http://mervine.net/json2struct
-type Configuration struct {
+type configuration struct {
 	ConsoleActivated    string
 	HTTPActivated       string
 	HTTPPort            string
@@ -41,7 +42,7 @@ type Configuration struct {
 	RefreshTimer        string
 }
 
-var config Configuration
+var config configuration
 
 var (
 	bloomskyMessageToConsole  = make(chan bloomskyStructure.BloomskyStructure)
@@ -54,7 +55,7 @@ var (
 
 // ReadConfig read config from config.json
 // with the package viper
-func ReadConfig(configName string) (err error) {
+func readConfig(configName string) (err error) {
 	viper.SetConfigName(configName)
 	viper.AddConfigPath(".")
 
@@ -97,6 +98,31 @@ func ReadConfig(configName string) (err error) {
 	return nil
 }
 
+// displayToConsole print major informations from a bloomsky JSON to console
+func displayToConsole(onebloomsky bloomskyStructure.BloomskyStructure) {
+	t, err := template.ParseFiles("tmpl/bloomsky.txt")
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
+	if t.Execute(os.Stdout, onebloomsky); err != nil {
+		fmt.Printf("%v", err)
+	}
+}
+
+//InitConsole listen on the chanel
+func initConsole(messages chan bloomskyStructure.BloomskyStructure) {
+	go func() {
+
+		mylog.Trace.Println("Init the queue to receive message to export to console")
+
+		for {
+			mylog.Trace.Println("Receive message to export to console")
+			msg := <-messages
+			displayToConsole(msg)
+		}
+	}()
+}
+
 func main() {
 
 	flag.Parse()
@@ -106,7 +132,7 @@ func main() {
 	mylog.Init(mylog.ERROR)
 
 	// getConfig from the file config.json
-	if err := ReadConfig(configName); err != nil {
+	if err := readConfig(configName); err != nil {
 		mylog.Error.Fatal(fmt.Sprintf("%v", err))
 	}
 
@@ -122,7 +148,7 @@ func main() {
 
 	//init listeners
 	if config.ConsoleActivated == "true" {
-		export.InitConsole(bloomskyMessageToConsole)
+		initConsole(bloomskyMessageToConsole)
 	}
 	if config.InfluxDBActivated == "true" {
 		export.InitInfluxDB(bloomskyMessageToInfluxDB, config.InfluxDBServer, config.InfluxDBServerPort, config.InfluxDBUsername, config.InfluxDBPassword, config.InfluxDBDatabase)

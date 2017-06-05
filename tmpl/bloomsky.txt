@@ -1,0 +1,25 @@
+Bloomsky
+--------
+Timestamp :         {{.GetTimeStamp}}
+City :              {{.GetCity}}
+Device Id :         {{.GetDeviceID}}
+Num Of Followers :  {{.GetNumOfFollowers}}
+Index UV :          {{.GetIndexUV}}
+Night :             {{.IsNight}}
+Wind Direction :    {{.GetWindDirection}}
+Wind Gust :         {{.GetWindGustMph}}
+Sustained Wind Speed : {{.GetSustainedWindSpeedMph}}
+Wind Gust :         {{.GetWindGustMs}}
+Sustained Wind Speed {{.GetSustainedWindSpeedMs}}
+Rain :              {{.IsRain}}
+Daily :             {{.GetRainDailyIn}}
+24h Rain :          {{.GetRainIn}}
+Rain Rate :         {{.GetRainRateIn}}
+Rain Daily :        {{.GetRainDailyMm}}
+24h Rain :          {{.GetRainMm}}
+Rain Rate :         {{.GetRainRateMm}}
+Temperature F :     {{.GetTemperatureFahrenheit}}
+Temperature C :     {{.GetTemperatureCelsius}}
+Humidity :          {{.GetHumidity}}
+Pressure InHg :     {{.GetPressureInHg}}
+Pressure HPa :      {{.GetPressureHPa}}
