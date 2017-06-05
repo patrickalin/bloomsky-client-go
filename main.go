@@ -104,7 +104,7 @@ func displayToConsole(onebloomsky bloomskyStructure.BloomskyStructure) {
 	if err != nil {
 		fmt.Printf("%v", err)
 	}
-	if t.Execute(os.Stdout, onebloomsky); err != nil {
+	if err = t.Execute(os.Stdout, onebloomsky); err != nil {
 		fmt.Printf("%v", err)
 	}
 }
