@@ -2,3 +2,5 @@ bin
 bloomsky-client-go
 config.yaml
 .vscode/
+debug
+coverage.out
