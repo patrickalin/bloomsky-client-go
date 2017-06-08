@@ -3,50 +3,122 @@
 <html lang="en">
 
 <head>
+    <meta charset="utf-8">
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <title>Bloomsky</title>
+
+
+    <script>
+        window.addEventListener("load", function(evt) {
+
+            var output = document.getElementById("output");
+
+            var ws;
+
+            var print = function(message) {
+                var d = document.createElement("div");
+                d.innerHTML = message;
+                output.appendChild(d);
+            };
+
+            socket = new WebSocket("{{.}}");
+
+            //ON OPEN
+            socket.onopen = function(evt) {
+                // print("OPEN");
+                //print(socket.protocol)
+                //print(socket.readyState)
+                //print(socket.url)
+                socket.send("open")
+            }
+
+            // ON ERROR
+            socket.onerror = function(error) {
+                console.error(error);
+                print(error);
+            };
+
+            socket.onclose = function(evt) {
+                print("<b>Connection closed.</b>");
+            };
+
+            // ON MESSAGE
+            socket.onmessage = function(evt) {
+
+                var currentdate = new Date();
+                var datetime = "Last Sync: " + currentdate.getDate() + "/" +
+                    (currentdate.getMonth() + 1) + "/" +
+                    currentdate.getFullYear() + " @ " +
+                    currentdate.getHours() + ":" +
+                    currentdate.getMinutes() + ":" +
+                    currentdate.getSeconds();
+
+                document.getElementById("refreshtime").innerHTML = datetime;
+
+
+                //print("MESSAGE");
+                //console.log(evt.data)
+                var json = JSON.parse(evt.data);
+
+                var date = new Date(json.Data.TS * 1000);
+                var hours = date.getHours();
+                var minutes = "0" + date.getMinutes();
+                var seconds = "0" + date.getSeconds();
+                var formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+
+                document.getElementById("timestamp").innerHTML = formattedTime;
+                document.getElementById("city").innerHTML = json.CityName;
+                document.getElementById("device").innerHTML = json.DeviceID;
+                document.getElementById("followers").innerHTML = json.NumOfFollowers + " followers";
+                document.getElementById("night").innerHTML = json.Data.Night;
+                document.getElementById("uv").innerHTML = json.Storm.UVIndex + "  ( <2 très faible pas de risque, 2 - 4 faible réaction lente, 4 - 6 modérée brûlure facilitée)";
+
+                document.getElementById("winddir").innerHTML = json.Storm.WindDirection;
+                document.getElementById("windgust").innerHTML = json.Storm.WindGust + " mp/h";;
+                document.getElementById("sustwind").innerHTML = json.Storm.SustainedWindSpeed + " mp/h";;
+                document.getElementById("wingustms").innerHTML = json.Storm.WindGustms + " m/s";;
+                document.getElementById("sustwindms").innerHTML = json.Storm.SustainedWindSpeedms + " m/s";;
+                document.getElementById("wingustkmh").innerHTML = json.Storm.WindGustkmh + " km/h";
+                document.getElementById("sustwindkmh").innerHTML = json.Storm.SustainedWindSpeedkmh + " km/h";
+
+                document.getElementById("rain").innerHTML = json.Storm.Rain;
+                document.getElementById("raindaily").innerHTML = json.Storm.RainDaily + " in/day";
+                document.getElementById("rainrate").innerHTML = json.Storm.RainRate + " in/h";
+                document.getElementById("raindailymm").innerHTML = json.Storm.RainDailymm + " mm/day";
+                document.getElementById("rainratemm").innerHTML = json.Storm.RainRatemm + " mm/h";
+
+                document.getElementById("tempf").innerHTML = json.Data.Temperature + " °F";
+                document.getElementById("tempc").innerHTML = json.Data.TemperatureC + " °C";
+
+                document.getElementById("humidity").innerHTML = json.Data.Humidity + " %";
+
+                document.getElementById("pressureinhg").innerHTML = json.Data.Pressure + " inHg";
+                document.getElementById("pressurehpa").innerHTML = json.Data.Pressurehpa + " hPa";
+
+                document.getElementById("voltage").innerHTML = json.Data.Voltage
+
+                document.getElementById("bloomimg0").src = json.Data.ImageURL;
+                document.getElementById("bloomimg1").src = json.PreviewImageList[0];
+                document.getElementById("bloomimg2").src = json.PreviewImageList[1];
+                document.getElementById("bloomimg3").src = json.PreviewImageList[2];
+                document.getElementById("bloomimg4").src = json.PreviewImageList[3];
+                document.getElementById("bloomimg5").src = json.PreviewImageList[4];
+
+                document.getElementById("bloomvid0").src = json.VideoList[0];
+                document.getElementById("bloomvid1").src = json.VideoList[1];
+                document.getElementById("bloomvid2").src = json.VideoList[2];
+                document.getElementById("bloomvid3").src = json.VideoList[3];
+                document.getElementById("bloomvid4").src = json.VideoList[4];
+
+            }
+
+        });
+    </script>
+
 </head>
 
+
+<!--
 <script src="tmpl/js/raphael-2.1.4.min.js"></script>
 <script src="tmpl/js/justgage.js"></script>
-
-<body>
-
-    <h1> Bloomsky </h1>
-    <br>Timestamp : {{.GetTimeStamp}}
-    <br>City : {{.GetCity}}
-    <br>Device Id : {{.GetDeviceID}}
-    <br>Num Of Followers : {{.GetNumOfFollowers}}
-    <br>Index UV : {{.GetIndexUV}}
-    <br>Night : {{.IsNight}}
-    <br>Wind Direction : {{.GetWindDirection}}
-    <br>Wind Gust : {{.GetWindGustMph}}
-    <br>Sustained Wind Speed : {{.GetSustainedWindSpeedMph}}
-    <br>Wind Gust : {{.GetWindGustMs}}
-    <br>Sustained Wind Speed {{.GetSustainedWindSpeedMs}}
-    <br>Rain : {{.IsRain}} Daily : {{.GetRainDailyIn}}
-    <br>24h Rain : {{.GetRainIn}}
-    <br>Rain Rate : {{.GetRainRateIn}}
-    <br>Rain Daily : {{.GetRainDailyMm}}
-    <br>24h Rain : {{.GetRainMm}}
-    <br>Rain Rate : {{.GetRainRateMm}}
-    <br>Temperature F : {{.GetTemperatureFahrenheit}} °F
-    <br>Temperature C : {{.GetTemperatureCelsius}} °C
-    <br>Humidity : {{.GetHumidity}}
-    <br>Pressure InHg : {{.GetPressureInHg}}
-    <br>Pressure HPa : {{.GetPressureHPa}}
-
-    <div id="gauge" class="200x160px"></div>
-</body>
-
-<script>
-    var g = new JustGage({
-        id: "gauge",
-        value: 20,
-        min: -40,
-        max: 40,
-        title: "Temperature"
-    });
-</script>
-
-</html>
+-->
