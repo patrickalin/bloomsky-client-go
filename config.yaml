@@ -1,23 +1,24 @@
 ---
 ######## Params influxDB necessary if true
-  InfluxDBActivated: "false"
-  InfluxDBServer: "localhost"
-  InfluxDBServerPort: "8086"
-  InfluxDBUsername: "root"
-  InfluxDBPassword: "root"
-  InfluxDBDatabase: "bloomsky"
+  influxDBActivated: "false"
+  influxDBServer: "localhost"
+  influxDBServerPort: "8086"
+  influxDBUsername: "root"
+  influxDBPassword: "root"
+  influxDBDatabase: "bloomsky"
 ######## If true display informations on console
-  ConsoleActivated: "false"
+  consoleActivated: "false"
 ######## If true display informations on webpage
-  HTTPActivated: "true"
-  HTTPPort : ":1111"
+  hTTPActivated: "true"
+  hTTPPort : ":1111"
 ######## Refresh time, be not to small because you are blocked by openweather and bloomsky (in second)
-  RefreshTimer: "60"
+  refreshTimer: "60"
 ######## Params for bloomsky
 # Normally don't change
-  BloomskyURL: "https://api.bloomsky.com/api/skydata/"
+  bloomskyURL: "https://api.bloomsky.com/api/skydata/"
 # the key, it's free : https://dashboard.bloomsky.com/
-  BloomskyAccessToken: "yourTocken"
+  bloomskyAccessToken: "yourtoken"
 # 1 info  -> 4 trace
-  LogLevel: 4
+  logLevel: 4
 #########
+  mock: false
