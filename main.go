@@ -4,17 +4,14 @@ package main
 import (
 	"flag"
 	"fmt"
-	"html/template"
-	"net/http"
 	"os"
 	"path/filepath"
 	"reflect"
 	"strconv"
 	"time"
 
-	clientinfluxdb "github.com/influxdata/influxdb/client/v2"
 	mylog "github.com/patrickalin/GoMyLog"
-	bloomskyStructure "github.com/patrickalin/bloomsky-api-go"
+	bloomsky "github.com/patrickalin/bloomsky-api-go"
 	"github.com/spf13/viper"
 )
 
@@ -40,14 +37,15 @@ type configuration struct {
 	bloomskyAccessToken string
 	bloomskyURL         string
 	refreshTimer        string
+	mock                bool
 }
 
 var config configuration
 
 var (
-	bloomskyMessageToConsole  = make(chan bloomskyStructure.BloomskyStructure)
-	bloomskyMessageToInfluxDB = make(chan bloomskyStructure.BloomskyStructure)
-	bloomskyMessageToHTTP     = make(chan bloomskyStructure.BloomskyStructure)
+	bloomskyMessageToConsole  = make(chan bloomsky.BloomskyStructure)
+	bloomskyMessageToInfluxDB = make(chan bloomsky.BloomskyStructure)
+	bloomskyMessageToHTTP     = make(chan bloomsky.BloomskyStructure)
 
 	myTime time.Duration
 	debug  = flag.String("debug", "", "Error=1, Warning=2, Info=3, Trace=4")
@@ -83,6 +81,7 @@ func readConfig(configName string) (err error) {
 	config.hTTPActivated = viper.GetString("HTTPActivated")
 	config.hTTPPort = viper.GetString("HTTPPort")
 	config.logLevel = viper.GetString("LogLevel")
+	config.mock = viper.GetBool("mock")
 
 	// Check if one value of the structure is empty
 	v := reflect.ValueOf(config)
@@ -94,171 +93,14 @@ func readConfig(configName string) (err error) {
 			return fmt.Errorf("Check if the key " + v.Type().Field(i).Name + " is present in the file " + dir)
 		}
 	}
-
 	return nil
-}
-
-// displayToConsole print major informations from a bloomsky JSON to console
-func displayToConsole(bloomsky bloomskyStructure.BloomskyStructure) {
-	t, err := template.ParseFiles("tmpl/bloomsky.txt")
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
-	if err = t.Execute(os.Stdout, bloomsky); err != nil {
-		fmt.Printf("%v", err)
-	}
-}
-
-//InitConsole listen on the chanel
-func initConsole(messages chan bloomskyStructure.BloomskyStructure) {
-	go func() {
-
-		mylog.Trace.Println("Init the queue to receive message to export to console")
-
-		for {
-			mylog.Trace.Println("Receive message to export to console")
-			msg := <-messages
-			displayToConsole(msg)
-		}
-	}()
-}
-
-var myBloomskyHTTP bloomskyStructure.BloomskyStructure
-
-//displayToHTTP TODO normally push information with websocket to page
-func displayToHTTP(bloomsky bloomskyStructure.BloomskyStructure) {
-	fmt.Println("normally push websocket")
-	myBloomskyHTTP = bloomsky
-}
-
-func handler(w http.ResponseWriter, r *http.Request) {
-	mylog.Trace.Println("Handle")
-
-	//t := template.New("bloomsky") // Create a template.
-	//t = t.Funcs(template.FuncMap{"GetTimeStamp": mybloomsky.GetTimeStamp()})
-
-	t, err := template.ParseFiles("tmpl/bloomsky.html") // Parse template file.
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
-	err = t.Execute(w, myBloomskyHTTP) // merge.
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
-
-}
-
-//newWebServer create web server
-func newWebServer(HTTPPort string) {
-	mylog.Trace.Printf("Init server http port %s", HTTPPort)
-	http.HandleFunc("/", handler)
-	err := http.ListenAndServe(HTTPPort, nil)
-	if err != nil {
-		mylog.Error.Fatal(fmt.Errorf("Error when I create the server : %v", err))
-	}
-	mylog.Trace.Printf("Server ok on http %s", HTTPPort)
-}
-
-//initWebServer listen on the chanel
-func initWebServer(messages chan bloomskyStructure.BloomskyStructure) {
-	go func() {
-
-		mylog.Trace.Println("Init the queue to receive message to export to http")
-
-		for {
-			msg := <-messages
-			mylog.Trace.Println("Receive message to export to http")
-			displayToHTTP(msg)
-		}
-	}()
-}
-
-func sendbloomskyToInfluxDB(onebloomsky bloomskyStructure.BloomskyStructure, clientInflux clientinfluxdb.Client, InfluxDBDatabase string) {
-
-	fmt.Printf("\n%s :> Send bloomsky Data to InfluxDB\n", time.Now().Format(time.RFC850))
-
-	// Create a point and add to batch
-	tags := map[string]string{"bloomsky": "living"}
-	fields := map[string]interface{}{
-		"NumOfFollowers": onebloomsky.GetNumOfFollowers(),
-	}
-
-	// Create a new point batch
-	bp, err := clientinfluxdb.NewBatchPoints(clientinfluxdb.BatchPointsConfig{
-		Database:  InfluxDBDatabase,
-		Precision: "s",
-	})
-
-	if err != nil {
-		mylog.Error.Fatal(fmt.Errorf("Error sent Data to Influx DB : %v", err))
-	}
-
-	pt, err := clientinfluxdb.NewPoint("bloomskyData", tags, fields, time.Now())
-	bp.AddPoint(pt)
-
-	// Write the batch
-	err = clientInflux.Write(bp)
-
-	if err != nil {
-		err2 := createDB(clientInflux, InfluxDBDatabase)
-		if err2 != nil {
-			mylog.Error.Fatal(fmt.Errorf("Check if InfluxData is running or if the database bloomsky exists : %v", err))
-		}
-	}
-}
-
-func createDB(clientInflux clientinfluxdb.Client, InfluxDBDatabase string) error {
-	fmt.Println("Create Database bloomsky in InfluxData")
-
-	query := fmt.Sprint("CREATE DATABASE ", InfluxDBDatabase)
-	q := clientinfluxdb.NewQuery(query, "", "")
-
-	fmt.Println("Query: ", query)
-
-	_, err := clientInflux.Query(q)
-	if err != nil {
-		return fmt.Errorf("Error with : Create database bloomsky, check if InfluxDB is running : %v", err)
-	}
-	fmt.Println("Database bloomsky created in InfluxDB")
-	return nil
-}
-
-func makeClientInfluxDB(InfluxDBServer, InfluxDBServerPort, InfluxDBUsername, InfluxDBPassword string) (client clientinfluxdb.Client, err error) {
-	client, err = clientinfluxdb.NewHTTPClient(
-		clientinfluxdb.HTTPConfig{
-			Addr:     fmt.Sprintf("http://%s:%s", InfluxDBServer, InfluxDBServerPort),
-			Username: InfluxDBUsername,
-			Password: InfluxDBPassword,
-		})
-
-	if err != nil || client == nil {
-		return nil, fmt.Errorf("Error creating database bloomsky, check if InfluxDB is running : %v", err)
-	}
-	return client, nil
-}
-
-// InitInfluxDB initiate the client influxDB
-// Arguments bloomsky informations, configuration from config file
-// Wait events to send to influxDB
-func initInfluxDB(messagesbloomsky chan bloomskyStructure.BloomskyStructure, influxDBServer, influxDBServerPort, influxDBUsername, influxDBPassword, influxDBDatabase string) {
-
-	clientInflux, _ := makeClientInfluxDB(influxDBServer, influxDBServerPort, influxDBUsername, influxDBPassword)
-
-	go func() {
-		mylog.Trace.Println("Receive messagesbloomsky to export InfluxDB")
-		for {
-			msg := <-messagesbloomsky
-			sendbloomskyToInfluxDB(msg, clientInflux, influxDBDatabase)
-		}
-	}()
-
 }
 
 func main() {
 
 	flag.Parse()
 
-	fmt.Printf("\n %s :> Bloomsky API %s in Go\n", time.Now().Format(time.RFC850), VERSION)
+	fmt.Printf("\n%s :> Bloomsky API %s in Go\n", time.Now().Format(time.RFC850), VERSION)
 
 	mylog.Init(mylog.ERROR)
 
@@ -278,6 +120,9 @@ func main() {
 	myTime = time.Duration(i) * time.Second
 
 	//init listeners
+	go func() {
+		schedule()
+	}()
 	if config.consoleActivated == "true" {
 		initConsole(bloomskyMessageToConsole)
 	}
@@ -285,14 +130,7 @@ func main() {
 		initInfluxDB(bloomskyMessageToInfluxDB, config.influxDBServer, config.influxDBServerPort, config.influxDBUsername, config.influxDBPassword, config.influxDBDatabase)
 	}
 	if config.hTTPActivated == "true" {
-		fmt.Printf("cici %s", config.hTTPActivated)
-		initWebServer(bloomskyMessageToHTTP)
-	}
-	go func() {
-		schedule()
-	}()
-	if config.hTTPActivated == "true" {
-		newWebServer(config.hTTPPort)
+		createWebServer(config.hTTPPort)
 	}
 }
 
@@ -314,10 +152,19 @@ func schedule() {
 
 //Principal function which one loops each Time Variable
 func repeat() {
-	mylog.Trace.Printf("Repeat actions each Time Variable %s secondes", config.refreshTimer)
+	mylog.Trace.Printf("Repeat actions each Time Variable : %s secondes", config.refreshTimer)
 
 	// get bloomsky JSON and parse information in bloomsky Go Structure
-	mybloomsky := bloomskyStructure.NewBloomsky(config.bloomskyURL, config.bloomskyAccessToken)
+	var mybloomsky bloomsky.BloomskyStructure
+	if config.mock {
+		//TODO put in one file
+		mylog.Trace.Println("Warning : mock activated !!!")
+		body := []byte("[{\"UTC\":2,\"CityName\":\"Thuin\",\"Storm\":{\"UVIndex\":\"1\",\"WindDirection\":\"E\",\"RainDaily\":0,\"WindGust\":0,\"SustainedWindSpeed\":0,\"RainRate\":0,\"24hRain\":0},\"Searchable\":true,\"DeviceName\":\"skyThuin\",\"RegisterTime\":1486905295,\"DST\":1,\"BoundedPoint\":\"\",\"LON\":4.3101,\"Point\":{},\"VideoList\":[\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-27.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-28.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-29.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-30.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-31.mp4\"],\"VideoList_C\":[\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-27_C.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-28_C.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-29_C.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-30_C.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-31_C.mp4\"],\"DeviceID\":\"442C05954A59\",\"NumOfFollowers\":2,\"LAT\":50.3394,\"ALT\":195,\"Data\":{\"Luminance\":9999,\"Temperature\":70.79,\"ImageURL\":\"http://s3-us-west-1.amazonaws.com/bskyimgs/faBiuZWsnpaoqZqrqJ1kr5uqmZammJw=.jpg\",\"TS\":1496345207,\"Rain\":false,\"Humidity\":64,\"Pressure\":29.41,\"DeviceType\":\"SKY2\",\"Voltage\":2611,\"Night\":false,\"UVIndex\":9999,\"ImageTS\":1496345207},\"FullAddress\":\"Drève des Alliés, Thuin, Wallonie, BE\",\"StreetName\":\"Drève des Alliés\",\"PreviewImageList\":[\"http://s3-us-west-1.amazonaws.com/bskyimgs/faBiuZWsnpaoqZqrqJ1kr5qwlZOmn5c=.jpg\",\"http://s3-us-west-1.amazonaws.com/bskyimgs/faBiuZWsnpaoqZqrqJ1kr5qwnZmqmZw=.jpg\",\"http://s3-us-west-1.amazonaws.com/bskyimgs/faBiuZWsnpaoqZqrqJ1kr5unnJakmZg=.jpg\",\"http://s3-us-west-1.amazonaws.com/bskyimgs/faBiuZWsnpaoqZqrqJ1kr5uom5Kkm50=.jpg\",\"http://s3-us-west-1.amazonaws.com/bskyimgs/faBiuZWsnpaoqZqrqJ1kr5upmZiqnps=.jpg\"]}]")
+		mybloomsky = bloomsky.NewBloomskyFromBody(body)
+	}
+	if !config.mock {
+		mybloomsky = bloomsky.NewBloomsky(config.bloomskyURL, config.bloomskyAccessToken, true)
+	}
 
 	go func() {
 		// display major informations to console
