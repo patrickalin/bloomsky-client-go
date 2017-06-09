@@ -1,0 +1,241 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+    "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Bloomsky client go">
+    <meta name="author" content="patrickalin@gmail.com">
+
+    <title>Bloomsky client Go</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet " href="/static/css/bootstrap-theme.min.css" crossorigin="anonymous">
+    <link rel="stylesheet " href="/static/css/weather-icons.min.css">
+    <link rel="stylesheet " href="/static/css/weather-icons-wind.min.css">
+
+
+
+    <script src="/static/js/jquery-3.2.1.min.js" crossorigin="anonymous "></script>
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="/static/js/bootstrap.min.js " crossorigin="anonymous "></script>
+
+    <style>
+        body {
+            padding-top: 50px;
+        }
+        
+        .starter-template {
+            padding: 40px 15px;
+            text-align: center;
+        }
+        
+        iframe {
+            border: none;
+        }
+    </style>
+
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js "></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js "></script>
+    <![endif]-->
+
+    <script>
+        window.addEventListener("load", function(evt) {
+            var output = document.getElementById("output");
+            var ws;
+            var print = function(message) {
+                var d = document.createElement("div");
+                d.innerHTML = message;
+                output.appendChild(d);
+            };
+            socket = new WebSocket("{{.}}");
+            //ON OPEN
+            socket.onopen = function(evt) {
+                    // print("OPEN");
+                    //print(socket.protocol)
+                    //print(socket.readyState)
+                    //print(socket.url)
+                    socket.send("open")
+                }
+                // ON ERROR
+            socket.onerror = function(error) {
+                console.error(error);
+                print(error);
+            };
+            socket.onclose = function(evt) {
+                print("<b>Connection closed.</b>");
+            };
+            // ON MESSAGE
+            socket.onmessage = function(evt) {
+                var currentdate = new Date();
+                var datetime = "Last Sync: " + currentdate.getDate() + "/" +
+                    (currentdate.getMonth() + 1) + "/" +
+                    currentdate.getFullYear() + " @ " +
+                    currentdate.getHours() + ":" +
+                    currentdate.getMinutes() + ":" +
+                    currentdate.getSeconds();
+                document.getElementById("refreshtime").innerHTML = datetime;
+                //print("MESSAGE");
+                //console.log(evt.data)
+
+
+                // build date
+                var json = JSON.parse(evt.data);
+                var a = new Date(json.Data.TS * 1000);
+                var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                var year = a.getFullYear();
+                var month = months[a.getMonth()];
+                var date = a.getDate();
+                var hour = a.getHours();
+                var min = a.getMinutes();
+                var sec = a.getSeconds();
+                var formattedTime0 = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec;
+                var formattedTime1 = date - 1 + ' ' + month + ' ' + year;
+                document.getElementById("formattedTime1").innerHTML = formattedTime1;
+                var formattedTime2 = date - 2 + ' ' + month + ' ' + year;
+                document.getElementById("formattedTime2").innerHTML = formattedTime2;
+                var formattedTime3 = date - 3 + ' ' + month + ' ' + year;
+                document.getElementById("formattedTime3").innerHTML = formattedTime3;
+                var formattedTime4 = date - 4 + ' ' + month + ' ' + year;
+                document.getElementById("formattedTime4").innerHTML = formattedTime4;
+                var formattedTime5 = date - 5 + ' ' + month + ' ' + year;
+                document.getElementById("formattedTime5").innerHTML = formattedTime5;
+
+                document.getElementById("timestamp").innerHTML = formattedTime0;
+                document.getElementById("city").innerHTML = json.CityName;
+                document.getElementById("device").innerHTML = json.DeviceID;
+                document.getElementById("followers").innerHTML = json.NumOfFollowers + " followers";
+
+                if (json.Data.Night) {
+                    document.getElementById("night").innerHTML = "<i class=\"wi wi-moon-waning-crescent-3\"></i> Nigth"
+                } else {
+                    document.getElementById("night").innerHTML = "<i class=\"wi wi-day-sunny\"></i> Day"
+                };
+                if (json.Storm.UVIndex <= 2) {
+                    document.getElementById("uv").innerHTML = json.Storm.UVIndex + "/11 low" + " <i class=\"wi wi-cloudy\"></i>"
+                } else
+                if (json.Storm.UVIndex <= 4) {
+                    document.getElementById("uv").innerHTML = json.Storm.UVIndex + "/11 medium" + " <i class=\"wi wi-day-cloudy\"></i>"
+                } else {
+                    document.getElementById("uv").innerHTML = json.Storm.UVIndex + "/11 high" + " <i class=\"wi wi-day-sunny\"></i>"
+                };
+
+                if (json.Storm.WindDirection == "N") {
+                    document.getElementById("winddir").innerHTML = "North  <i class=\"wi wi-wind towards-0-deg\"></i>"
+                } else
+                if (json.Storm.WindDirection == "NE") {
+                    document.getElementById("winddir").innerHTML = " North Est <i class=\"wi wi-wind towards-45-deg\"></i>"
+                } else
+                if (json.Storm.WindDirection == "E") {
+                    document.getElementById("winddir").innerHTML = " Est <i class=\"wi wi-wind towards-90-deg\"></i>"
+                } else
+                if (json.Storm.WindDirection == "SE") {
+                    document.getElementById("winddir").innerHTML = " South Est<i class=\"wi wi-wind towards-135-deg\"></i>"
+                } else
+                if (json.Storm.WindDirection == "S") {
+                    document.getElementById("winddir").innerHTML = " South <i class=\"wi wi-wind towards-180-deg\"></i>"
+                } else
+                if (json.Storm.WindDirection == "SW") {
+                    document.getElementById("winddir").innerHTML = "South West <i class=\"wi wi-wind towards-225-deg\"></i>"
+                } else
+                if (json.Storm.WindDirection == "W") {
+                    document.getElementById("winddir").innerHTML = " West <i class=\"wi wi-wind towards-270-deg\"></i>"
+                } else
+                if (json.Storm.WindDirection == "NW") {
+                    document.getElementById("winddir").innerHTML = " North West <i class=\"wi wi-wind towards-315-deg\"></i>"
+                };
+
+                if (json.Storm.SustainedWindSpeed <= 1) {
+                    document.getElementById("sustwind").innerHTML = json.Storm.SustainedWindSpeed + " mp/h" + " <i class=\"wi wi-wind-beaufort-0\"></i>"
+                    document.getElementById("windgust").innerHTML = json.Storm.WindGust + " mp/h" + " <i class=\"wi wi-wind-beaufort-0\"></i>";
+                    document.getElementById("wingustms").innerHTML = json.Storm.WindGustms + " m/s" + " <i class=\"wi wi-wind-beaufort-0\"></i>";
+                    document.getElementById("wingustkmh").innerHTML = json.Storm.WindGustkmh + " km/h" + " <i class=\"wi wi-wind-beaufort-0\"></i>";
+                    document.getElementById("sustwindms").innerHTML = json.Storm.SustainedWindSpeedms + " m/s" + " <i class=\"wi wi-wind-beaufort-0\"></i>";
+                    document.getElementById("sustwindkmh").innerHTML = json.Storm.SustainedWindSpeedkmh + " km/h" + " <i class=\"wi wi-wind-beaufort-0\"></i>";
+                } else
+                if (json.Storm.SustainedWindSpeed <= 3) {
+                    document.getElementById("sustwind").innerHTML = json.Storm.SustainedWindSpeed + " mp/h" + " <i class=\"wi wi-wind-beaufort-1\"></i>";
+                    document.getElementById("windgust").innerHTML = json.Storm.WindGust + " mp/h" + " <i class=\"wi wi-wind-beaufort-1\"></i>";
+                    document.getElementById("wingustms").innerHTML = json.Storm.WindGustms + " m/s" + " <i class=\"wi wi-wind-beaufort-1\"></i>";
+                    document.getElementById("wingustkmh").innerHTML = json.Storm.WindGustkmh + " km/h" + " <i class=\"wi wi-wind-beaufort-1\"></i>";
+                    document.getElementById("sustwindms").innerHTML = json.Storm.SustainedWindSpeedms + " m/s" + " <i class=\"wi wi-wind-beaufort-1\"></i>";
+                    document.getElementById("sustwindkmh").innerHTML = json.Storm.SustainedWindSpeedkmh + " km/h" + " <i class=\"wi wi-wind-beaufort-1\"></i>";
+                } else
+                if (json.Storm.SustainedWindSpeed <= 7) {
+                    document.getElementById("sustwind").innerHTML = json.Storm.SustainedWindSpeed + " mp/h" + " <i class=\"wi wi-wind-beaufort-2\"></i>"
+                    document.getElementById("windgust").innerHTML = json.Storm.WindGust + " mp/h" + " <i class=\"wi wi-wind-beaufort-2\"></i>";
+                    document.getElementById("wingustms").innerHTML = json.Storm.WindGustms + " m/s" + " <i class=\"wi wi-wind-beaufort-2\"></i>";
+                    document.getElementById("wingustkmh").innerHTML = json.Storm.WindGustkmh + " km/h" + " <i class=\"wi wi-wind-beaufort-2\"></i>";
+                    document.getElementById("sustwindms").innerHTML = json.Storm.SustainedWindSpeedms + " m/s" + " <i class=\"wi wi-wind-beaufort-2\"></i>";
+                    document.getElementById("sustwindkmh").innerHTML = json.Storm.SustainedWindSpeedkmh + " km/h" + " <i class=\"wi wi-wind-beaufort-2\"></i>";
+                };
+
+
+                if (json.Storm.Rain == 0) {
+                    document.getElementById("rain").innerHTML = "No <i class=\"wi wi-day-sunny\"></i>"
+                } else {
+                    document.getElementById("rain").innerHTML = "Yes <i class=\"wi wi-umbrellax\"></i>"
+                };
+                if (json.Storm.RainDaily == 0) {
+                    document.getElementById("raindaily").innerHTML = "-"
+                } else {
+                    document.getElementById("raindaily").innerHTML = json.Storm.RainDaily + " in"
+                };
+                if (json.Storm.RainDailymm == 0) {
+                    document.getElementById("raindailymm").innerHTML = "-"
+                } else {
+                    document.getElementById("raindailymm").innerHTML = json.Storm.RainDailymm + " mm <br>" + json.Storm.RainDailymm + " l/m2"
+                };
+                if (json.Storm.RainRate == 0) {
+                    document.getElementById("rainrate").innerHTML = "-"
+                } else {
+                    document.getElementById("rainrate").innerHTML = json.Storm.RainRate + " in"
+                };
+                if (json.Storm.RainRatemm == 0) {
+                    document.getElementById("rainratemm").innerHTML = "-"
+                } else {
+                    document.getElementById("rainratemm").innerHTML = json.Storm.RainRatemm + " mm <br>" + json.Storm.RainRatemm + " l/m2"
+                };
+
+                document.getElementById("tempf").innerHTML = json.Data.Temperature + " <i class=\"wi wi-fahrenheit\"></i>";
+                document.getElementById("tempc").innerHTML = json.Data.TemperatureC + " <i class=\"wi wi-celsius\"></i>";
+
+                document.getElementById("humidity").innerHTML = json.Data.Humidity + " <i class=\"wi wi-humidity\"></i>";
+
+                document.getElementById("pressureinhg").innerHTML = json.Data.Pressure + " inHg";
+                document.getElementById("pressurehpa").innerHTML = json.Data.Pressurehpa + " hPa";
+
+                document.getElementById("voltage").innerHTML = json.Data.Voltage + " mV";
+
+                document.getElementById("bloomimg0").src = json.Data.ImageURL;
+
+                /* document.getElementById("bloomimg1").src = json.PreviewImageList[0];
+                 document.getElementById("bloomimg2").src = json.PreviewImageList[1];
+                 document.getElementById("bloomimg3").src = json.PreviewImageList[2];
+                 document.getElementById("bloomimg4").src = json.PreviewImageList[3];
+                 document.getElementById("bloomimg5").src = json.PreviewImageList[4];*/
+
+                document.getElementById("bloomvid0").src = json.VideoList[0];
+                document.getElementById("vid0").load();
+                document.getElementById("bloomvid1").src = json.VideoList[1];
+                document.getElementById("vid1").load();
+                document.getElementById("bloomvid2").src = json.VideoList[2];
+                document.getElementById("vid2").load();
+                document.getElementById("bloomvid3").src = json.VideoList[3];
+                document.getElementById("vid3").load();
+                document.getElementById("bloomvid4").src = json.VideoList[4];
+                document.getElementById("vid4").load();
+            }
+        });
+    </script>
+
+</head>

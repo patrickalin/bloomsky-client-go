@@ -58,7 +58,7 @@ func refreshdata(w http.ResponseWriter, r *http.Request) {
 }
 
 func home(w http.ResponseWriter, r *http.Request) {
-	homeTemplate, err := template.ParseFiles("tmpl/bloomsky.html")
+	homeTemplate, err := template.ParseFiles("tmpl/bloomsky_header.html")
 	if err != nil {
 		log.Fatal(fmt.Errorf("template part 1 : %v", err))
 	}
@@ -66,7 +66,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(fmt.Errorf("write part 2 : %v", err))
 	}
-	homeTemplate2, err := template.ParseFiles("tmpl/bloomsky2.html")
+	homeTemplate2, err := template.ParseFiles("tmpl/bloomsky_body.html")
 	if err != nil {
 		log.Fatal(fmt.Errorf("template part 2 : %v", err))
 	}
@@ -80,6 +80,9 @@ func home(w http.ResponseWriter, r *http.Request) {
 func createWebServer(HTTPPort string) {
 	flag.Parse()
 	log.SetFlags(0)
+
+	fs := http.FileServer(http.Dir("static"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	http.HandleFunc("/refreshdata", refreshdata)
 	http.HandleFunc("/", home)
