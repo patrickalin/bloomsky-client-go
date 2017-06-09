@@ -25,6 +25,7 @@ deploy:
   - bin/goBloomsky-windows-386.exe
   - bin/goBloomsky-windows-amd64.exe
   - config.yaml
+  - static/*
   skip_cleanup: true
   on:
     tags: true
