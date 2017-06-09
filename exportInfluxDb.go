@@ -14,9 +14,31 @@ func sendbloomskyToInfluxDB(onebloomsky bloomskyStructure.BloomskyStructure, cli
 	fmt.Printf("\n%s :> Send bloomsky Data to InfluxDB\n", time.Now().Format(time.RFC850))
 
 	// Create a point and add to batch
-	tags := map[string]string{"bloomsky": "living"}
+	tags := map[string]string{"bloomsky": onebloomsky.GetCity()}
 	fields := map[string]interface{}{
-		"NumOfFollowers": onebloomsky.GetNumOfFollowers(),
+		"NumOfFollowers":        onebloomsky.GetNumOfFollowers(),
+		"Humidity":              onebloomsky.GetHumidity(),
+		"Uv":                    onebloomsky.GetIndexUV(),
+		"PressureHpa":           onebloomsky.GetPressureHPa(),
+		"PressureInHg":          onebloomsky.GetPressureInHg(),
+		"Night":                 onebloomsky.IsNight(),
+		"Rain":                  onebloomsky.IsRain(),
+		"RainDailyIn":           onebloomsky.GetRainDailyIn(),
+		"RainDailyMm":           onebloomsky.GetRainDailyMm(),
+		"RainIn":                onebloomsky.GetRainIn(),
+		"RainMm":                onebloomsky.GetRainMm(),
+		"RainRateIn":            onebloomsky.GetRainRateIn(),
+		"RainRateMm":            onebloomsky.GetRainRateMm(),
+		"ustainedWindSpeedkmh":  onebloomsky.GetSustainedWindSpeedkmh(),
+		"SustainedWindSpeedMph": onebloomsky.GetSustainedWindSpeedMph(),
+		"SustainedWindSpeedMs":  onebloomsky.GetSustainedWindSpeedMs(),
+		"WindDirection":         onebloomsky.GetWindDirection(),
+		"WindGustkmh":           onebloomsky.GetWindGustkmh(),
+		"WindGustMph":           onebloomsky.GetWindGustMph(),
+		"WindGustMs":            onebloomsky.GetWindGustMs(),
+		"TemperatureCelsius":    onebloomsky.GetTemperatureCelsius(),
+		"TemperatureFahrenheit": onebloomsky.GetTemperatureFahrenheit(),
+		"TimeStamp":             onebloomsky.GetTimeStamp(),
 	}
 
 	// Create a new point batch
