@@ -11,19 +11,25 @@
 A simple Go client for the BloomSky API.
 I's possible to export informations in the console or in in Time Series Database InfluxData.
 
-## Prerequisites
+## 2 Getting Started
+
+### Prerequisites
 
 * BloomSky API key (get it here: https://dashboard.bloomsky.com/)
-
-## Getting Started
 
 ### Installation
 
 Download the [binary](https://github.com/patrickalin/bloomsky-client-go/releases) for your OS and the [config.yaml](https://github.com/patrickalin/bloomsky-client-go/blob/master/config.yaml) in the same folder.
 
+### Configuration
+
+!!!! You have to change the API Key in the config.yaml.
+
 ### Usage
 
-You have to change the API Key in the config.yaml.
+* Windows : goBloomsky-windows-amd64.exe
+* Linux : goBloomsky-linux-amd64.bin
+* Mac : goBloomsky-darwin-amd64.bin
 
 ### Example : result in the standard console.
 
@@ -72,17 +78,15 @@ You can display the result with Grafana
 If you want I have a similar code for openweather to save the temperature of you location.
 [GoOpenWeatherToInfluxDB](https://github.com/patrickalin/GoOpenWeatherToInfluxDB)
 
-## Compilation
+## 2 Compilation
 
 ### Pre installation
 
-install git
+* install git
+* install go from http://golang.org/
+* If you want install influxData
 
-install go from http://golang.org/
-
-If you want use influxData, version > 0.13
-
-#Installation
+### #Installation
 
     git clone https://github.com/patrickalin/GobloomskyThermostatAPIRest.git
     cd GobloomskyThermostatAPIRest
@@ -90,42 +94,15 @@ If you want use influxData, version > 0.13
     go get -v .
     go build
 
-#Extra installation influxDB
+### Mock
 
-[InfluxData download](https://influxdata.com/downloads/#influxdb)
+In the config file, you can activate a mock. If you don't have a API key.
 
-Execution
-
-    influxd@
-
-#Configuration
-
-1 You must copy the config.json.example to config.json
-
-    cp config.json.example config.json
-
-2 In the config file modify the secret key receive on https://developer.bloomsky.com/
-
-Don't forget to receive a secretCode, it's a POST to developer-api.bloomsky.com not a GET. I lose a lot of time with this error.
-
-To test, execute one time :
-
-    curl -L -X GET -H "Accept: application/json" "https://developer-api.bloomsky.com/?auth=c.557ToBeCompleted"
-    with you key
-
-4 Modify all paramameters in config.json
-
-- For InfluxData, isntall the software https://influxdata.com/, the Go program create himself the database "bloomsky"
-
-#Execution
-
-    ./GobloomskyThermostatAPIRest
-
-#Debug
+### Debug
 
 In the config file, you can change the log level.
 
-#Thanks
+## 3 Thanks
 
 https://github.com/tixu for testing and review
 
@@ -133,6 +110,6 @@ http://mervine.net/json2struct "transform JSON to Go struct library"
 
 http://github.com/spf13/viper "read config library"
 
-### License
+## 4 License
 
 The code is licensed under the permissive Apache v2.0 licence. This means you can do what you like with the software, as long as you include the required notices. [Read this](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)) for a summary.
