@@ -27,6 +27,10 @@ You have to change the API Key in the config.yaml.
 
 ### Example : result in the standard console.
 
+![InfluxData Image ](https://github.com/patrickalin/bloomsky-client-go-source/blob/master/img/webserver.png)
+
+### Example : result in the standard console.
+
     Bloomsky
     --------
     Timestamp :         2017-06-09 22:07:10 &#43;0200 CEST
