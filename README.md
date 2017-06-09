@@ -9,9 +9,10 @@
 [![Coverage Status](https://coveralls.io/repos/github/patrickalin/bloomsky-client-go/badge.svg)](https://coveralls.io/github/patrickalin/bloomsky-client-go)
 
 A simple Go client for the BloomSky API.
-I's possible to export informations in the console or in in Time Series Database InfluxData.
+* It's possible to show informations in the console or in a embeded web server.
+* It's also possible to export datas to Time Series Database InfluxData.
 
-## 2 Getting Started
+## 1 Getting Started
 
 ### Prerequisites
 
@@ -19,19 +20,21 @@ I's possible to export informations in the console or in in Time Series Database
 
 ### Installation
 
-Download the [binary](https://github.com/patrickalin/bloomsky-client-go/releases) for your OS and the [config.yaml](https://github.com/patrickalin/bloomsky-client-go/blob/master/config.yaml) in the same folder.
+* Download the [binary](https://github.com/patrickalin/bloomsky-client-go/releases) for your OS and the [config.yaml](https://github.com/patrickalin/bloomsky-client-go/blob/master/config.yaml) in the same folder.
 
 ### Configuration
 
-!!!! You have to change the API Key in the config.yaml.
+* Don't forget !!!! : You have to change the API Key in the config.yaml.
 
 ### Usage
 
 * Windows : goBloomsky-windows-amd64.exe
-* Linux : goBloomsky-linux-amd64.bin
-* Mac : goBloomsky-darwin-amd64.bin
+* Linux : ./goBloomsky-linux-amd64.bin
+* Mac : ./goBloomsky-darwin-amd64.bin
 
-### Example : result in the standard console.
+### Example : result in the webserver.
+
+By default : http://localhost:1111/
 
 ![InfluxData Image ](https://github.com/patrickalin/bloomsky-client-go-source/blob/master/img/webserver.png)
 
@@ -75,10 +78,7 @@ You can display the result with Grafana
 
 ![Grafana Image ](https://github.com/patrickalin/GobloomskyThermostatAPIRest/blob/master/img/Grafana.png)
 
-If you want I have a similar code for openweather to save the temperature of you location.
-[GoOpenWeatherToInfluxDB](https://github.com/patrickalin/GoOpenWeatherToInfluxDB)
-
-## 2 Compilation
+## 2 Modificatin code / Compilation
 
 ### Pre installation
 
@@ -86,7 +86,7 @@ If you want I have a similar code for openweather to save the temperature of you
 * install go from http://golang.org/
 * If you want install influxData
 
-### #Installation
+### Installation
 
     git clone https://github.com/patrickalin/GobloomskyThermostatAPIRest.git
     cd GobloomskyThermostatAPIRest
