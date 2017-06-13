@@ -1,13 +1,13 @@
 ---
 ######## Params influxDB necessary if true
-  influxDB_activated: "false"
+  influxDB_activated: "true"
   influxDB_server: "localhost"
   influxDB_server_port: "8086"
   influxDB_username: "root"
   influxDB_password: "root"
   influxDB_database: "bloomsky"
 ######## If true display informations on console
-  console_activated: "false"
+  console_activated: "true"
 ######## If true display informations on webpage
   http_activated: "true"
   http_port : ":1111"
@@ -20,4 +20,8 @@
   bloomsky_access_token: "yourTocken"
 # 1 info  -> 4 trace
   log_level: 4
+# language (en-us, fr)
+  language : en-us
+# to use the code in offline mode put mock: true
+  mock: false
 #########
