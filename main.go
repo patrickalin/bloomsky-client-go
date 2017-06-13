@@ -13,6 +13,7 @@ import (
 	"github.com/nicksnyder/go-i18n/i18n"
 	mylog "github.com/patrickalin/GoMyLog"
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
+	"github.com/patrickalin/bloomsky-client-go/assembly"
 	"github.com/spf13/viper"
 )
 
@@ -41,6 +42,7 @@ type configuration struct {
 	mock                bool
 	language            string
 	translateFunc       i18n.TranslateFunc
+	dev                 bool
 }
 
 var config configuration
@@ -86,8 +88,7 @@ func readConfig(configName string) (err error) {
 	config.logLevel = viper.GetString("LogLevel")
 	config.mock = viper.GetBool("mock")
 	config.language = viper.GetString("language")
-
-	fmt.Println(config.language)
+	config.dev = viper.GetBool("dev")
 
 	config.translateFunc, err = i18n.Tfunc(config.language)
 	if err != nil {
@@ -107,10 +108,28 @@ func readConfig(configName string) (err error) {
 	return nil
 }
 
+//go:generate ./command/bindata.sh
+//go:generate ./command/bindata-assetfs.sh
+
 func main() {
 
-	i18n.MustLoadTranslationFile("lang/en-US.all.json")
-	i18n.MustLoadTranslationFile("lang/fr.all.json")
+	if config.dev {
+		i18n.LoadTranslationFile("lang/en-us.all.json")
+		i18n.LoadTranslationFile("lang/fr.all.json")
+	} else {
+		assetEn, err := assembly.Asset("lang/en-us.all.json")
+		if err != nil {
+			panic(err)
+		}
+
+		assetFr, err := assembly.Asset("lang/fr.all.json")
+		if err != nil {
+			panic(err)
+		}
+
+		i18n.ParseTranslationFileBytes("lang/en-us.all.json", assetEn)
+		i18n.ParseTranslationFileBytes("lang/fr.all.json", assetFr)
+	}
 
 	flag.Parse()
 
@@ -166,6 +185,7 @@ func schedule() {
 
 //Principal function which one loops each Time Variable
 func repeat() {
+
 	mylog.Trace.Printf("Repeat actions each Time Variable : %s secondes", config.refreshTimer)
 
 	// get bloomsky JSON and parse information in bloomsky Go Structure
