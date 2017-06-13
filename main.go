@@ -4,6 +4,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -115,27 +116,27 @@ func main() {
 
 	if config.dev {
 		if err := i18n.LoadTranslationFile("lang/en-us.all.json"); err != nil {
-			panic(err)
+			log.Fatal(fmt.Errorf("error read language file : %v", err))
 		}
 		if err := i18n.LoadTranslationFile("lang/fr.all.json"); err != nil {
-			panic(err)
+			log.Fatal(fmt.Errorf("error read language file : %v", err))
 		}
 	} else {
 		assetEn, err := assembly.Asset("lang/en-us.all.json")
 		if err != nil {
-			panic(err)
+			log.Fatal(fmt.Errorf("error read language file : %v", err))
 		}
 
 		assetFr, err := assembly.Asset("lang/fr.all.json")
 		if err != nil {
-			panic(err)
+			log.Fatal(fmt.Errorf("error read language file : %v", err))
 		}
 
 		if err := i18n.ParseTranslationFileBytes("lang/en-us.all.json", assetEn); err != nil {
-			panic(err)
+			log.Fatal(fmt.Errorf("error read language file : %v", err))
 		}
 		if err := i18n.ParseTranslationFileBytes("lang/fr.all.json", assetFr); err != nil {
-			panic(err)
+			log.Fatal(fmt.Errorf("error read language file : %v", err))
 		}
 	}
 

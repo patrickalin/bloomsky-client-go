@@ -70,19 +70,24 @@ func home(w http.ResponseWriter, r *http.Request) {
 		templateHeader, err = template.New("bloomsky_header.html").Funcs(map[string]interface{}{
 			"T": config.translateFunc,
 		}).ParseFiles("tmpl/bloomsky_header.html")
+
+		if err != nil {
+			log.Fatal(fmt.Errorf("template part 1 : %v", err))
+		}
 	} else {
 		assetHeader, err := assembly.Asset("tmpl/bloomsky_header.html")
+
 		if err != nil {
-			panic(err)
+			log.Fatal(fmt.Errorf("template part 1 : %v", err))
 		}
 
 		templateHeader, err = template.New("bloomsky_header.html").Funcs(map[string]interface{}{
 			"T": config.translateFunc,
 		}).Parse(string(assetHeader[:]))
-	}
 
-	if err != nil {
-		log.Fatal(fmt.Errorf("template part 1 : %v", err))
+		if err != nil {
+			log.Fatal(fmt.Errorf("template part 1 : %v", err))
+		}
 	}
 
 	//fmt.Println(T("program_greeting"))
@@ -98,20 +103,22 @@ func home(w http.ResponseWriter, r *http.Request) {
 		templateBody, err = template.New("bloomsky_body.html").Funcs(map[string]interface{}{
 			"T": config.translateFunc,
 		}).ParseFiles("tmpl/bloomsky_body.html")
+		if err != nil {
+			log.Fatal(fmt.Errorf("template part 2 : %v", err))
+		}
 
 	} else {
 		assetBody, err := assembly.Asset("tmpl/bloomsky_body.html")
 		if err != nil {
-			panic(err)
+			log.Fatal(fmt.Errorf("template part 2 : %v", err))
 		}
 
 		templateBody, err = template.New("bloomsky_body.html").Funcs(map[string]interface{}{
 			"T": config.translateFunc,
 		}).Parse(string(assetBody[:]))
-	}
-
-	if err != nil {
-		log.Fatal(fmt.Errorf("template part 2 : %v", err))
+		if err != nil {
+			log.Fatal(fmt.Errorf("template part 2 : %v", err))
+		}
 	}
 
 	//fmt.Println(T("program_greeting"))

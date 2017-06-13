@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"text/template"
 
@@ -27,20 +28,19 @@ func displayToConsole(bloomsky bloomsky.BloomskyStructure) {
 		}).ParseFiles("tmpl/bloomsky.txt")
 
 		if err != nil {
-			panic(err)
+			log.Fatal(fmt.Errorf("template console : %v", err))
 		}
 	} else {
 		assetBloomsky, err := assembly.Asset("tmpl/bloomsky.txt")
 		if err != nil {
-			panic(err)
+			log.Fatal(fmt.Errorf("template console : %v", err))
 		}
 
 		testTemplate, err = template.New("bloomsky.txt").Funcs(map[string]interface{}{
 			"T": config.translateFunc,
 		}).Parse(string(assetBloomsky[:]))
-
 		if err != nil {
-			panic(err)
+			log.Fatal(fmt.Errorf("template console : %v", err))
 		}
 	}
 
