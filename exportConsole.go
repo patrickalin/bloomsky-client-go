@@ -25,6 +25,10 @@ func displayToConsole(bloomsky bloomsky.BloomskyStructure) {
 		testTemplate, err = template.New("bloomsky.txt").Funcs(map[string]interface{}{
 			"T": config.translateFunc,
 		}).ParseFiles("tmpl/bloomsky.txt")
+
+		if err != nil {
+			panic(err)
+		}
 	} else {
 		assetBloomsky, err := assembly.Asset("tmpl/bloomsky.txt")
 		if err != nil {
@@ -34,10 +38,10 @@ func displayToConsole(bloomsky bloomsky.BloomskyStructure) {
 		testTemplate, err = template.New("bloomsky.txt").Funcs(map[string]interface{}{
 			"T": config.translateFunc,
 		}).Parse(string(assetBloomsky[:]))
-	}
 
-	if err != nil {
-		panic(err)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	//fmt.Println(T("program_greeting"))

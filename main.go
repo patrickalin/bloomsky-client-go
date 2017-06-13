@@ -114,8 +114,12 @@ func readConfig(configName string) (err error) {
 func main() {
 
 	if config.dev {
-		i18n.LoadTranslationFile("lang/en-us.all.json")
-		i18n.LoadTranslationFile("lang/fr.all.json")
+		if err := i18n.LoadTranslationFile("lang/en-us.all.json"); err != nil {
+			panic(err)
+		}
+		if err := i18n.LoadTranslationFile("lang/fr.all.json"); err != nil {
+			panic(err)
+		}
 	} else {
 		assetEn, err := assembly.Asset("lang/en-us.all.json")
 		if err != nil {
@@ -127,8 +131,12 @@ func main() {
 			panic(err)
 		}
 
-		i18n.ParseTranslationFileBytes("lang/en-us.all.json", assetEn)
-		i18n.ParseTranslationFileBytes("lang/fr.all.json", assetFr)
+		if err := i18n.ParseTranslationFileBytes("lang/en-us.all.json", assetEn); err != nil {
+			panic(err)
+		}
+		if err := i18n.ParseTranslationFileBytes("lang/fr.all.json", assetFr); err != nil {
+			panic(err)
+		}
 	}
 
 	flag.Parse()
