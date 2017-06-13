@@ -8,9 +8,9 @@ install:
 - go get github.com/elazarl/go-bindata-assetfs/...
 - go get github.com/gorilla/websocket
 - go get github.com/nicksnyder/go-i18n/i18n
--	go get github.com/patrickalin/GoMyLog
--	go get bloomsky "github.com/patrickalin/bloomsky-api-go
--	go get github.com/spf13/viper
+- go get github.com/patrickalin/GoMyLog
+- go get bloomsky "github.com/patrickalin/bloomsky-api-go
+- go get github.com/spf13/viper
 - go get .
 
 script:
