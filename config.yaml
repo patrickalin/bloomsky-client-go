@@ -7,7 +7,7 @@
   influxDBPassword: "root"
   influxDBDatabase: "bloomsky"
 ######## If true display informations on console
-  consoleActivated: "false"
+  consoleActivated: "true"
 ######## If true display informations on webpage
   hTTPActivated: "true"
   hTTPPort : ":1111"
@@ -19,6 +19,8 @@
 # the key, it's free : https://dashboard.bloomsky.com/
   bloomskyAccessToken: "yourtoken"
 # 1 info  -> 4 trace
-  logLevel: 4
+  logLevel: 1
+# language (en-us, fr)
+  language : en-us
 #########
   mock: false

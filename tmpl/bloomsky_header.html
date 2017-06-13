@@ -77,7 +77,7 @@
             // ON MESSAGE
             socket.onmessage = function(evt) {
                 var currentdate = new Date();
-                var datetime = "Last Sync: " + currentdate.getDate() + "/" +
+                var datetime = "{{T "Last Sync"}}: " + currentdate.getDate() + "/" +
                     (currentdate.getMonth() + 1) + "/" +
                     currentdate.getFullYear() + " @ " +
                     currentdate.getHours() + ":" +
@@ -91,7 +91,7 @@
                 // build date
                 var json = JSON.parse(evt.data);
                 var a = new Date(json.Data.TS * 1000);
-                var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                var months = ['{{T "Jan"}}', '{{T "Feb"}}', '{{T "Mar"}}', '{{T "Apr"}}', '{{T "May"}}', '{{T "Jun"}}', '{{T "Jul"}}', '{{T "Aug"}}', '{{T "Sep"}}', '{{T "Oct"}}', '{{T "Nov"}}', '{{T "Dec"}}'];
                 var year = a.getFullYear();
                 var month = months[a.getMonth()];
                 var date = a.getDate();
@@ -113,45 +113,45 @@
                 document.getElementById("timestamp").innerHTML = formattedTime0;
                 document.getElementById("city").innerHTML = json.CityName;
                 document.getElementById("device").innerHTML = json.DeviceID;
-                document.getElementById("followers").innerHTML = json.NumOfFollowers + " followers";
+                document.getElementById("followers").innerHTML = json.NumOfFollowers + " {{T "followers"}}";
 
                 if (json.Data.Night) {
-                    document.getElementById("night").innerHTML = "<i class=\"wi wi-moon-waning-crescent-3\"></i> Nigth"
+                    document.getElementById("night").innerHTML = "<i class=\"wi wi-moon-waning-crescent-3\"></i> {{T "Night"}}"
                 } else {
-                    document.getElementById("night").innerHTML = "<i class=\"wi wi-day-sunny\"></i> Day"
+                    document.getElementById("night").innerHTML = "<i class=\"wi wi-day-sunny\"></i> {{T "Day"}}"
                 };
                 if (json.Storm.UVIndex <= 2) {
-                    document.getElementById("uv").innerHTML = json.Storm.UVIndex + "/11 low" + " <i class=\"wi wi-cloudy\"></i>"
+                    document.getElementById("uv").innerHTML = json.Storm.UVIndex + "/11 {{T "low"}}" + " <i class=\"wi wi-cloudy\"></i>"
                 } else
                 if (json.Storm.UVIndex <= 4) {
-                    document.getElementById("uv").innerHTML = json.Storm.UVIndex + "/11 medium" + " <i class=\"wi wi-day-cloudy\"></i>"
+                    document.getElementById("uv").innerHTML = json.Storm.UVIndex + "/11 {{T "medium"}}" + " <i class=\"wi wi-day-cloudy\"></i>"
                 } else {
-                    document.getElementById("uv").innerHTML = json.Storm.UVIndex + "/11 high" + " <i class=\"wi wi-day-sunny\"></i>"
+                    document.getElementById("uv").innerHTML = json.Storm.UVIndex + "/11 {{T "high"}}" + " <i class=\"wi wi-day-sunny\"></i>"
                 };
 
                 if (json.Storm.WindDirection == "N") {
-                    document.getElementById("winddir").innerHTML = "North  <i class=\"wi wi-wind towards-0-deg\"></i>"
+                    document.getElementById("winddir").innerHTML = "{{T "North"}}  <i class=\"wi wi-wind towards-0-deg\"></i>"
                 } else
                 if (json.Storm.WindDirection == "NE") {
-                    document.getElementById("winddir").innerHTML = " North Est <i class=\"wi wi-wind towards-45-deg\"></i>"
+                    document.getElementById("winddir").innerHTML = "{{T "North"}} {{T "Est"}} <i class=\"wi wi-wind towards-45-deg\"></i>"
                 } else
                 if (json.Storm.WindDirection == "E") {
-                    document.getElementById("winddir").innerHTML = " Est <i class=\"wi wi-wind towards-90-deg\"></i>"
+                    document.getElementById("winddir").innerHTML = "{{T "Est"}} <i class=\"wi wi-wind towards-90-deg\"></i>"
                 } else
                 if (json.Storm.WindDirection == "SE") {
-                    document.getElementById("winddir").innerHTML = " South Est<i class=\"wi wi-wind towards-135-deg\"></i>"
+                    document.getElementById("winddir").innerHTML = "{{T "South"}} {{T "Est"}}<i class=\"wi wi-wind towards-135-deg\"></i>"
                 } else
                 if (json.Storm.WindDirection == "S") {
-                    document.getElementById("winddir").innerHTML = " South <i class=\"wi wi-wind towards-180-deg\"></i>"
+                    document.getElementById("winddir").innerHTML = "{{T "South"}} <i class=\"wi wi-wind towards-180-deg\"></i>"
                 } else
                 if (json.Storm.WindDirection == "SW") {
-                    document.getElementById("winddir").innerHTML = "South West <i class=\"wi wi-wind towards-225-deg\"></i>"
+                    document.getElementById("winddir").innerHTML = "{{T "South"}} {{T "West"}} <i class=\"wi wi-wind towards-225-deg\"></i>"
                 } else
                 if (json.Storm.WindDirection == "W") {
-                    document.getElementById("winddir").innerHTML = " West <i class=\"wi wi-wind towards-270-deg\"></i>"
+                    document.getElementById("winddir").innerHTML = "{{T "West"}} <i class=\"wi wi-wind towards-270-deg\"></i>"
                 } else
                 if (json.Storm.WindDirection == "NW") {
-                    document.getElementById("winddir").innerHTML = " North West <i class=\"wi wi-wind towards-315-deg\"></i>"
+                    document.getElementById("winddir").innerHTML = "{{T "North"}} {{T "West"}} <i class=\"wi wi-wind towards-315-deg\"></i>"
                 };
 
                 if (json.Storm.SustainedWindSpeed <= 1) {
@@ -181,9 +181,9 @@
 
 
                 if (json.Storm.Rain == 0) {
-                    document.getElementById("rain").innerHTML = "No <i class=\"wi wi-day-sunny\"></i>"
+                    document.getElementById("rain").innerHTML = "{{T "No"}} <i class=\"wi wi-day-sunny\"></i>"
                 } else {
-                    document.getElementById("rain").innerHTML = "Yes <i class=\"wi wi-umbrellax\"></i>"
+                    document.getElementById("rain").innerHTML = "{{T "Yes"}} <i class=\"wi wi-umbrellax\"></i>"
                 };
                 if (json.Storm.RainDaily == 0) {
                     document.getElementById("raindaily").innerHTML = "-"

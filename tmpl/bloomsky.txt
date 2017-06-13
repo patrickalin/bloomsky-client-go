@@ -1,25 +1,26 @@
+---------------------
 Bloomsky
---------
-Timestamp :         {{.GetTimeStamp}}
-City :              {{.GetCity}}
-Device Id :         {{.GetDeviceID}}
-Num Of Followers :  {{.GetNumOfFollowers}}
-Index UV :          {{.GetIndexUV}}
-Night :             {{.IsNight}}
-Wind Direction :    {{.GetWindDirection}}
-Wind Gust :         {{.GetWindGustMph}}
-Sustained Wind Speed : {{.GetSustainedWindSpeedMph}}
-Wind Gust :         {{.GetWindGustMs}}
-Sustained Wind Speed {{.GetSustainedWindSpeedMs}}
-Rain :              {{.IsRain}}
-Daily :             {{.GetRainDailyIn}}
-24h Rain :          {{.GetRainIn}}
-Rain Rate :         {{.GetRainRateIn}}
-Rain Daily :        {{.GetRainDailyMm}}
-24h Rain :          {{.GetRainMm}}
-Rain Rate :         {{.GetRainRateMm}}
-Temperature F :     {{.GetTemperatureFahrenheit}} °F
-Temperature C :     {{.GetTemperatureCelsius}} °C
-Humidity :          {{.GetHumidity}}
-Pressure InHg :     {{.GetPressureInHg}}
-Pressure HPa :      {{.GetPressureHPa}}
+---------------------
+{{T "Timestamp"}} :                     {{.GetTimeStamp}}
+{{T "City"}} :                         {{.GetCity}}
+{{T "Device Id"}} :                 {{.GetDeviceID}}
+{{T "Number Of Followers"}} :           {{.GetNumOfFollowers}}
+{{T "Index UV"}} :                      {{.GetIndexUV}}
+{{T "Night"}} :                          {{.IsNight}}
+{{T "Wind Direction"}} :             {{.GetWindDirection}}
+{{T "Wind Gust"}} :                {{.GetWindGustMph}} Mph
+{{T "Sustained Wind"}} :       {{.GetSustainedWindSpeedMph}} Mph
+{{T "Wind Gust"}} :                {{.GetWindGustMs}} Ms
+{{T "Sustained Wind"}} :       {{.GetSustainedWindSpeedMs}} Ms
+{{T "Rain"}} :                          {{.IsRain}} 
+{{T "Rain Daily"}} :       {{.GetRainDailyIn}} in
+{{T "Rain"}} :          {{.GetRainIn}} in
+{{T "Rain Rate"}} :         {{.GetRainRateIn}} in
+{{T "Rain Daily"}} :        {{.GetRainDailyMm}} mm
+{{T "Rain"}} :                {{.GetRainMm}} mm
+{{T "Rain Rate"}} :             {{.GetRainRateMm}} mm
+{{T "Temperature"}} F" :                {{.GetTemperatureFahrenheit}} °F
+{{T "Temperature"}} C :                  {{.GetTemperatureCelsius}} °C
+{{T "Humidity"}} :                       {{.GetHumidity}} %
+{{T "Pressure"}} InHg :     {{.GetPressureInHg}} InHg
+{{T "Pressure"}} HPa :      {{.GetPressureHPa}} HPa

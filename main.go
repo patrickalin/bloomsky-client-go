@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/nicksnyder/go-i18n/i18n"
 	mylog "github.com/patrickalin/GoMyLog"
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
 	"github.com/spf13/viper"
@@ -38,6 +39,8 @@ type configuration struct {
 	bloomskyURL         string
 	refreshTimer        string
 	mock                bool
+	language            string
+	translateFunc       i18n.TranslateFunc
 }
 
 var config configuration
@@ -82,6 +85,14 @@ func readConfig(configName string) (err error) {
 	config.hTTPPort = viper.GetString("HTTPPort")
 	config.logLevel = viper.GetString("LogLevel")
 	config.mock = viper.GetBool("mock")
+	config.language = viper.GetString("language")
+
+	fmt.Println(config.language)
+
+	config.translateFunc, err = i18n.Tfunc(config.language)
+	if err != nil {
+		mylog.Error.Fatal(fmt.Sprintf("%v", err))
+	}
 
 	// Check if one value of the structure is empty
 	v := reflect.ValueOf(config)
@@ -97,6 +108,9 @@ func readConfig(configName string) (err error) {
 }
 
 func main() {
+
+	i18n.MustLoadTranslationFile("lang/en-US.all.json")
+	i18n.MustLoadTranslationFile("lang/fr.all.json")
 
 	flag.Parse()
 

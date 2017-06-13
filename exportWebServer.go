@@ -58,18 +58,34 @@ func refreshdata(w http.ResponseWriter, r *http.Request) {
 }
 
 func home(w http.ResponseWriter, r *http.Request) {
-	homeTemplate, err := template.ParseFiles("tmpl/bloomsky_header.html")
+
+	var err error
+
+	homeTemplate, err := template.New("bloomsky_header.html").Funcs(map[string]interface{}{
+		"T": config.translateFunc,
+	}).ParseFiles("tmpl/bloomsky_header.html")
+
 	if err != nil {
 		log.Fatal(fmt.Errorf("template part 1 : %v", err))
 	}
+
+	//fmt.Println(T("program_greeting"))
+
 	err = homeTemplate.Execute(w, "ws://"+r.Host+"/refreshdata")
 	if err != nil {
-		log.Fatal(fmt.Errorf("write part 2 : %v", err))
+		log.Fatal(fmt.Errorf("write part 1 : %v", err))
 	}
-	homeTemplate2, err := template.ParseFiles("tmpl/bloomsky_body.html")
+
+	homeTemplate2, err := template.New("bloomsky_body.html").Funcs(map[string]interface{}{
+		"T": config.translateFunc,
+	}).ParseFiles("tmpl/bloomsky_body.html")
+
 	if err != nil {
 		log.Fatal(fmt.Errorf("template part 2 : %v", err))
 	}
+
+	//fmt.Println(T("program_greeting"))
+
 	err = homeTemplate2.Execute(w, mybloomsky)
 	if err != nil {
 		log.Fatal(fmt.Errorf("write part 2 : %v", err))
