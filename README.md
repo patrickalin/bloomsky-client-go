@@ -33,6 +33,7 @@ A simple Go client for the BloomSky API.
 
 ### Usage
 
+Execute the binary with the config file in the same folder.
 * Windows : goBloomsky-windows-amd64.exe
 * Linux : ./goBloomsky-linux-amd64.bin
 * Mac : ./goBloomsky-darwin-amd64.bin
