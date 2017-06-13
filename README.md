@@ -26,6 +26,11 @@ A simple Go client for the BloomSky API.
 
 * Don't forget !!!! : You have to change the API Key in the config.yaml.
 
+### Traduction
+
+* This application supports en-us and fr
+* Cette application supporte l'anglais et le français
+
 ### Usage
 
 * Windows : goBloomsky-windows-amd64.exe
