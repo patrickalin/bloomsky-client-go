@@ -1,4 +1,6 @@
 #!/bin/bash
+go generate
+
 echo "compile each binary"
 
 if [ -z "$TRAVIS_BUILD_DIR" ]

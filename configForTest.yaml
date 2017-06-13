@@ -1,27 +1,30 @@
 ---
-######## Params influxDB necessary if true
-  influxDB_activated: "true"
-  influxDB_server: "localhost"
-  influxDB_server_port: "8086"
-  influxDB_username: "root"
-  influxDB_password: "root"
-  influxDB_database: "bloomsky"
-######## If true display informations on console
-  console_activated: "true"
-######## If true display informations on webpage
-  http_activated: "true"
-  http_port : ":1111"
-######## Refresh time, be not to small because you are blocked by openweather and bloomsky (in second)
-  refresh_timer: "60"
-######## Params for bloomsky
-# Normally don't change
-  bloomsky_url: "https://api.bloomsky.com/api/skydata/"
-# the key, it's free : https://dashboard.bloomsky.com/
-  bloomsky_access_token: "yourTocken"
-# 1 info  -> 4 trace
-  log_level: 4
 # language (en-us, fr)
   language : en-us
+######## Params for bloomsky
+# Normally don't change
+  bloomskyURL: "https://api.bloomsky.com/api/skydata/"
+# the key, it's free : https://dashboard.bloomsky.com/
+  bloomskyAccessToken: "yourtoken"
+######## Refresh time, be not to small because you are blocked by openweather and bloomsky (in second)
+  refreshTimer: "60"
+######## If true display informations on console
+  consoleActivated: "true"
+######## If true display informations on webpage
+  hTTPActivated: "true"
+  hTTPPort : ":1111"
+######## Params influxDB necessary if true
+  influxDBActivated: "true"
+  influxDBServer: "localhost"
+  influxDBServerPort: "8086"
+  influxDBUsername: "root"
+  influxDBPassword: "root"
+  influxDBDatabase: "bloomsky"
+######## Expert
+# 1 info  -> 4 trace
+  logLevel: 4
 # to use the code in offline mode put mock: true
   mock: false
+# use template, static file in folder not in bundled
+  dev: false
 #########

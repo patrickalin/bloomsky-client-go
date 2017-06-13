@@ -4,3 +4,5 @@ config.yaml
 .vscode/
 debug
 coverage.out
+assembly-assetfs/
+assembly/

@@ -1,7 +1,7 @@
 {
   "City": {
     "other": "City"
-  },
+  }, 
   "d_days": {
     "one": "{{.Count}} day",
     "other": "{{.Count}} days"

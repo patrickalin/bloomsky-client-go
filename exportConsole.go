@@ -8,6 +8,7 @@ import (
 	"github.com/nicksnyder/go-i18n/i18n"
 	mylog "github.com/patrickalin/GoMyLog"
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
+	"github.com/patrickalin/bloomsky-client-go/assembly"
 )
 
 var funcMap = map[string]interface{}{
@@ -20,11 +21,20 @@ var testTemplate *template.Template
 func displayToConsole(bloomsky bloomsky.BloomskyStructure) {
 
 	var err error
-	//testTemplate, err = template.New("hello.gohtml").Funcs(funcMap).ParseFiles("hello.gohtml")
+	if config.dev {
+		testTemplate, err = template.New("bloomsky.txt").Funcs(map[string]interface{}{
+			"T": config.translateFunc,
+		}).ParseFiles("tmpl/bloomsky.txt")
+	} else {
+		assetBloomsky, err := assembly.Asset("tmpl/bloomsky.txt")
+		if err != nil {
+			panic(err)
+		}
 
-	testTemplate, err = template.New("bloomsky.txt").Funcs(map[string]interface{}{
-		"T": config.translateFunc,
-	}).ParseFiles("tmpl/bloomsky.txt")
+		testTemplate, err = template.New("bloomsky.txt").Funcs(map[string]interface{}{
+			"T": config.translateFunc,
+		}).Parse(string(assetBloomsky[:]))
+	}
 
 	if err != nil {
 		panic(err)

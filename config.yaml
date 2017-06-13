@@ -1,4 +1,18 @@
 ---
+# language (en-us, fr)
+  language : fr
+######## Params for bloomsky
+# Normally don't change
+  bloomskyURL: "https://api.bloomsky.com/api/skydata/"
+# the key, it's free : https://dashboard.bloomsky.com/
+  bloomskyAccessToken: "yourtoken"
+######## Refresh time, be not to small because you are blocked by openweather and bloomsky (in second)
+  refreshTimer: "60"
+######## If true display informations on console
+  consoleActivated: "true"
+######## If true display informations on webpage
+  hTTPActivated: "true"
+  hTTPPort : ":1111"
 ######## Params influxDB necessary if true
   influxDBActivated: "false"
   influxDBServer: "localhost"
@@ -6,21 +20,11 @@
   influxDBUsername: "root"
   influxDBPassword: "root"
   influxDBDatabase: "bloomsky"
-######## If true display informations on console
-  consoleActivated: "true"
-######## If true display informations on webpage
-  hTTPActivated: "true"
-  hTTPPort : ":1111"
-######## Refresh time, be not to small because you are blocked by openweather and bloomsky (in second)
-  refreshTimer: "60"
-######## Params for bloomsky
-# Normally don't change
-  bloomskyURL: "https://api.bloomsky.com/api/skydata/"
-# the key, it's free : https://dashboard.bloomsky.com/
-  bloomskyAccessToken: "yourtoken"
+######## Expert
 # 1 info  -> 4 trace
   logLevel: 1
-# language (en-us, fr)
-  language : en-us
-#########
+# to use the code in offline mode put mock: true
   mock: false
+# use template, static file in folder not in bundled
+  dev: false
+#########
