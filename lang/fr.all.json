@@ -1,0 +1,154 @@
+{
+  "Apr": {
+    "other": "Avril"
+  },
+  "Aug": {
+    "other": "Aout"
+  },
+  "Bloomsky client in Go": {
+    "other": "Client Bloomsky en Go"
+  },
+  "City": {
+    "other": "Ville"
+  },
+  "Day": {
+    "other": "Jour"
+  },
+  "Dec": {
+    "other": "Décembre"
+  },
+  "Device Id": {
+    "other": "Dispositif ID"
+  },
+  "Est": {
+    "other": "Est"
+  },
+  "Feb": {
+    "other": "Février"
+  },
+  "Home": {
+    "other": "Accueil"
+  },
+  "Humidity": {
+    "other": "Humidité"
+  },
+  "Index UV": {
+    "other": "Index UV"
+  },
+  "Jan": {
+    "other": "Janvier"
+  },
+  "Jul": {
+    "other": "Juillet"
+  },
+  "Jun": {
+    "other": "Juin"
+  },
+  "Last Sync": {
+    "other": "Dernière synchronisation"
+  },
+  "Mar": {
+    "other": "Mars"
+  },
+  "May": {
+    "other": "mai"
+  },
+  "Night": {
+    "other": "Nuit"
+  },
+  "No": {
+    "other": "Non"
+  },
+  "North": {
+    "other": "Nord"
+  },
+  "Nov": {
+    "other": "Novembre"
+  },
+  "Number Of Followers": {
+    "other": "Nombre de followers"
+  },
+  "Oct": {
+    "other": "Octobre"
+  },
+  "Pressure": {
+    "other": "Pression atmosphérique"
+  },
+  "Rain": {
+    "other": "Pluie"
+  },
+  "Rain Daily": {
+    "other": "Pluie accumulé d'aujourd'hui"
+  },
+  "Rain Rate": {
+    "other": "Taux de pluie"
+  },
+  "Rain Rate Last hour": {
+    "other": "Pluie cette dernière heure"
+  },
+  "Sep": {
+    "other": "Septembre"
+  },
+  "South": {
+    "other": "Sud"
+  },
+  "Sustained Wind": {
+    "other": "Vitesse du vent soutenu"
+  },
+  "Temperature": {
+    "other": "Température"
+  },
+  "Timestamp": {
+    "other": "Timestamp"
+  },
+  "WDirection": {
+    "other": "Wind Direction"
+  },
+  "West": {
+    "other": "Ouest"
+  },
+  "Wind Direction": {
+    "other": "Direction du vent"
+  },
+  "Wind Gust": {
+    "other": "Rafale de vent"
+  },
+  "Yes": {
+    "other": "Oui"
+  },
+  "d_days": {
+    "one": "{{.Count}} day",
+    "other": "{{.Count}} days"
+  },
+  "high": {
+    "other": "Haut"
+  },
+  "low": {
+    "other": "Bas"
+  },
+  "medium": {
+    "other": "Moyen"
+  },
+  "my_height_in_meters": {
+    "one": "I am {{.Count}} meters tall.",
+    "other": "I am {{.Count}} meters tall."
+  },
+  "person_greeting": {
+    "other": "Hello {{.Person}}"
+  },
+  "person_unread_email_count": {
+    "one": "{{.Person}} has {{.Count}} unread emails.",
+    "other": "{{.Person}} has {{.Count}} unread emails."
+  },
+  "person_unread_email_count_timeframe": {
+    "one": "{{.Person}} has {{.Count}} unread emails in the past {{.Timeframe}}.",
+    "other": "{{.Person}} has {{.Count}} unread emails in the past {{.Timeframe}}."
+  },
+  "program_greeting": {
+    "other": "Hello world"
+  },
+  "your_unread_email_count": {
+    "one": "You have {{.Count}} unread emails.",
+    "other": "You have {{.Count}} unread emails."
+  }
+}

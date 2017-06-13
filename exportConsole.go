@@ -2,20 +2,37 @@ package main
 
 import (
 	"fmt"
-	"html/template"
 	"os"
+	"text/template"
 
+	"github.com/nicksnyder/go-i18n/i18n"
 	mylog "github.com/patrickalin/GoMyLog"
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
 )
 
+var funcMap = map[string]interface{}{
+	"T": i18n.IdentityTfunc,
+}
+
+var testTemplate *template.Template
+
 // displayToConsole print major informations from a bloomsky JSON to console
 func displayToConsole(bloomsky bloomsky.BloomskyStructure) {
-	t, err := template.ParseFiles("tmpl/bloomsky.txt")
+
+	var err error
+	//testTemplate, err = template.New("hello.gohtml").Funcs(funcMap).ParseFiles("hello.gohtml")
+
+	testTemplate, err = template.New("bloomsky.txt").Funcs(map[string]interface{}{
+		"T": config.translateFunc,
+	}).ParseFiles("tmpl/bloomsky.txt")
+
 	if err != nil {
-		fmt.Printf("%v", err)
+		panic(err)
 	}
-	if err = t.Execute(os.Stdout, bloomsky); err != nil {
+
+	//fmt.Println(T("program_greeting"))
+
+	if testTemplate.Execute(os.Stdout, bloomsky) != nil {
 		fmt.Printf("%v", err)
 	}
 }

@@ -13,7 +13,7 @@
             </div>
             <div id="navbar" class="collapse navbar-collapse">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="#">Home</a></li>
+                    <li class="active"><a href="#">{{T "Home"}}</a></li>
                     <li><a href="https://github.com/patrickalin/bloomsky-client-go" target="_blank">Github</a></li>
                     <li><a href="https://dashboard.bloomsky.com/" target="_blank">Bloomsky Dashboard</a></li>
 
@@ -27,7 +27,7 @@
         <div class="row">
             <div class="col-md-3">
                 <img src="/static/bloomsky.png" width=60%>
-                <p class="lead">Bloomsky client in Go</p>
+                <p class="lead">{{T "Bloomsky client in Go"}}</p>
                 <div id="timestamp">{{.GetTimeStamp}}</div>
                 <img src="tmp.gif" alt="Bloomsky img" id="bloomimg0" height="200" width="200">
             </div>
@@ -41,7 +41,7 @@
 
                 <table class="table table-striped">
                     <tr>
-                        <td><span class="glyphicon glyphicon-map-marker"></span> City</td>
+                        <td><span class="glyphicon glyphicon-map-marker"></span> {{T "City"}}</td>
                         <td>
                             <div id="city">{{.GetCity}}</div>
                         </td>
@@ -61,7 +61,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><i class="wi wi-sunset"></i> Index UV </td>
+                        <td><i class="wi wi-sunset"></i> {{T "Index UV"}} </td>
                         <td>
                             <div id="uv"> {{.GetIndexUV}}</div>
                         </td>
@@ -70,7 +70,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><i class="wi wi-small-craft-advisory"></i> Wind Direction</td>
+                        <td><i class="wi wi-small-craft-advisory"></i> {{T "Wind Direction"}}</td>
                         <td>
                             <div id="winddir">{{.GetWindDirection}}</div>
                         </td>
@@ -79,7 +79,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><i class="wi wi-small-craft-advisory"></i> Wind Gust</td>
+                        <td><i class="wi wi-small-craft-advisory"></i> {{T "Wind Gust"}}</td>
                         <td>
                             <div id="windgust">{{.GetWindGustMph}}</div>
                         </td>
@@ -89,7 +89,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><i class="wi wi-small-craft-advisory"></i> Sustained Wind</td>
+                        <td><i class="wi wi-small-craft-advisory"></i> {{T "Sustained Wind"}}</td>
                         <td>
                             <div id="sustwind">{{.GetSustainedWindSpeedMph}}</div>
                         </td>
@@ -99,7 +99,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><i class="wi wi-raindrop"></i> Rain</td>
+                        <td><i class="wi wi-raindrop"></i> {{T "Rain"}}</td>
                         <td>
                             <div id="rain">{{.IsRain}} </div>
                         </td>
@@ -108,7 +108,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><i class="wi wi-raindrop"></i> Rain Daily</td>
+                        <td><i class="wi wi-raindrop"></i> {{T "Rain Daily"}}</td>
                         <td>
                             <div id="raindaily">{{.GetRainDailyIn}}</div>
                         </td>
@@ -117,7 +117,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><i class="wi wi-raindrop"></i> Rain Rate Last hour</td>
+                        <td><i class="wi wi-raindrop"></i> {{T "Rain Rate Last hour"}}</td>
                         <td>
                             <div id="rainrate">{{.GetRainRateIn}}</div>
                         </td>
@@ -126,7 +126,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><i class="wi wi-thermometer"></i> Temperature</td>
+                        <td><i class="wi wi-thermometer"></i> {{T "Temperature"}}</td>
                         <td>
                             <div id="tempf">{{.GetTemperatureFahrenheit}} °F</div>
                         </td>
@@ -135,7 +135,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><i class="wi wi-humidity"></i> Humidity</td>
+                        <td><i class="wi wi-humidity"></i> {{T "Humidity"}}</td>
                         <td>
                             <div id="humidity">{{.GetHumidity}}</div>
                         </td>
@@ -144,7 +144,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><i class="wi wi-barometer"></i> Pressure</td>
+                        <td><i class="wi wi-barometer"></i> {{T "Pressure"}}</td>
                         <td>
                             <div id="pressureinhg">{{.GetPressureInHg}}</div>
                         </td>
@@ -174,7 +174,7 @@
                         <img src="tmp.gif" alt="Bloomsky img" id="bloomimg5" height="200" width="200">
                     </tr>-->
                     <tr>
-                        <td><span class="glyphicon glyphicon-globe"></span> Number of Followers</td>
+                        <td><span class="glyphicon glyphicon-globe"></span> {{T "Number Of Followers"}}</td>
                         <td>
                             <div id="followers">{{.GetNumOfFollowers}}</div>
                         </td>
@@ -183,7 +183,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><span class="glyphicon glyphicon glyphicon-cog"></span> Device Id</td>
+                        <td><span class="glyphicon glyphicon glyphicon-cog"></span> {{T "Device Id"}}</td>
                         <td>
                             <div id="device">{{.GetDeviceID}}</div>
                         </td>
