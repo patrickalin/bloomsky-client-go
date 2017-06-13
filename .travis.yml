@@ -6,6 +6,13 @@ install:
 - go get github.com/mattn/goveralls
 - go get github.com/jteeuwen/go-bindata/...
 - go get github.com/elazarl/go-bindata-assetfs/...
+- go get github.com/gorilla/websocket
+- go get github.com/nicksnyder/go-i18n/i18n
+-	go get mylog "github.com/patrickalin/GoMyLog
+-	go get bloomsky "github.com/patrickalin/bloomsky-api-go
+-	go get github.com/spf13/viper
+- go get .
+
 script:
 - go test -v -covermode=count -coverprofile=coverage.out
 - echo $COVERALLS_TOKEN
