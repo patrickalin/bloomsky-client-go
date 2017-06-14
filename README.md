@@ -1,4 +1,4 @@
-# BloomSky Client in Go v0.5
+# BloomSky Client in Go
 
 [![Build Status](https://travis-ci.org/patrickalin/bloomsky-client-go.svg?branch=master)](https://travis-ci.org/patrickalin/bloomsky-client-go)
 
