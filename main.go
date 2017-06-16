@@ -21,8 +21,8 @@ import (
 //configName name of the config file
 const configName = "config"
 
-//VERSION of the code
-const VERSION = "0.2"
+//Version of the code
+var Version = "No Version Provided"
 
 // Configuration is the structure of the config YAML file
 //use http://mervine.net/json2struct
@@ -145,7 +145,7 @@ func main() {
 
 	flag.Parse()
 
-	fmt.Printf("\n%s :> Bloomsky API %s in Go\n", time.Now().Format(time.RFC850), VERSION)
+	fmt.Printf("\n%s :> Bloomsky API %s in Go\n", time.Now().Format(time.RFC850), Version)
 
 	mylog.Init(mylog.ERROR)
 

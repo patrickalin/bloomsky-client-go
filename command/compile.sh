@@ -15,7 +15,7 @@ for GOOS in darwin linux windows; do
     echo "Building $GOOS-$GOARCH"
     export GOOS=$GOOS
     export GOARCH=$GOARCH
-    go build -o $TRAVIS_BUILD_DIR/bin/goBloomsky-$GOOS-$GOARCH
+    go build -o $TRAVIS_BUILD_DIR/bin/goBloomsky-$GOOS-$GOARCH -ldflags "-X main.Version=`cat VERSION`"
   done
 done
 mv bin/goBloomsky-darwin-386 bin/goBloomsky-darwin-386.bin
