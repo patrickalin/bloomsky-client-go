@@ -9,7 +9,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/patrickalin/bloomsky-client-go/badge.svg)](https://coveralls.io/github/patrickalin/bloomsky-client-go)
 
 A simple Go client for the BloomSky API.
-* It's possible to show informations in the console or in a embeded web server.
+* It's possible to show informations in the console or in a embedded web server.
 * It's also possible to export datas to Time Series Database InfluxData.
 
 ## 1 Getting Started
