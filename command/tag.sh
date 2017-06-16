@@ -1,3 +1,3 @@
 git ls-remote --tags origin
-git tag -af v0.6 -m "my version 0.6"
+git tag -af `cat VERSION` -m "`cat VERSION`"
 git push origin --tags
