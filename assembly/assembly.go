@@ -87,7 +87,7 @@ func tmplBloomskyTxt() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/bloomsky.txt", size: 1352, mode: os.FileMode(420), modTime: time.Unix(1497300991, 0)}
+	info := bindataFileInfo{name: "tmpl/bloomsky.txt", size: 1352, mode: os.FileMode(420), modTime: time.Unix(1497470514, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -107,7 +107,7 @@ func tmplBloomsky_bodyHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/bloomsky_body.html", size: 10594, mode: os.FileMode(420), modTime: time.Unix(1497384191, 0)}
+	info := bindataFileInfo{name: "tmpl/bloomsky_body.html", size: 10594, mode: os.FileMode(420), modTime: time.Unix(1497470514, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -127,7 +127,7 @@ func tmplBloomsky_headerHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/bloomsky_header.html", size: 14131, mode: os.FileMode(420), modTime: time.Unix(1497298885, 0)}
+	info := bindataFileInfo{name: "tmpl/bloomsky_header.html", size: 14131, mode: os.FileMode(420), modTime: time.Unix(1497470514, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -147,7 +147,7 @@ func langEnUsAllJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "lang/en-us.all.json", size: 852, mode: os.FileMode(420), modTime: time.Unix(1497363081, 0)}
+	info := bindataFileInfo{name: "lang/en-us.all.json", size: 852, mode: os.FileMode(420), modTime: time.Unix(1497470514, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -167,7 +167,7 @@ func langFrAllJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "lang/fr.all.json", size: 2723, mode: os.FileMode(420), modTime: time.Unix(1497357944, 0)}
+	info := bindataFileInfo{name: "lang/fr.all.json", size: 2723, mode: os.FileMode(420), modTime: time.Unix(1497470514, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
