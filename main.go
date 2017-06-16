@@ -106,6 +106,9 @@ func readConfig(configName string) (err error) {
 			return fmt.Errorf("Check if the key " + v.Type().Field(i).Name + " is present in the file " + dir)
 		}
 	}
+	if token := os.Getenv("bloomskyAccessToken"); token != "" {
+		config.bloomskyAccessToken = token
+	}
 	return nil
 }
 
