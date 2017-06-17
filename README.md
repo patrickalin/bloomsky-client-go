@@ -44,7 +44,7 @@ By default : `http://localhost:1111/`
 
 ![InfluxData Image ](https://github.com/patrickalin/bloomsky-client-go-source/blob/master/img/webserver.png)
 
-### Example : result in the standard console.
+### Example : result in the standard console
 
     Bloomsky
     --------
@@ -72,7 +72,7 @@ By default : `http://localhost:1111/`
     Pressure InHg :     29.38
     Pressure HPa :      994.92
 
-### Example : result in a influxData.
+### Example : result in a influxData
 
 ![InfluxData Image ](https://github.com/patrickalin/bloomsky-client-go-source/blob/master/img/InfluxDB.png)
 
