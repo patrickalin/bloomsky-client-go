@@ -42,7 +42,7 @@ Execute the binary with the config file in the same folder.
 
 By default : `http://localhost:1111/`
 
-![InfluxData Image ](https://github.com/patrickalin/bloomsky-client-go-source/blob/master/img/webserver.png)
+![Web server](https://raw.githubusercontent.com/patrickalin/bloomsky-client-go/master/img/webserver.png)
 
 ### Example : result in the standard console
 
@@ -74,15 +74,7 @@ By default : `http://localhost:1111/`
 
 ### Example : result in a influxData
 
-![InfluxData Image ](https://github.com/patrickalin/bloomsky-client-go-source/blob/master/img/InfluxDB.png)
-
-You can display the result with Chronograph
-
-![Chronograph Image ](https://github.com/patrickalin/bloomsky-client-go-source/blob/master/img/Chronograph.png)
-
-You can display the result with Grafana
-
-![Grafana Image ](https://github.com/patrickalin/GobloomskyThermostatAPIRest/blob/master/img/Grafana.png)
+![InfluxData Image ](https://raw.githubusercontent.com/patrickalin/bloomsky-client-go/master/img/InfluxDB.png)
 
 ## 2 Modification code / Compilation
 
