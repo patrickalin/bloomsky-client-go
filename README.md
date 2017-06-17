@@ -1,16 +1,13 @@
 # BloomSky Client in Go
 
 [![Build Status](https://travis-ci.org/patrickalin/bloomsky-client-go.svg?branch=master)](https://travis-ci.org/patrickalin/bloomsky-client-go)
-
 ![Build size](https://reposs.herokuapp.com/?path=patrickalin/bloomsky-client-go)
-
 [![Go Report Card](https://goreportcard.com/badge/github.com/patrickalin/bloomsky-client-go)](https://goreportcard.com/report/github.com/patrickalin/bloomsky-client-go)
-
 [![Coverage Status](https://coveralls.io/repos/github/patrickalin/bloomsky-client-go/badge.svg)](https://coveralls.io/github/patrickalin/bloomsky-client-go)
-
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 A simple Go client for the BloomSky API.
+
 * It's possible to show informations in the console or in a embedded web server.
 * It's also possible to export datas to Time Series Database InfluxData.
 
@@ -18,7 +15,7 @@ A simple Go client for the BloomSky API.
 
 ### Prerequisites
 
-* BloomSky API key (get it here: https://dashboard.bloomsky.com/)
+* BloomSky API key (get it here: [Bloomsky api](https://dashboard.bloomsky.com/))
 
 ### Installation
 
@@ -36,13 +33,14 @@ A simple Go client for the BloomSky API.
 ### Usage
 
 Execute the binary with the config file in the same folder.
+
 * Windows : goBloomsky-windows-amd64.exe
 * Linux : ./goBloomsky-linux-amd64.bin
 * Mac : ./goBloomsky-darwin-amd64.bin
 
-### Example : result in the webserver.
+### Example : result in the webserver
 
-By default : http://localhost:1111/
+By default : `http://localhost:1111/`
 
 ![InfluxData Image ](https://github.com/patrickalin/bloomsky-client-go-source/blob/master/img/webserver.png)
 
@@ -86,15 +84,15 @@ You can display the result with Grafana
 
 ![Grafana Image ](https://github.com/patrickalin/GobloomskyThermostatAPIRest/blob/master/img/Grafana.png)
 
-## 2 Modificatin code / Compilation
+## 2 Modification code / Compilation
 
 ### Pre installation
 
 * install git
-* install go from http://golang.org/
+* install go from `http://golang.org/`
 * If you want install influxData
 
-### Installation
+### Installation env development
 
     git clone https://github.com/patrickalin/GobloomskyThermostatAPIRest.git
     cd GobloomskyThermostatAPIRest
@@ -112,11 +110,11 @@ In the config file, you can change the log level.
 
 ## 3 Thanks
 
-https://github.com/tixu for testing and review
+<https://github.com/tixu> for testing and review
 
-http://mervine.net/json2struct "transform JSON to Go struct library"
+<http://mervine.net/json2struct> "transform JSON to Go struct library"
 
-http://github.com/spf13/viper "read config library"
+<http://github.com/spf13/viper> "read config library"
 
 ## 4 License
 
