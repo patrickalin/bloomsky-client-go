@@ -9,9 +9,9 @@
 ######## Refresh time, be not to small because you are blocked by openweather and bloomsky (in second)
   refreshTimer: "60"
 ######## If true display informations on console
-  consoleActivated: "true"
+  consoleActivated: true
 ######## If true display informations on webpage
-  hTTPActivated: "true"
+  hTTPActivated: true
   hTTPPort : ":1111"
 ######## Params influxDB necessary if true
   influxDBActivated: "false"
@@ -24,7 +24,7 @@
 # 1 info  -> 4 trace
   logLevel: 1
 # to use the code in offline mode put mock: true
-  mock: false
+  mock: true
 # use template, static file in folder not in bundled
   dev: false
 #########

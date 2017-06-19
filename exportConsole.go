@@ -44,15 +44,13 @@ func displayToConsole(bloomsky bloomsky.BloomskyStructure) {
 		}
 	}
 
-	//fmt.Println(T("program_greeting"))
-
 	if testTemplate.Execute(os.Stdout, bloomsky) != nil {
 		fmt.Printf("%v", err)
 	}
 }
 
 //InitConsole listen on the chanel
-func initConsole(messages chan bloomsky.BloomskyStructure) {
+func binitConsole(messages chan bloomsky.BloomskyStructure) {
 	go func() {
 
 		mylog.Trace.Println("Init the queue to receive message to export to console")
