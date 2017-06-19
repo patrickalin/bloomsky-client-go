@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -25,26 +26,30 @@ type httpServer struct {
 	h                     *http.Server
 }
 
-func (h *httpServer) write() {
-	for {
-		msg := <-h.bloomskyMessageToHTTP
-		mybloomsky = msg
-		var err error
+func (h *httpServer) listen(context context.Context) {
+	go func() {
+		for {
+			msg := <-h.bloomskyMessageToHTTP
+			mybloomsky = msg
+			fmt.Println("eeee")
+			var err error
 
-		mylog.Trace.Println("Receive message to export to http")
+			mylog.Trace.Println("Receive message to export to http")
 
-		msgJSON, err = json.Marshal(msg)
-		if err != nil {
-			mylog.Trace.Printf("%v", fmt.Errorf("Error: %s", err))
-			return
+			msgJSON, err = json.Marshal(msg)
+			if err != nil {
+				mylog.Trace.Printf("%v", fmt.Errorf("Error: %s", err))
+				return
+			}
+			if conn != nil {
+				err = conn.WriteMessage(websocket.TextMessage, msgJSON)
+				if err != nil {
+					mylog.Trace.Printf("Impossible to write to websocket : %v", err)
+				}
+			}
+			mylog.Trace.Println("Message send to browser")
 		}
-
-		err = conn.WriteMessage(websocket.TextMessage, msgJSON)
-		if err != nil {
-			mylog.Trace.Printf("Impossible to write to websocket : %v", err)
-		}
-		mylog.Trace.Println("Message send to browser")
-	}
+	}()
 }
 
 // websocket handler
@@ -62,7 +67,6 @@ func (h *httpServer) refreshdata(w http.ResponseWriter, r *http.Request) {
 		mylog.Trace.Printf("Impossible to write to websocket : %v", err)
 	}
 
-	go h.write()
 }
 
 func (h *httpServer) home(w http.ResponseWriter, r *http.Request) {
