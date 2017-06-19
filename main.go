@@ -214,7 +214,7 @@ func schedule(ctx context.Context) {
 
 //Principal function which one loops each Time Variable
 func collect(ctx context.Context) {
-	fmt.Println("hello")
+
 	mylog.Trace.Printf("Repeat actions each Time Variable : %s secondes", config.refreshTimer)
 
 	// get bloomsky JSON and parse information in bloomsky Go Structure
@@ -229,11 +229,10 @@ func collect(ctx context.Context) {
 		mybloomsky = bloomsky.NewBloomsky(config.bloomskyURL, config.bloomskyAccessToken, true)
 	}
 
-	for k, v := range channels {
-		fmt.Printf("pub %s", k)
+	for _, v := range channels {
 		v <- mybloomsky
 	}
-	fmt.Println("hello")
+
 }
 
 func readTranslationResource(name string) []byte {
