@@ -96,9 +96,15 @@ By default : `http://localhost:1111/`
 
 In the config file, you can activate a mock. If you don't have a API key.
 
-### Debug
+### Debug / Dev
 
-In the config file, you can change the log level.
+In the config file, you can change the log level. 
+
+In order to use the mock (if you do not have a bloomsky station)
+
+    mock: true
+    # use template, static file in folder not in bundled
+    dev: true
 
 ## 3 Thanks
 
@@ -107,6 +113,8 @@ In the config file, you can change the log level.
 <http://mervine.net/json2struct> "transform JSON to Go struct library"
 
 <http://github.com/spf13/viper> "read config library"
+
+
 
 ## 4 License
 
