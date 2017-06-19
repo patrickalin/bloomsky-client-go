@@ -160,10 +160,6 @@ func main() {
 	myTime = time.Duration(i) * time.Second
 	ctxsch, cancelsch := context.WithCancel(ctx)
 	//init listeners
-	go func() {
-
-		schedule(ctxsch)
-	}()
 
 	if config.consoleActivated {
 		channels["console"] = make(chan bloomsky.BloomskyStructure)
@@ -178,6 +174,9 @@ func main() {
 		h = createWebServer(channels["web"], config.hTTPPort)
 
 	}
+	go func() {
+		schedule(ctxsch)
+	}()
 	<-ctx.Done()
 	cancelsch()
 	if h.h != nil {
