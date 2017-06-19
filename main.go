@@ -27,10 +27,10 @@ var Version = "No Version Provided"
 // Configuration is the structure of the config YAML file
 //use http://mervine.net/json2struct
 type configuration struct {
-	consoleActivated    string
-	hTTPActivated       string
+	consoleActivated    bool
+	hTTPActivated       bool
 	hTTPPort            string
-	influxDBActivated   string
+	influxDBActivated   bool
 	influxDBDatabase    string
 	influxDBPassword    string
 	influxDBServer      string
@@ -81,10 +81,10 @@ func readConfig(configName string) (err error) {
 	config.influxDBServer = viper.GetString("InfluxDBServer")
 	config.influxDBServerPort = viper.GetString("InfluxDBServerPort")
 	config.influxDBUsername = viper.GetString("InfluxDBUsername")
-	config.consoleActivated = viper.GetString("ConsoleActivated")
-	config.influxDBActivated = viper.GetString("InfluxDBActivated")
+	config.consoleActivated = viper.GetBool("ConsoleActivated")
+	config.influxDBActivated = viper.GetBool("InfluxDBActivated")
 	config.refreshTimer = viper.GetString("RefreshTimer")
-	config.hTTPActivated = viper.GetString("HTTPActivated")
+	config.hTTPActivated = viper.GetBool("HTTPActivated")
 	config.hTTPPort = viper.GetString("HTTPPort")
 	config.logLevel = viper.GetString("LogLevel")
 	config.mock = viper.GetBool("mock")
@@ -168,13 +168,13 @@ func main() {
 	go func() {
 		schedule()
 	}()
-	if config.consoleActivated == "true" {
+	if config.consoleActivated {
 		initConsole(bloomskyMessageToConsole)
 	}
-	if config.influxDBActivated == "true" {
+	if config.influxDBActivated {
 		initInfluxDB(bloomskyMessageToInfluxDB, config.influxDBServer, config.influxDBServerPort, config.influxDBUsername, config.influxDBPassword, config.influxDBDatabase)
 	}
-	if config.hTTPActivated == "true" {
+	if config.hTTPActivated {
 		createWebServer(config.hTTPPort)
 	}
 }
@@ -214,21 +214,21 @@ func repeat() {
 
 	go func() {
 		// display major informations to console
-		if config.consoleActivated == "true" {
+		if config.consoleActivated {
 			bloomskyMessageToConsole <- mybloomsky
 		}
 	}()
 
 	go func() {
 		// display major informations to console to influx DB
-		if config.influxDBActivated == "true" {
+		if config.influxDBActivated {
 			bloomskyMessageToInfluxDB <- mybloomsky
 		}
 	}()
 
 	go func() {
 		// display major informations to http
-		if config.hTTPActivated == "true" {
+		if config.hTTPActivated {
 			bloomskyMessageToHTTP <- mybloomsky
 		}
 	}()
