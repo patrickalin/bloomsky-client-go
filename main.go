@@ -160,10 +160,6 @@ func main() {
 	myTime = time.Duration(i) * time.Second
 	ctxsch, cancelsch := context.WithCancel(ctx)
 	//init listeners
-	go func() {
-
-		schedule(ctxsch)
-	}()
 
 	if config.consoleActivated {
 		channels["console"] = make(chan bloomsky.BloomskyStructure)
@@ -178,6 +174,9 @@ func main() {
 		h = createWebServer(channels["web"], config.hTTPPort)
 
 	}
+	go func() {
+		schedule(ctxsch)
+	}()
 	<-ctx.Done()
 	cancelsch()
 	if h.h != nil {
@@ -192,22 +191,24 @@ func main() {
 func schedule(ctx context.Context) {
 	ticker := time.NewTicker(myTime)
 
-	repeat()
+	collect()
 	for {
 		select {
 		case <-ticker.C:
-			repeat()
+			collect()
 		case <-ctx.Done():
 			fmt.Println("stoping ticker")
 			ticker.Stop()
-
+			for _, v := range channels {
+				close(v)
+			}
 			return
 		}
 	}
 }
 
 //Principal function which one loops each Time Variable
-func repeat() {
+func collect() {
 
 	mylog.Trace.Printf("Repeat actions each Time Variable : %s secondes", config.refreshTimer)
 
