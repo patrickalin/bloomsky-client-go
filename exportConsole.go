@@ -2,14 +2,13 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"text/template"
 
 	"github.com/nicksnyder/go-i18n/i18n"
-	mylog "github.com/patrickalin/GoMyLog"
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
 	"github.com/patrickalin/bloomsky-client-go/assembly"
+	log "github.com/sirupsen/logrus"
 )
 
 var funcMap = map[string]interface{}{
@@ -33,14 +32,14 @@ func displayToConsole(bloomsky bloomsky.BloomskyStructure) {
 	} else {
 		assetBloomsky, err := assembly.Asset("tmpl/bloomsky.txt")
 		if err != nil {
-			log.Fatal(fmt.Errorf("template console : %v", err))
+			log.Fatalf("template console : %v", err)
 		}
 
 		testTemplate, err = template.New("bloomsky.txt").Funcs(map[string]interface{}{
 			"T": config.translateFunc,
 		}).Parse(string(assetBloomsky[:]))
 		if err != nil {
-			log.Fatal(fmt.Errorf("template console : %v", err))
+			log.Fatalf("template console : %v", err)
 		}
 	}
 
@@ -53,10 +52,10 @@ func displayToConsole(bloomsky bloomsky.BloomskyStructure) {
 func initConsole(messages chan bloomsky.BloomskyStructure) {
 	go func() {
 
-		mylog.Trace.Println("Init the queue to receive message to export to console")
+		log.Info("Init the queue to receive message to export to console")
 
 		for {
-			mylog.Trace.Println("Receive message to export to console")
+			log.Info("Receive message to export to console")
 			msg := <-messages
 			displayToConsole(msg)
 		}

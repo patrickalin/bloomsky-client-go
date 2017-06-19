@@ -5,8 +5,8 @@ import (
 	"time"
 
 	clientinfluxdb "github.com/influxdata/influxdb/client/v2"
-	mylog "github.com/patrickalin/GoMyLog"
 	bloomskyStructure "github.com/patrickalin/bloomsky-api-go"
+	log "github.com/sirupsen/logrus"
 )
 
 func sendbloomskyToInfluxDB(onebloomsky bloomskyStructure.BloomskyStructure, clientInflux clientinfluxdb.Client, InfluxDBDatabase string) {
@@ -48,7 +48,7 @@ func sendbloomskyToInfluxDB(onebloomsky bloomskyStructure.BloomskyStructure, cli
 	})
 
 	if err != nil {
-		mylog.Error.Fatal(fmt.Errorf("Error sent Data to Influx DB : %v", err))
+		log.Errorf("Error sent Data to Influx DB : %v", err)
 	}
 
 	pt, err := clientinfluxdb.NewPoint("bloomskyData", tags, fields, time.Now())
@@ -60,7 +60,7 @@ func sendbloomskyToInfluxDB(onebloomsky bloomskyStructure.BloomskyStructure, cli
 	if err != nil {
 		err2 := createDB(clientInflux, InfluxDBDatabase)
 		if err2 != nil {
-			mylog.Error.Fatal(fmt.Errorf("Check if InfluxData is running or if the database bloomsky exists : %v", err))
+			log.Errorf("Check if InfluxData is running or if the database bloomsky exists : %v", err)
 		}
 	}
 }
@@ -103,7 +103,7 @@ func initInfluxDB(messagesbloomsky chan bloomskyStructure.BloomskyStructure, inf
 	clientInflux, _ := makeClientInfluxDB(influxDBServer, influxDBServerPort, influxDBUsername, influxDBPassword)
 
 	go func() {
-		mylog.Trace.Println("Receive messagesbloomsky to export InfluxDB")
+		log.Info("Receive messagesbloomsky to export InfluxDB")
 		for {
 			msg := <-messagesbloomsky
 			sendbloomskyToInfluxDB(msg, clientInflux, influxDBDatabase)

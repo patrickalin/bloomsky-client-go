@@ -1,7 +1,7 @@
 ---------------------
-Bloomsky
+Bloomsky {{.LastCall}}
 ---------------------
-{{T "Timestamp"}} :                     {{.GetTimeStamp}}
+{{T "Timestamp bloomsky"}} :                     {{.GetTimeStamp}}
 {{T "City"}} :                         {{.GetCity}}
 {{T "Device Id"}} :                 {{.GetDeviceID}}
 {{T "Number Of Followers"}} :           {{.GetNumOfFollowers}}
