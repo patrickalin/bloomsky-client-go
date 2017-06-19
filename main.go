@@ -200,7 +200,9 @@ func schedule(ctx context.Context) {
 		case <-ctx.Done():
 			fmt.Println("stoping ticker")
 			ticker.Stop()
-
+			for _, v := range channels {
+				close(v)
+			}
 			return
 		}
 	}
