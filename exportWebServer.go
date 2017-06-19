@@ -130,21 +130,27 @@ func home(w http.ResponseWriter, r *http.Request) {
 }
 
 //createWebServer create web server
-func createWebServer(HTTPPort string) {
+func createWebServer(HTTPPort string) *http.Server {
 	flag.Parse()
 	log.SetFlags(0)
 
 	fs := http.FileServer(&assetfs.AssetFS{Asset: assemblyAssetfs.Asset, AssetDir: assemblyAssetfs.AssetDir, AssetInfo: assemblyAssetfs.AssetInfo, Prefix: "static"})
 
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
+	s := http.NewServeMux()
 
-	http.HandleFunc("/refreshdata", refreshdata)
-	http.HandleFunc("/", home)
+	s.Handle("/static/", http.StripPrefix("/static/", fs))
+
+	s.HandleFunc("/refreshdata", refreshdata)
+	s.HandleFunc("/", home)
 
 	fmt.Printf("Init server http port %s \n", HTTPPort)
-
-	if err := http.ListenAndServe(HTTPPort, nil); err != nil {
-		mylog.Error.Fatal(fmt.Errorf("Error when I create the server : %v", err))
-	}
+	h := &http.Server{Addr: HTTPPort, Handler: s}
+	go func() {
+		if err := h.ListenAndServe(); err != nil {
+			mylog.Error.Fatal(fmt.Errorf("Error when I create the server : %v", err))
+		}
+	}()
 	mylog.Trace.Printf("Server listen on %s", HTTPPort)
+
+	return h
 }

@@ -2,11 +2,14 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"reflect"
 	"strconv"
@@ -56,6 +59,7 @@ var (
 
 	myTime time.Duration
 	debug  = flag.String("debug", "", "Error=1, Warning=2, Info=3, Trace=4")
+	h      *http.Server
 )
 
 // ReadConfig read config from config.json
@@ -117,6 +121,18 @@ func readConfig(configName string) (err error) {
 //go:generate ./command/bindata-assetfs.sh
 
 func main() {
+	ctx, cancel := context.WithCancel(context.Background())
+
+	signalCh := make(chan os.Signal, 1)
+	signal.Notify(signalCh)
+	go func() {
+		select {
+		case <-signalCh:
+			fmt.Println("receive interrupt")
+			cancel()
+			return
+		}
+	}()
 
 	if err := i18n.ParseTranslationFileBytes("lang/en-us.all.json", readTranslationResource("lang/en-us.all.json")); err != nil {
 		log.Fatal(fmt.Errorf("error read language file : %v", err))
@@ -145,10 +161,11 @@ func main() {
 
 	i, _ := strconv.Atoi(config.refreshTimer)
 	myTime = time.Duration(i) * time.Second
-
+	ctxsch, cancelsch := context.WithCancel(ctx)
 	//init listeners
 	go func() {
-		schedule()
+
+		schedule(ctxsch)
 	}()
 	if config.consoleActivated {
 		initConsole(bloomskyMessageToConsole)
@@ -157,21 +174,32 @@ func main() {
 		initInfluxDB(bloomskyMessageToInfluxDB, config.influxDBServer, config.influxDBServerPort, config.influxDBUsername, config.influxDBPassword, config.influxDBDatabase)
 	}
 	if config.hTTPActivated {
-		createWebServer(config.hTTPPort)
+		h = createWebServer(config.hTTPPort)
+		fmt.Println("eeee", h)
 	}
+	<-ctx.Done()
+	cancelsch()
+	if h != nil {
+		fmt.Println("shutting down ws")
+		h.Shutdown(ctx)
+	}
+
+	fmt.Println("terminated")
 }
 
 // The scheduler
-func schedule() {
+func schedule(ctx context.Context) {
 	ticker := time.NewTicker(myTime)
-	quit := make(chan struct{})
+
 	repeat()
 	for {
 		select {
 		case <-ticker.C:
 			repeat()
-		case <-quit:
+		case <-ctx.Done():
+			fmt.Println("stoping ticker")
 			ticker.Stop()
+
 			return
 		}
 	}
