@@ -163,7 +163,11 @@ func main() {
 
 	if config.consoleActivated {
 		channels["console"] = make(chan bloomsky.BloomskyStructure)
-		initConsole(channels["console"])
+		c, err := initConsole(channels["console"])
+		if err != nil {
+			mylog.Error.Fatal(fmt.Sprintf("%v", err))
+		}
+		c.listen(context.Background())
 	}
 	if config.influxDBActivated {
 		channels["influxdb"] = make(chan bloomsky.BloomskyStructure)
@@ -172,6 +176,7 @@ func main() {
 	if config.hTTPActivated {
 		channels["web"] = make(chan bloomsky.BloomskyStructure)
 		h = createWebServer(channels["web"], config.hTTPPort)
+		h.listen(context.Background())
 
 	}
 	go func() {
@@ -191,11 +196,11 @@ func main() {
 func schedule(ctx context.Context) {
 	ticker := time.NewTicker(myTime)
 
-	collect()
+	collect(ctx)
 	for {
 		select {
 		case <-ticker.C:
-			collect()
+			collect(ctx)
 		case <-ctx.Done():
 			fmt.Println("stoping ticker")
 			ticker.Stop()
@@ -208,8 +213,8 @@ func schedule(ctx context.Context) {
 }
 
 //Principal function which one loops each Time Variable
-func collect() {
-
+func collect(ctx context.Context) {
+	fmt.Println("hello")
 	mylog.Trace.Printf("Repeat actions each Time Variable : %s secondes", config.refreshTimer)
 
 	// get bloomsky JSON and parse information in bloomsky Go Structure
@@ -224,12 +229,11 @@ func collect() {
 		mybloomsky = bloomsky.NewBloomsky(config.bloomskyURL, config.bloomskyAccessToken, true)
 	}
 
-	go func() {
-		for _, v := range channels {
-			v <- mybloomsky
-		}
-	}()
-
+	for k, v := range channels {
+		fmt.Printf("pub %s", k)
+		v <- mybloomsky
+	}
+	fmt.Println("hello")
 }
 
 func readTranslationResource(name string) []byte {

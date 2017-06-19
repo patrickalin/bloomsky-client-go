@@ -1,64 +1,68 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
 	"text/template"
 
-	"github.com/nicksnyder/go-i18n/i18n"
 	mylog "github.com/patrickalin/GoMyLog"
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
 	"github.com/patrickalin/bloomsky-client-go/assembly"
 )
 
-var funcMap = map[string]interface{}{
-	"T": i18n.IdentityTfunc,
+type console struct {
+	in           chan bloomsky.BloomskyStructure
+	testTemplate *template.Template
 }
 
-var testTemplate *template.Template
-
-// displayToConsole print major informations from a bloomsky JSON to console
-func displayToConsole(bloomsky bloomsky.BloomskyStructure) {
-
-	var err error
+func initTemplate() *template.Template {
 	if config.dev {
-		testTemplate, err = template.New("bloomsky.txt").Funcs(map[string]interface{}{
+		t, err := template.New("bloomsky.txt").Funcs(map[string]interface{}{
 			"T": config.translateFunc,
 		}).ParseFiles("tmpl/bloomsky.txt")
 
 		if err != nil {
 			log.Fatal(fmt.Errorf("template console : %v", err))
 		}
-	} else {
-		assetBloomsky, err := assembly.Asset("tmpl/bloomsky.txt")
-		if err != nil {
-			log.Fatal(fmt.Errorf("template console : %v", err))
-		}
-
-		testTemplate, err = template.New("bloomsky.txt").Funcs(map[string]interface{}{
-			"T": config.translateFunc,
-		}).Parse(string(assetBloomsky[:]))
-		if err != nil {
-			log.Fatal(fmt.Errorf("template console : %v", err))
-		}
+		return t
 	}
 
-	if testTemplate.Execute(os.Stdout, bloomsky) != nil {
-		fmt.Printf("%v", err)
+	assetBloomsky, err := assembly.Asset("tmpl/bloomsky.txt")
+	if err != nil {
+		log.Fatal(fmt.Errorf("template console : %v", err))
 	}
+
+	t, err := template.New("bloomsky.txt").Funcs(map[string]interface{}{
+		"T": config.translateFunc,
+	}).Parse(string(assetBloomsky[:]))
+	if err != nil {
+		log.Fatal(fmt.Errorf("template console : %v", err))
+	}
+	return t
 }
 
 //InitConsole listen on the chanel
-func initConsole(messages chan bloomsky.BloomskyStructure) {
+func initConsole(messages chan bloomsky.BloomskyStructure) (console, error) {
+	c := console{in: messages, testTemplate: initTemplate()}
+	return c, nil
+
+}
+
+func (c *console) listen(context context.Context) {
 	go func() {
 
 		mylog.Trace.Println("Init the queue to receive message to export to console")
 
 		for {
 			mylog.Trace.Println("Receive message to export to console")
-			msg := <-messages
-			displayToConsole(msg)
+			msg := <-c.in
+			if err := c.testTemplate.Execute(os.Stdout, msg); err != nil {
+				fmt.Printf("%v", err)
+			}
 		}
+
 	}()
+
 }

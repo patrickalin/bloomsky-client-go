@@ -114,7 +114,7 @@ In order to use the mock (if you do not have a bloomsky station)
 <http://mervine.net/json2struct> "transform JSON to Go struct library"
 
 <http://github.com/spf13/viper> "read config library"
-
+        
 
 
 ## 4 License
