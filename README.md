@@ -102,9 +102,8 @@ In the config file, you can change the log level.
 
 In order to use the mock (if you do not have a bloomsky station)
 
-    mock: true
-    # use template, static file in folder not in bundled
-    dev: true
+   mock: true
+   dev: true
 
 ## 3 Thanks
 
