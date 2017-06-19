@@ -7,7 +7,7 @@
 # the key, it's free : https://dashboard.bloomsky.com/
   bloomskyAccessToken: "yourtoken"
 ######## Refresh time, be not to small because you are blocked by openweather and bloomsky (in second)
-  refreshTimer: "60"
+  refreshTimer: "10"
 ######## If true display informations on console
   consoleActivated: true
 ######## If true display informations on webpage

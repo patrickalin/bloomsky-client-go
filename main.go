@@ -56,7 +56,7 @@ var (
 
 	myTime time.Duration
 	debug  = flag.String("debug", "", "Error=1, Warning=2, Info=3, Trace=4")
-	h      *httpServer
+	c      *httpServer
 )
 
 // ReadConfig read config from config.json
@@ -124,8 +124,8 @@ func main() {
 	signal.Notify(signalCh)
 	go func() {
 		select {
-		case <-signalCh:
-			fmt.Println("receive interrupt")
+		case i := <-signalCh:
+			fmt.Printf("receive interrupt  %v", i)
 			cancel()
 			return
 		}
@@ -171,22 +171,31 @@ func main() {
 	}
 	if config.influxDBActivated {
 		channels["influxdb"] = make(chan bloomsky.BloomskyStructure)
-		initInfluxDB(channels["influxdb"], config.influxDBServer, config.influxDBServerPort, config.influxDBUsername, config.influxDBPassword, config.influxDBDatabase)
-	}
-	if config.hTTPActivated {
-		channels["web"] = make(chan bloomsky.BloomskyStructure)
-		h = createWebServer(channels["web"], config.hTTPPort)
-		h.listen(context.Background())
+		c, err := initClient(channels["influxdb"], config.influxDBServer, config.influxDBServerPort, config.influxDBUsername, config.influxDBPassword, config.influxDBDatabase)
+		if err != nil {
+			mylog.Error.Fatal(fmt.Sprintf("%v", err))
+		}
+		c.listen(context.Background())
 
 	}
-	go func() {
-		schedule(ctxsch)
-	}()
+	if config.hTTPActivated {
+		var err error
+		channels["web"] = make(chan bloomsky.BloomskyStructure)
+		c, err = createWebServer(channels["web"], config.hTTPPort)
+		if err != nil {
+			mylog.Error.Fatal(fmt.Sprintf("%v", err))
+		}
+		c.listen(context.Background())
+
+	}
+
+	schedule(ctxsch)
+
 	<-ctx.Done()
 	cancelsch()
-	if h.h != nil {
+	if c.h != nil {
 		fmt.Println("shutting down ws")
-		h.h.Shutdown(ctx)
+		c.h.Shutdown(ctx)
 	}
 
 	fmt.Println("terminated")
