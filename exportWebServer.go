@@ -20,9 +20,14 @@ var conn *websocket.Conn
 var mybloomsky bloomsky.BloomskyStructure
 var msgJSON []byte
 
-func write() {
+type httpServer struct {
+	bloomskyMessageToHTTP chan bloomsky.BloomskyStructure
+	h                     *http.Server
+}
+
+func (h *httpServer) write() {
 	for {
-		msg := <-bloomskyMessageToHTTP
+		msg := <-h.bloomskyMessageToHTTP
 		mybloomsky = msg
 		var err error
 
@@ -43,7 +48,7 @@ func write() {
 }
 
 // websocket handler
-func refreshdata(w http.ResponseWriter, r *http.Request) {
+func (h *httpServer) refreshdata(w http.ResponseWriter, r *http.Request) {
 	upgrader := websocket.Upgrader{}
 	var err error
 	conn, err = upgrader.Upgrade(w, r, nil)
@@ -57,10 +62,10 @@ func refreshdata(w http.ResponseWriter, r *http.Request) {
 		mylog.Trace.Printf("Impossible to write to websocket : %v", err)
 	}
 
-	go write()
+	go h.write()
 }
 
-func home(w http.ResponseWriter, r *http.Request) {
+func (h *httpServer) home(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 	var templateHeader *template.Template
@@ -130,21 +135,28 @@ func home(w http.ResponseWriter, r *http.Request) {
 }
 
 //createWebServer create web server
-func createWebServer(HTTPPort string) {
+func createWebServer(in chan bloomsky.BloomskyStructure, HTTPPort string) *httpServer {
+	server := &httpServer{bloomskyMessageToHTTP: in}
 	flag.Parse()
 	log.SetFlags(0)
 
 	fs := http.FileServer(&assetfs.AssetFS{Asset: assemblyAssetfs.Asset, AssetDir: assemblyAssetfs.AssetDir, AssetInfo: assemblyAssetfs.AssetInfo, Prefix: "static"})
 
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
+	s := http.NewServeMux()
 
-	http.HandleFunc("/refreshdata", refreshdata)
-	http.HandleFunc("/", home)
+	s.Handle("/static/", http.StripPrefix("/static/", fs))
+
+	s.HandleFunc("/refreshdata", server.refreshdata)
+	s.HandleFunc("/", server.home)
 
 	fmt.Printf("Init server http port %s \n", HTTPPort)
-
-	if err := http.ListenAndServe(HTTPPort, nil); err != nil {
-		mylog.Error.Fatal(fmt.Errorf("Error when I create the server : %v", err))
-	}
+	h := &http.Server{Addr: HTTPPort, Handler: s}
+	go func() {
+		if err := h.ListenAndServe(); err != nil {
+			mylog.Error.Fatal(fmt.Errorf("Error when I create the server : %v", err))
+		}
+	}()
 	mylog.Trace.Printf("Server listen on %s", HTTPPort)
+	server.h = h
+	return server
 }
