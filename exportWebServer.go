@@ -135,7 +135,7 @@ func (h *httpServer) home(w http.ResponseWriter, r *http.Request) {
 }
 
 //createWebServer create web server
-func createWebServer(in chan bloomsky.BloomskyStructure, HTTPPort string) *httpServer {
+func createWebServer(in chan bloomsky.BloomskyStructure, HTTPPort string) (*httpServer, error) {
 	server := &httpServer{bloomskyMessageToHTTP: in}
 	flag.Parse()
 	log.SetFlags(0)
@@ -158,5 +158,5 @@ func createWebServer(in chan bloomsky.BloomskyStructure, HTTPPort string) *httpS
 	}()
 	mylog.Trace.Printf("Server listen on %s", HTTPPort)
 	server.h = h
-	return server
+	return server, nil
 }
