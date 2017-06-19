@@ -50,7 +50,7 @@ func displayToConsole(bloomsky bloomsky.BloomskyStructure) {
 }
 
 //InitConsole listen on the chanel
-func binitConsole(messages chan bloomsky.BloomskyStructure) {
+func initConsole(messages chan bloomsky.BloomskyStructure) {
 	go func() {
 
 		mylog.Trace.Println("Init the queue to receive message to export to console")

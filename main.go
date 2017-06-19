@@ -192,11 +192,11 @@ func main() {
 func schedule(ctx context.Context) {
 	ticker := time.NewTicker(myTime)
 
-	repeat()
+	collect()
 	for {
 		select {
 		case <-ticker.C:
-			repeat()
+			collect()
 		case <-ctx.Done():
 			fmt.Println("stoping ticker")
 			ticker.Stop()
@@ -207,7 +207,7 @@ func schedule(ctx context.Context) {
 }
 
 //Principal function which one loops each Time Variable
-func repeat() {
+func collect() {
 
 	mylog.Trace.Printf("Repeat actions each Time Variable : %s secondes", config.refreshTimer)
 
