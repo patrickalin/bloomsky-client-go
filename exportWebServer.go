@@ -31,12 +31,10 @@ func (h *httpServer) listen(context context.Context) {
 		for {
 			msg := <-h.bloomskyMessageToHTTP
 			mybloomsky = msg
-			fmt.Println("eeee")
-			var err error
 
 			mylog.Trace.Println("Receive message to export to http")
 
-			msgJSON, err = json.Marshal(msg)
+			msgJSON, err := json.Marshal(msg)
 			if err != nil {
 				mylog.Trace.Printf("%v", fmt.Errorf("Error: %s", err))
 				return
@@ -105,8 +103,6 @@ func (h *httpServer) home(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(fmt.Errorf("write part 1 : %v", err))
 	}
-
-	fmt.Println(config.dev)
 
 	if config.dev {
 		templateBody, err = template.New("bloomsky_body.html").Funcs(map[string]interface{}{
