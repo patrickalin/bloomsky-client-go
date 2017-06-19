@@ -6,7 +6,6 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -15,9 +14,9 @@ import (
 	"time"
 
 	"github.com/nicksnyder/go-i18n/i18n"
-	mylog "github.com/patrickalin/GoMyLog"
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
 	"github.com/patrickalin/bloomsky-client-go/assembly"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
@@ -49,9 +48,9 @@ type configuration struct {
 	dev                 bool
 }
 
-var config configuration
-
 var (
+	config configuration
+
 	channels = make(map[string]chan bloomsky.BloomskyStructure)
 
 	myTime time.Duration
@@ -70,7 +69,7 @@ func readConfig(configName string) (err error) {
 		return fmt.Errorf("%v", err)
 	}
 	dir = dir + "/" + configName
-	fmt.Printf("The config file loaded is :> %s/%s \n \n", dir, configName)
+	log.Infof("The config file loaded is : %s/%s", dir, configName)
 
 	if err := viper.ReadInConfig(); err != nil {
 		return err
@@ -93,9 +92,16 @@ func readConfig(configName string) (err error) {
 	config.language = viper.GetString("language")
 	config.dev = viper.GetBool("dev")
 
+	if err := i18n.ParseTranslationFileBytes("lang/en-us.all.json", readTranslationResource("lang/en-us.all.json")); err != nil {
+		log.Fatalf("error read language file : %v", err)
+	}
+	if err := i18n.ParseTranslationFileBytes("lang/fr.all.json", readTranslationResource("lang/fr.all.json")); err != nil {
+		log.Fatalf("error read language file : %v", err)
+	}
+
 	config.translateFunc, err = i18n.Tfunc(config.language)
 	if err != nil {
-		mylog.Error.Fatal(fmt.Sprintf("%v", err))
+		log.Errorf("Problem with loading translate file, %v", err)
 	}
 
 	// Check if one value of the structure is empty
@@ -118,6 +124,7 @@ func readConfig(configName string) (err error) {
 //go:generate ./command/bindata-assetfs.sh
 
 func main() {
+
 	ctx, cancel := context.WithCancel(context.Background())
 
 	signalCh := make(chan os.Signal, 1)
@@ -131,35 +138,25 @@ func main() {
 		}
 	}()
 
-	if err := i18n.ParseTranslationFileBytes("lang/en-us.all.json", readTranslationResource("lang/en-us.all.json")); err != nil {
-		log.Fatal(fmt.Errorf("error read language file : %v", err))
-	}
-	if err := i18n.ParseTranslationFileBytes("lang/fr.all.json", readTranslationResource("lang/fr.all.json")); err != nil {
-		log.Fatal(fmt.Errorf("error read language file : %v", err))
-	}
+	log.Infof("%s : Bloomsky API %s in Go", time.Now().Format(time.RFC850), Version)
 
 	flag.Parse()
 
-	fmt.Printf("\n%s :> Bloomsky API %s in Go\n", time.Now().Format(time.RFC850), Version)
-
-	mylog.Init(mylog.ERROR)
-
 	// getConfig from the file config.json
 	if err := readConfig(configName); err != nil {
-		mylog.Error.Fatal(fmt.Sprintf("%v", err))
+		log.Fatalf("Problem with reading config file, %v", err)
 	}
 
 	if *debug != "" {
 		config.logLevel = *debug
 	}
-
-	level, _ := strconv.Atoi(config.logLevel)
-	mylog.Init(mylog.Level(level))
+	//log.SetLevel(log.ErrorLevel)
+	//TODO put the choice from the config file in the variable
+	//level, _ := strconv.Atoi(config.logLevel)
 
 	i, _ := strconv.Atoi(config.refreshTimer)
 	myTime = time.Duration(i) * time.Second
 	ctxsch, cancelsch := context.WithCancel(ctx)
-	//init listeners
 
 	if config.consoleActivated {
 		channels["console"] = make(chan bloomsky.BloomskyStructure)
@@ -174,6 +171,7 @@ func main() {
 		h = createWebServer(channels["web"], config.hTTPPort)
 
 	}
+
 	go func() {
 		schedule(ctxsch)
 	}()
@@ -210,13 +208,13 @@ func schedule(ctx context.Context) {
 //Principal function which one loops each Time Variable
 func collect() {
 
-	mylog.Trace.Printf("Repeat actions each Time Variable : %s secondes", config.refreshTimer)
+	log.Infof("Repeat actions each Time Variable : %s secondes", config.refreshTimer)
 
 	// get bloomsky JSON and parse information in bloomsky Go Structure
 	var mybloomsky bloomsky.BloomskyStructure
 	if config.mock {
 		//TODO put in one file
-		mylog.Trace.Println("Warning : mock activated !!!")
+		log.Info("Warning : mock activated !!!")
 		body := []byte("[{\"UTC\":2,\"CityName\":\"Thuin\",\"Storm\":{\"UVIndex\":\"1\",\"WindDirection\":\"E\",\"RainDaily\":0,\"WindGust\":0,\"SustainedWindSpeed\":0,\"RainRate\":0,\"24hRain\":0},\"Searchable\":true,\"DeviceName\":\"skyThuin\",\"RegisterTime\":1486905295,\"DST\":1,\"BoundedPoint\":\"\",\"LON\":4.3101,\"Point\":{},\"VideoList\":[\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-27.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-28.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-29.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-30.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-31.mp4\"],\"VideoList_C\":[\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-27_C.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-28_C.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-29_C.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-30_C.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-31_C.mp4\"],\"DeviceID\":\"442C05954A59\",\"NumOfFollowers\":2,\"LAT\":50.3394,\"ALT\":195,\"Data\":{\"Luminance\":9999,\"Temperature\":70.79,\"ImageURL\":\"http://s3-us-west-1.amazonaws.com/bskyimgs/faBiuZWsnpaoqZqrqJ1kr5uqmZammJw=.jpg\",\"TS\":1496345207,\"Rain\":false,\"Humidity\":64,\"Pressure\":29.41,\"DeviceType\":\"SKY2\",\"Voltage\":2611,\"Night\":false,\"UVIndex\":9999,\"ImageTS\":1496345207},\"FullAddress\":\"Drève des Alliés, Thuin, Wallonie, BE\",\"StreetName\":\"Drève des Alliés\",\"PreviewImageList\":[\"http://s3-us-west-1.amazonaws.com/bskyimgs/faBiuZWsnpaoqZqrqJ1kr5qwlZOmn5c=.jpg\",\"http://s3-us-west-1.amazonaws.com/bskyimgs/faBiuZWsnpaoqZqrqJ1kr5qwnZmqmZw=.jpg\",\"http://s3-us-west-1.amazonaws.com/bskyimgs/faBiuZWsnpaoqZqrqJ1kr5unnJakmZg=.jpg\",\"http://s3-us-west-1.amazonaws.com/bskyimgs/faBiuZWsnpaoqZqrqJ1kr5uom5Kkm50=.jpg\",\"http://s3-us-west-1.amazonaws.com/bskyimgs/faBiuZWsnpaoqZqrqJ1kr5upmZiqnps=.jpg\"]}]")
 		mybloomsky = bloomsky.NewBloomskyFromBody(body)
 	}
@@ -233,7 +231,6 @@ func collect() {
 }
 
 func readTranslationResource(name string) []byte {
-
 	if config.dev {
 		b, err := ioutil.ReadFile(name)
 		if err != nil {

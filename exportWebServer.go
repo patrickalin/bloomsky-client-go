@@ -5,15 +5,14 @@ import (
 	"flag"
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 
 	"github.com/elazarl/go-bindata-assetfs"
 	"github.com/gorilla/websocket"
-	mylog "github.com/patrickalin/GoMyLog"
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
 	"github.com/patrickalin/bloomsky-client-go/assembly"
 	"github.com/patrickalin/bloomsky-client-go/assembly-assetfs"
+	log "github.com/sirupsen/logrus"
 )
 
 var conn *websocket.Conn
@@ -31,19 +30,19 @@ func (h *httpServer) write() {
 		mybloomsky = msg
 		var err error
 
-		mylog.Trace.Println("Receive message to export to http")
+		log.Info("Receive message to export to http")
 
 		msgJSON, err = json.Marshal(msg)
 		if err != nil {
-			mylog.Trace.Printf("%v", fmt.Errorf("Error: %s", err))
+			log.Infof("Error: %v", err)
 			return
 		}
 
 		err = conn.WriteMessage(websocket.TextMessage, msgJSON)
 		if err != nil {
-			mylog.Trace.Printf("Impossible to write to websocket : %v", err)
+			log.Infof("Impossible to write to websocket : %v", err)
 		}
-		mylog.Trace.Println("Message send to browser")
+		log.Info("Message send to browser")
 	}
 }
 
@@ -53,13 +52,13 @@ func (h *httpServer) refreshdata(w http.ResponseWriter, r *http.Request) {
 	var err error
 	conn, err = upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		mylog.Trace.Printf("upgrade: %v", err)
+		log.Infof("upgrade: %v", err)
 		return
 	}
 
 	err = conn.WriteMessage(websocket.TextMessage, msgJSON)
 	if err != nil {
-		mylog.Trace.Printf("Impossible to write to websocket : %v", err)
+		log.Infof("Impossible to write to websocket : %v", err)
 	}
 
 	go h.write()
@@ -136,27 +135,26 @@ func (h *httpServer) home(w http.ResponseWriter, r *http.Request) {
 
 //createWebServer create web server
 func createWebServer(in chan bloomsky.BloomskyStructure, HTTPPort string) *httpServer {
+
+	log.Infof("Init server http port %s", HTTPPort)
 	server := &httpServer{bloomskyMessageToHTTP: in}
 	flag.Parse()
-	log.SetFlags(0)
 
 	fs := http.FileServer(&assetfs.AssetFS{Asset: assemblyAssetfs.Asset, AssetDir: assemblyAssetfs.AssetDir, AssetInfo: assemblyAssetfs.AssetInfo, Prefix: "static"})
 
 	s := http.NewServeMux()
 
 	s.Handle("/static/", http.StripPrefix("/static/", fs))
-
 	s.HandleFunc("/refreshdata", server.refreshdata)
 	s.HandleFunc("/", server.home)
 
-	fmt.Printf("Init server http port %s \n", HTTPPort)
 	h := &http.Server{Addr: HTTPPort, Handler: s}
 	go func() {
 		if err := h.ListenAndServe(); err != nil {
-			mylog.Error.Fatal(fmt.Errorf("Error when I create the server : %v", err))
+			log.Errorf("Error when I create the server : %v", err)
 		}
 	}()
-	mylog.Trace.Printf("Server listen on %s", HTTPPort)
+	log.Infof("Server listen on %s", HTTPPort)
 	server.h = h
 	return server
 }
