@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -53,13 +52,11 @@ type configuration struct {
 var config configuration
 
 var (
-	bloomskyMessageToConsole  = make(chan bloomsky.BloomskyStructure)
-	bloomskyMessageToInfluxDB = make(chan bloomsky.BloomskyStructure)
-	bloomskyMessageToHTTP     = make(chan bloomsky.BloomskyStructure)
+	channels = make(map[string]chan bloomsky.BloomskyStructure)
 
 	myTime time.Duration
 	debug  = flag.String("debug", "", "Error=1, Warning=2, Info=3, Trace=4")
-	h      *http.Server
+	h      *httpServer
 )
 
 // ReadConfig read config from config.json
@@ -167,21 +164,25 @@ func main() {
 
 		schedule(ctxsch)
 	}()
+
 	if config.consoleActivated {
-		initConsole(bloomskyMessageToConsole)
+		channels["console"] = make(chan bloomsky.BloomskyStructure)
+		initConsole(channels["console"])
 	}
 	if config.influxDBActivated {
-		initInfluxDB(bloomskyMessageToInfluxDB, config.influxDBServer, config.influxDBServerPort, config.influxDBUsername, config.influxDBPassword, config.influxDBDatabase)
+		channels["influxdb"] = make(chan bloomsky.BloomskyStructure)
+		initInfluxDB(channels["influxdb"], config.influxDBServer, config.influxDBServerPort, config.influxDBUsername, config.influxDBPassword, config.influxDBDatabase)
 	}
 	if config.hTTPActivated {
-		h = createWebServer(config.hTTPPort)
-		fmt.Println("eeee", h)
+		channels["web"] = make(chan bloomsky.BloomskyStructure)
+		h = createWebServer(channels["web"], config.hTTPPort)
+
 	}
 	<-ctx.Done()
 	cancelsch()
-	if h != nil {
+	if h.h != nil {
 		fmt.Println("shutting down ws")
-		h.Shutdown(ctx)
+		h.h.Shutdown(ctx)
 	}
 
 	fmt.Println("terminated")
@@ -223,25 +224,11 @@ func repeat() {
 	}
 
 	go func() {
-		// display major informations to console
-		if config.consoleActivated {
-			bloomskyMessageToConsole <- mybloomsky
+		for _, v := range channels {
+			v <- mybloomsky
 		}
 	}()
 
-	go func() {
-		// display major informations to console to influx DB
-		if config.influxDBActivated {
-			bloomskyMessageToInfluxDB <- mybloomsky
-		}
-	}()
-
-	go func() {
-		// display major informations to http
-		if config.hTTPActivated {
-			bloomskyMessageToHTTP <- mybloomsky
-		}
-	}()
 }
 
 func readTranslationResource(name string) []byte {
