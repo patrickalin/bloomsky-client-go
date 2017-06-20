@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"flag"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -135,7 +134,6 @@ func (h *httpServer) home(w http.ResponseWriter, r *http.Request) {
 
 func createWebServer(in chan bloomsky.BloomskyStructure, HTTPPort string) (*httpServer, error) {
 	server := &httpServer{bloomskyMessageToHTTP: in}
-	flag.Parse()
 
 	fs := http.FileServer(&assetfs.AssetFS{Asset: assemblyAssetfs.Asset, AssetDir: assemblyAssetfs.AssetDir, AssetInfo: assemblyAssetfs.AssetInfo, Prefix: "static"})
 
