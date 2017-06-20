@@ -10,7 +10,6 @@ import (
 	"os/signal"
 	"path/filepath"
 	"reflect"
-	"strconv"
 	"time"
 
 	"github.com/nicksnyder/go-i18n/i18n"
@@ -25,6 +24,8 @@ const configName = "config"
 
 //Version of the code
 var Version = "No Version Provided"
+
+var body []byte
 
 // Configuration is the structure of the config YAML file
 //use http://mervine.net/json2struct
@@ -41,7 +42,7 @@ type configuration struct {
 	logLevel            string
 	bloomskyAccessToken string
 	bloomskyURL         string
-	refreshTimer        string
+	refreshTimer        time.Duration
 	mock                bool
 	language            string
 	translateFunc       i18n.TranslateFunc
@@ -53,9 +54,8 @@ var (
 
 	channels = make(map[string]chan bloomsky.BloomskyStructure)
 
-	myTime time.Duration
-	debug  = flag.String("debug", "", "Error=1, Warning=2, Info=3, Trace=4")
-	c      *httpServer
+	debug = flag.String("debug", "", "Error=1, Warning=2, Info=3, Trace=4")
+	c     *httpServer
 )
 
 // ReadConfig read config from config.json
@@ -75,6 +75,7 @@ func readConfig(configName string) (err error) {
 		return err
 	}
 
+	//Todo find to simplify this section
 	config.bloomskyURL = viper.GetString("BloomskyURL")
 	config.bloomskyAccessToken = viper.GetString("BloomskyAccessToken")
 	config.influxDBDatabase = viper.GetString("InfluxDBDatabase")
@@ -84,7 +85,7 @@ func readConfig(configName string) (err error) {
 	config.influxDBUsername = viper.GetString("InfluxDBUsername")
 	config.consoleActivated = viper.GetBool("ConsoleActivated")
 	config.influxDBActivated = viper.GetBool("InfluxDBActivated")
-	config.refreshTimer = viper.GetString("RefreshTimer")
+	config.refreshTimer = time.Duration(viper.GetInt("RefreshTimer")) * time.Second
 	config.hTTPActivated = viper.GetBool("HTTPActivated")
 	config.hTTPPort = viper.GetString("HTTPPort")
 	config.logLevel = viper.GetString("LogLevel")
@@ -109,6 +110,7 @@ func readConfig(configName string) (err error) {
 	values := make([]interface{}, v.NumField())
 	for i := 0; i < v.NumField(); i++ {
 		values[i] = v.Field(i)
+		//Todo
 		//v.Field(i).SetString(viper.GetString(v.Type().Field(i).Name))
 		if values[i] == "" {
 			return fmt.Errorf("Check if the key " + v.Type().Field(i).Name + " is present in the file " + dir)
@@ -125,6 +127,7 @@ func readConfig(configName string) (err error) {
 
 func main() {
 
+	log.Debug("Create context")
 	myContext, cancel := context.WithCancel(context.Background())
 
 	signalCh := make(chan os.Signal, 1)
@@ -132,7 +135,7 @@ func main() {
 	go func() {
 		select {
 		case i := <-signalCh:
-			fmt.Printf("receive interrupt  %v", i)
+			log.Debugf("Receive interrupt  %v", i)
 			cancel()
 			return
 		}
@@ -140,29 +143,32 @@ func main() {
 
 	log.Infof("%s : Bloomsky API %s in Go", time.Now().Format(time.RFC850), Version)
 
-	flag.Parse()
-
-	// getConfig from the file config.json
+	log.Debug("Get config from the file config.json")
 	if err := readConfig(configName); err != nil {
 		log.Fatalf("Problem with reading config file, %v", err)
 	}
 
+	log.Debug("Get flag from command line")
+	flag.Parse()
 	if *debug != "" {
 		config.logLevel = *debug
 	}
-	//log.SetLevel(log.ErrorLevel)
-	//TODO put the choice from the config file in the variable
-	//level, _ := strconv.Atoi(config.logLevel)
 
-	i, _ := strconv.Atoi(config.refreshTimer)
-	myTime = time.Duration(i) * time.Second
+	level, err := log.ParseLevel(config.logLevel)
+	if err != nil {
+		log.Fatalf("Error parse level %v", err)
+	}
+	log.SetLevel(level)
+	log.Debugf("Level trace: %s", level)
+
+	//TODO pourquoi on redefini un deuxième context ?
 	ctxsch, cancelsch := context.WithCancel(myContext)
 
 	if config.consoleActivated {
 		channels["console"] = make(chan bloomsky.BloomskyStructure)
 		c, err := initConsole(channels["console"])
 		if err != nil {
-			log.Fatalf(fmt.Sprintf("%v", err))
+			log.Fatalf("Error with initConsol%v", err)
 		}
 		c.listen(context.Background())
 	}
@@ -170,7 +176,7 @@ func main() {
 		channels["influxdb"] = make(chan bloomsky.BloomskyStructure)
 		c, err := initClient(channels["influxdb"], config.influxDBServer, config.influxDBServerPort, config.influxDBUsername, config.influxDBPassword, config.influxDBDatabase)
 		if err != nil {
-			log.Fatalf("%v", err)
+			log.Fatalf("Error with initClientInfluxDB %v", err)
 		}
 		c.listen(context.Background())
 
@@ -180,10 +186,16 @@ func main() {
 		channels["web"] = make(chan bloomsky.BloomskyStructure)
 		c, err = createWebServer(channels["web"], config.hTTPPort)
 		if err != nil {
-			log.Fatalf(fmt.Sprintf("%v", err))
+			log.Fatalf("Error with initWebServer %v", err)
 		}
 		c.listen(context.Background())
 
+	}
+
+	if config.mock {
+		log.Warn("Mock activated !!!")
+		//TODO put in one file
+		body = []byte("[{\"UTC\":2,\"CityName\":\"Thuin\",\"Storm\":{\"UVIndex\":\"1\",\"WindDirection\":\"E\",\"RainDaily\":0,\"WindGust\":0,\"SustainedWindSpeed\":0,\"RainRate\":0,\"24hRain\":0},\"Searchable\":true,\"DeviceName\":\"skyThuin\",\"RegisterTime\":1486905295,\"DST\":1,\"BoundedPoint\":\"\",\"LON\":4.3101,\"Point\":{},\"VideoList\":[\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-27.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-28.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-29.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-30.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-31.mp4\"],\"VideoList_C\":[\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-27_C.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-28_C.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-29_C.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-30_C.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-31_C.mp4\"],\"DeviceID\":\"442C05954A59\",\"NumOfFollowers\":2,\"LAT\":50.3394,\"ALT\":195,\"Data\":{\"Luminance\":9999,\"Temperature\":70.79,\"ImageURL\":\"http://s3-us-west-1.amazonaws.com/bskyimgs/faBiuZWsnpaoqZqrqJ1kr5uqmZammJw=.jpg\",\"TS\":1496345207,\"Rain\":false,\"Humidity\":64,\"Pressure\":29.41,\"DeviceType\":\"SKY2\",\"Voltage\":2611,\"Night\":false,\"UVIndex\":9999,\"ImageTS\":1496345207},\"FullAddress\":\"Drève des Alliés, Thuin, Wallonie, BE\",\"StreetName\":\"Drève des Alliés\",\"PreviewImageList\":[\"http://s3-us-west-1.amazonaws.com/bskyimgs/faBiuZWsnpaoqZqrqJ1kr5qwlZOmn5c=.jpg\",\"http://s3-us-west-1.amazonaws.com/bskyimgs/faBiuZWsnpaoqZqrqJ1kr5qwnZmqmZw=.jpg\",\"http://s3-us-west-1.amazonaws.com/bskyimgs/faBiuZWsnpaoqZqrqJ1kr5unnJakmZg=.jpg\",\"http://s3-us-west-1.amazonaws.com/bskyimgs/faBiuZWsnpaoqZqrqJ1kr5uom5Kkm50=.jpg\",\"http://s3-us-west-1.amazonaws.com/bskyimgs/faBiuZWsnpaoqZqrqJ1kr5upmZiqnps=.jpg\"]}]")
 	}
 
 	schedule(ctxsch)
@@ -191,16 +203,17 @@ func main() {
 	<-myContext.Done()
 	cancelsch()
 	if c.h != nil {
-		fmt.Println("shutting down ws")
+		log.Debug("Shutting down ws")
 		c.h.Shutdown(myContext)
 	}
 
-	fmt.Println("terminated")
+	log.Debug("Terminated")
 }
 
 // The scheduler
 func schedule(myContext context.Context) {
-	ticker := time.NewTicker(myTime)
+	ticker := time.NewTicker(config.refreshTimer)
+	log.Debug("Create scheduler")
 
 	collect(myContext)
 	for {
@@ -208,7 +221,7 @@ func schedule(myContext context.Context) {
 		case <-ticker.C:
 			collect(myContext)
 		case <-myContext.Done():
-			fmt.Println("stoping ticker")
+			log.Debug("Stoping ticker")
 			ticker.Stop()
 			for _, v := range channels {
 				close(v)
@@ -221,17 +234,15 @@ func schedule(myContext context.Context) {
 //Principal function which one loops each Time Variable
 func collect(ctx context.Context) {
 
-	log.Infof("Repeat actions each Time Variable : %s secondes", config.refreshTimer)
+	log.Infof("Parse informations from API bloomsky each : %s", config.refreshTimer)
 
 	// get bloomsky JSON and parse information in bloomsky Go Structure
 	var mybloomsky bloomsky.BloomskyStructure
 	if config.mock {
-		//TODO put in one file
-		log.Info("Warning : mock activated !!!")
-		body := []byte("[{\"UTC\":2,\"CityName\":\"Thuin\",\"Storm\":{\"UVIndex\":\"1\",\"WindDirection\":\"E\",\"RainDaily\":0,\"WindGust\":0,\"SustainedWindSpeed\":0,\"RainRate\":0,\"24hRain\":0},\"Searchable\":true,\"DeviceName\":\"skyThuin\",\"RegisterTime\":1486905295,\"DST\":1,\"BoundedPoint\":\"\",\"LON\":4.3101,\"Point\":{},\"VideoList\":[\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-27.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-28.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-29.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-30.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-31.mp4\"],\"VideoList_C\":[\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-27_C.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-28_C.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-29_C.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-30_C.mp4\",\"http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-05-31_C.mp4\"],\"DeviceID\":\"442C05954A59\",\"NumOfFollowers\":2,\"LAT\":50.3394,\"ALT\":195,\"Data\":{\"Luminance\":9999,\"Temperature\":70.79,\"ImageURL\":\"http://s3-us-west-1.amazonaws.com/bskyimgs/faBiuZWsnpaoqZqrqJ1kr5uqmZammJw=.jpg\",\"TS\":1496345207,\"Rain\":false,\"Humidity\":64,\"Pressure\":29.41,\"DeviceType\":\"SKY2\",\"Voltage\":2611,\"Night\":false,\"UVIndex\":9999,\"ImageTS\":1496345207},\"FullAddress\":\"Drève des Alliés, Thuin, Wallonie, BE\",\"StreetName\":\"Drève des Alliés\",\"PreviewImageList\":[\"http://s3-us-west-1.amazonaws.com/bskyimgs/faBiuZWsnpaoqZqrqJ1kr5qwlZOmn5c=.jpg\",\"http://s3-us-west-1.amazonaws.com/bskyimgs/faBiuZWsnpaoqZqrqJ1kr5qwnZmqmZw=.jpg\",\"http://s3-us-west-1.amazonaws.com/bskyimgs/faBiuZWsnpaoqZqrqJ1kr5unnJakmZg=.jpg\",\"http://s3-us-west-1.amazonaws.com/bskyimgs/faBiuZWsnpaoqZqrqJ1kr5uom5Kkm50=.jpg\",\"http://s3-us-west-1.amazonaws.com/bskyimgs/faBiuZWsnpaoqZqrqJ1kr5upmZiqnps=.jpg\"]}]")
 		mybloomsky = bloomsky.NewBloomskyFromBody(body)
 	}
 	if !config.mock {
+		log.Debug("Mock desactivated")
 		mybloomsky = bloomsky.NewBloomsky(config.bloomskyURL, config.bloomskyAccessToken, true)
 	}
 
@@ -241,19 +252,19 @@ func collect(ctx context.Context) {
 
 }
 
+//Read translation ressources from /lang or the assembly
 func readTranslationResource(name string) []byte {
 	if config.dev {
 		b, err := ioutil.ReadFile(name)
 		if err != nil {
-			log.Fatal(fmt.Errorf("error read language file : %v", err))
+			log.Fatalf("Error read language file from folder /lang : %v", err)
 		}
 		return b
 	}
 
 	b, err := assembly.Asset(name)
 	if err != nil {
-		log.Fatal(fmt.Errorf("error read language file : %v", err))
+		log.Fatalf("Error read language file from assembly : %v", err)
 	}
-
 	return b
 }
