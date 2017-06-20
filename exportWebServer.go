@@ -42,7 +42,7 @@ func (h *httpServer) listen(context context.Context) {
 					log.Infof("Impossible to write to websocket : %v", err)
 				}
 			}
-			log.Infof("Message send to browser")
+			log.Debug("Message send to browser")
 		}
 	}()
 }
@@ -151,7 +151,7 @@ func createWebServer(in chan bloomsky.BloomskyStructure, HTTPPort string) (*http
 			log.Errorf("Error when I create the server : %v", err)
 		}
 	}()
-	log.Infof("Server listen on %s", HTTPPort)
+	log.Infof("Server listen on port %s", HTTPPort)
 	server.h = h
 	return server, nil
 }
