@@ -1,15 +1,23 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"time"
 
 	clientinfluxdb "github.com/influxdata/influxdb/client/v2"
-	bloomskyStructure "github.com/patrickalin/bloomsky-api-go"
 	log "github.com/sirupsen/logrus"
+	bloomsky "github.com/patrickalin/bloomsky-api-go"
+
 )
 
-func sendbloomskyToInfluxDB(onebloomsky bloomskyStructure.BloomskyStructure, clientInflux clientinfluxdb.Client, InfluxDBDatabase string) {
+type client struct {
+	in       chan bloomsky.BloomskyStructure
+	c        clientinfluxdb.Client
+	database string
+}
+
+func (c *client) sendbloomskyToInfluxDB(onebloomsky bloomsky.BloomskyStructure) {
 
 	fmt.Printf("\n%s :> Send bloomsky Data to InfluxDB\n", time.Now().Format(time.RFC850))
 
@@ -43,7 +51,7 @@ func sendbloomskyToInfluxDB(onebloomsky bloomskyStructure.BloomskyStructure, cli
 
 	// Create a new point batch
 	bp, err := clientinfluxdb.NewBatchPoints(clientinfluxdb.BatchPointsConfig{
-		Database:  InfluxDBDatabase,
+		Database:  c.database,
 		Precision: "s",
 	})
 
@@ -55,17 +63,17 @@ func sendbloomskyToInfluxDB(onebloomsky bloomskyStructure.BloomskyStructure, cli
 	bp.AddPoint(pt)
 
 	// Write the batch
-	err = clientInflux.Write(bp)
+	err = c.c.Write(bp)
 
 	if err != nil {
-		err2 := createDB(clientInflux, InfluxDBDatabase)
+		err2 := c.createDB(c.database)
 		if err2 != nil {
 			log.Errorf("Check if InfluxData is running or if the database bloomsky exists : %v", err)
 		}
 	}
 }
 
-func createDB(clientInflux clientinfluxdb.Client, InfluxDBDatabase string) error {
+func (c *client) createDB(InfluxDBDatabase string) error {
 	fmt.Println("Create Database bloomsky in InfluxData")
 
 	query := fmt.Sprint("CREATE DATABASE ", InfluxDBDatabase)
@@ -73,7 +81,7 @@ func createDB(clientInflux clientinfluxdb.Client, InfluxDBDatabase string) error
 
 	fmt.Println("Query: ", query)
 
-	_, err := clientInflux.Query(q)
+	_, err := c.c.Query(q)
 	if err != nil {
 		return fmt.Errorf("Error with : Create database bloomsky, check if InfluxDB is running : %v", err)
 	}
@@ -81,32 +89,33 @@ func createDB(clientInflux clientinfluxdb.Client, InfluxDBDatabase string) error
 	return nil
 }
 
-func makeClientInfluxDB(InfluxDBServer, InfluxDBServerPort, InfluxDBUsername, InfluxDBPassword string) (client clientinfluxdb.Client, err error) {
-	client, err = clientinfluxdb.NewHTTPClient(
+func initClient(messagesbloomsky chan bloomsky.BloomskyStructure, InfluxDBServer, InfluxDBServerPort, InfluxDBUsername, InfluxDBPassword, InfluxDatabase string) (*client, error) {
+	c, err := clientinfluxdb.NewHTTPClient(
 		clientinfluxdb.HTTPConfig{
 			Addr:     fmt.Sprintf("http://%s:%s", InfluxDBServer, InfluxDBServerPort),
 			Username: InfluxDBUsername,
 			Password: InfluxDBPassword,
 		})
 
-	if err != nil || client == nil {
+	if err != nil || c == nil {
 		return nil, fmt.Errorf("Error creating database bloomsky, check if InfluxDB is running : %v", err)
 	}
-	return client, nil
+	cl := &client{c: c, in: messagesbloomsky, database: InfluxDatabase}
+	//need to check how to verify that the db is running
+	cl.createDB(InfluxDatabase)
+	return cl, nil
 }
 
 // InitInfluxDB initiate the client influxDB
 // Arguments bloomsky informations, configuration from config file
 // Wait events to send to influxDB
-func initInfluxDB(messagesbloomsky chan bloomskyStructure.BloomskyStructure, influxDBServer, influxDBServerPort, influxDBUsername, influxDBPassword, influxDBDatabase string) {
-
-	clientInflux, _ := makeClientInfluxDB(influxDBServer, influxDBServerPort, influxDBUsername, influxDBPassword)
+func (c *client) listen(context context.Context) {
 
 	go func() {
 		log.Info("Receive messagesbloomsky to export InfluxDB")
 		for {
-			msg := <-messagesbloomsky
-			sendbloomskyToInfluxDB(msg, clientInflux, influxDBDatabase)
+			msg := <-c.in
+			c.sendbloomskyToInfluxDB(msg)
 		}
 	}()
 }
