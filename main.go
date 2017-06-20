@@ -125,7 +125,7 @@ func readConfig(configName string) (err error) {
 
 func main() {
 
-	ctx, cancel := context.WithCancel(context.Background())
+	myContext, cancel := context.WithCancel(context.Background())
 
 	signalCh := make(chan os.Signal, 1)
 	signal.Notify(signalCh)
@@ -156,7 +156,7 @@ func main() {
 
 	i, _ := strconv.Atoi(config.refreshTimer)
 	myTime = time.Duration(i) * time.Second
-	ctxsch, cancelsch := context.WithCancel(ctx)
+	ctxsch, cancelsch := context.WithCancel(myContext)
 
 	if config.consoleActivated {
 		channels["console"] = make(chan bloomsky.BloomskyStructure)
@@ -188,26 +188,26 @@ func main() {
 
 	schedule(ctxsch)
 
-	<-ctx.Done()
+	<-myContext.Done()
 	cancelsch()
 	if c.h != nil {
 		fmt.Println("shutting down ws")
-		c.h.Shutdown(ctx)
+		c.h.Shutdown(myContext)
 	}
 
 	fmt.Println("terminated")
 }
 
 // The scheduler
-func schedule(ctx context.Context) {
+func schedule(myContext context.Context) {
 	ticker := time.NewTicker(myTime)
 
-	collect(ctx)
+	collect(myContext)
 	for {
 		select {
 		case <-ticker.C:
-			collect(ctx)
-		case <-ctx.Done():
+			collect(myContext)
+		case <-myContext.Done():
 			fmt.Println("stoping ticker")
 			ticker.Stop()
 			for _, v := range channels {
