@@ -11,7 +11,7 @@ A simple Go client for the BloomSky API.
 * It's possible to show informations in the console or in a embedded web server.
 * It's also possible to export datas to Time Series Database InfluxData.
 
-## 1 Getting Started
+## 1] Getting Started
 
 ### Prerequisites
 
@@ -76,7 +76,7 @@ By default : `http://localhost:1111/`
 
 ![InfluxData Image ](https://raw.githubusercontent.com/patrickalin/bloomsky-client-go/master/img/InfluxDB.png)
 
-## 2 Modification code / Compilation
+## 2] Modification code / Compilation
 
 ### Pre installation
 
@@ -107,7 +107,7 @@ In order to use the mock (if you do not have a bloomsky station)
 
 
 
-## 3 Thanks
+## 3] Thanks
 
 <https://github.com/tixu> for testing and review
 
@@ -117,7 +117,7 @@ In order to use the mock (if you do not have a bloomsky station)
         
 
 
-## 4 License
+## 4] License
 
 The code is licensed under the permissive Apache v2.0 licence. This means you can do what you like with the software, as long as you include the required notices. [Read this](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)) for a summary.
 
