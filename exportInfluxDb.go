@@ -6,9 +6,8 @@ import (
 	"time"
 
 	clientinfluxdb "github.com/influxdata/influxdb/client/v2"
-	log "github.com/sirupsen/logrus"
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
-
+	log "github.com/sirupsen/logrus"
 )
 
 type client struct {
