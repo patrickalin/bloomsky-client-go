@@ -24,15 +24,16 @@ func initTemplate() *template.Template {
 		}).ParseFiles("tmpl/bloomsky.txt")
 
 		if err != nil {
-			log.Fatal(fmt.Errorf("template console : %v", err))
+			log.Fatalf("Load template console : %v", err)
 		}
 		return t
 	}
+
 	assetBloomsky, err := assembly.Asset("tmpl/bloomsky.txt")
 	t, err := template.New("bloomsky.txt").Funcs(map[string]interface{}{
 		"T": config.translateFunc}).Parse(string(assetBloomsky[:]))
 	if err != nil {
-		log.Fatal(fmt.Errorf("template console : %v", err))
+		log.Fatalf("Load template console : %v", err)
 	}
 	return t
 }
@@ -41,7 +42,6 @@ func initTemplate() *template.Template {
 func initConsole(messages chan bloomsky.BloomskyStructure) (console, error) {
 	c := console{in: messages, testTemplate: initTemplate()}
 	return c, nil
-
 }
 
 func (c *console) listen(context context.Context) {
