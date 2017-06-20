@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -24,26 +25,26 @@ type httpServer struct {
 	h                     *http.Server
 }
 
-func (h *httpServer) write() {
-	for {
-		msg := <-h.bloomskyMessageToHTTP
-		mybloomsky = msg
-		var err error
+func (h *httpServer) listen(context context.Context) {
+	go func() {
+		for {
+			msg := <-h.bloomskyMessageToHTTP
+			mybloomsky = msg
 
-		log.Info("Receive message to export to http")
-
-		msgJSON, err = json.Marshal(msg)
-		if err != nil {
-			log.Infof("Error: %v", err)
-			return
+			msgJSON, err := json.Marshal(msg)
+			if err != nil {
+				log.Infof("%v", fmt.Errorf("Error: %s", err))
+				return
+			}
+			if conn != nil {
+				err = conn.WriteMessage(websocket.TextMessage, msgJSON)
+				if err != nil {
+					log.Infof("Impossible to write to websocket : %v", err)
+				}
+			}
+			log.Infof("Message send to browser")
 		}
-
-		err = conn.WriteMessage(websocket.TextMessage, msgJSON)
-		if err != nil {
-			log.Infof("Impossible to write to websocket : %v", err)
-		}
-		log.Info("Message send to browser")
-	}
+	}()
 }
 
 // websocket handler
@@ -61,7 +62,6 @@ func (h *httpServer) refreshdata(w http.ResponseWriter, r *http.Request) {
 		log.Infof("Impossible to write to websocket : %v", err)
 	}
 
-	go h.write()
 }
 
 func (h *httpServer) home(w http.ResponseWriter, r *http.Request) {
@@ -101,8 +101,6 @@ func (h *httpServer) home(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(fmt.Errorf("write part 1 : %v", err))
 	}
 
-	fmt.Println(config.dev)
-
 	if config.dev {
 		templateBody, err = template.New("bloomsky_body.html").Funcs(map[string]interface{}{
 			"T": config.translateFunc,
@@ -134,9 +132,8 @@ func (h *httpServer) home(w http.ResponseWriter, r *http.Request) {
 }
 
 //createWebServer create web server
-func createWebServer(in chan bloomsky.BloomskyStructure, HTTPPort string) *httpServer {
 
-	log.Infof("Init server http port %s", HTTPPort)
+func createWebServer(in chan bloomsky.BloomskyStructure, HTTPPort string) (*httpServer, error) {
 	server := &httpServer{bloomskyMessageToHTTP: in}
 	flag.Parse()
 
@@ -156,5 +153,5 @@ func createWebServer(in chan bloomsky.BloomskyStructure, HTTPPort string) *httpS
 	}()
 	log.Infof("Server listen on %s", HTTPPort)
 	server.h = h
-	return server
+	return server, nil
 }

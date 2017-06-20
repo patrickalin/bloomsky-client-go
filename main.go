@@ -55,7 +55,7 @@ var (
 
 	myTime time.Duration
 	debug  = flag.String("debug", "", "Error=1, Warning=2, Info=3, Trace=4")
-	h      *httpServer
+	c      *httpServer
 )
 
 // ReadConfig read config from config.json
@@ -131,8 +131,8 @@ func main() {
 	signal.Notify(signalCh)
 	go func() {
 		select {
-		case <-signalCh:
-			fmt.Println("receive interrupt")
+		case i := <-signalCh:
+			fmt.Printf("receive interrupt  %v", i)
 			cancel()
 			return
 		}
@@ -160,26 +160,39 @@ func main() {
 
 	if config.consoleActivated {
 		channels["console"] = make(chan bloomsky.BloomskyStructure)
-		initConsole(channels["console"])
+		c, err := initConsole(channels["console"])
+		if err != nil {
+			log.Fatalf(fmt.Sprintf("%v", err))
+		}
+		c.listen(context.Background())
 	}
 	if config.influxDBActivated {
 		channels["influxdb"] = make(chan bloomsky.BloomskyStructure)
-		initInfluxDB(channels["influxdb"], config.influxDBServer, config.influxDBServerPort, config.influxDBUsername, config.influxDBPassword, config.influxDBDatabase)
+		c, err := initClient(channels["influxdb"], config.influxDBServer, config.influxDBServerPort, config.influxDBUsername, config.influxDBPassword, config.influxDBDatabase)
+		if err != nil {
+			log.Fatalf("%v", err)
+		}
+		c.listen(context.Background())
+
 	}
 	if config.hTTPActivated {
+		var err error
 		channels["web"] = make(chan bloomsky.BloomskyStructure)
-		h = createWebServer(channels["web"], config.hTTPPort)
+		c, err = createWebServer(channels["web"], config.hTTPPort)
+		if err != nil {
+			log.Fatalf(fmt.Sprintf("%v", err))
+		}
+		c.listen(context.Background())
 
 	}
 
-	go func() {
-		schedule(ctxsch)
-	}()
+	schedule(ctxsch)
+
 	<-ctx.Done()
 	cancelsch()
-	if h.h != nil {
+	if c.h != nil {
 		fmt.Println("shutting down ws")
-		h.h.Shutdown(ctx)
+		c.h.Shutdown(ctx)
 	}
 
 	fmt.Println("terminated")
@@ -189,11 +202,11 @@ func main() {
 func schedule(ctx context.Context) {
 	ticker := time.NewTicker(myTime)
 
-	collect()
+	collect(ctx)
 	for {
 		select {
 		case <-ticker.C:
-			collect()
+			collect(ctx)
 		case <-ctx.Done():
 			fmt.Println("stoping ticker")
 			ticker.Stop()
@@ -206,7 +219,7 @@ func schedule(ctx context.Context) {
 }
 
 //Principal function which one loops each Time Variable
-func collect() {
+func collect(ctx context.Context) {
 
 	log.Infof("Repeat actions each Time Variable : %s secondes", config.refreshTimer)
 
@@ -222,11 +235,9 @@ func collect() {
 		mybloomsky = bloomsky.NewBloomsky(config.bloomskyURL, config.bloomskyAccessToken, true)
 	}
 
-	go func() {
-		for _, v := range channels {
-			v <- mybloomsky
-		}
-	}()
+	for _, v := range channels {
+		v <- mybloomsky
+	}
 
 }
 
