@@ -195,10 +195,19 @@ func main() {
 	if config.mock {
 		log.Warn("Mock activated !!!")
 		fileMock := "test-mock/mock.json"
-		body, err = ioutil.ReadFile(fileMock)
-		if err != nil {
-			log.Fatalf("Error in reading the file %s Err:  %v", fileMock, err)
+		if config.dev {
+			body, err = ioutil.ReadFile(fileMock)
+			if err != nil {
+				log.Fatalf("Error in reading the file %s Err:  %v", fileMock, err)
+			}
 		}
+		if !config.dev {
+			body, err = assembly.Asset(fileMock)
+			if err != nil {
+				log.Fatalf("Error in reading the file %s Err:  %v", fileMock, err)
+			}
+		}
+
 	}
 
 	schedule(ctxsch)
