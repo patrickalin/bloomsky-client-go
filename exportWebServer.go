@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"html/template"
 	"net/http"
 
@@ -27,14 +26,16 @@ type httpServer struct {
 func (h *httpServer) listen(context context.Context) {
 	go func() {
 		for {
-			msg := <-h.bloomskyMessageToHTTP
-			mybloomsky = msg
+			mybloomsky := <-h.bloomskyMessageToHTTP
 
-			msgJSON, err := json.Marshal(msg)
+			msgJSON, err := json.Marshal(mybloomsky)
+			log.Debugf("JSON : %s", msgJSON)
+
 			if err != nil {
-				log.Infof("%v", fmt.Errorf("Error: %s", err))
+				log.Infof("Marshal json Error: %v", err)
 				return
 			}
+
 			if conn != nil {
 				err = conn.WriteMessage(websocket.TextMessage, msgJSON)
 				if err != nil {
@@ -46,24 +47,28 @@ func (h *httpServer) listen(context context.Context) {
 	}()
 }
 
-// websocket handler
+// Websocket handler
 func (h *httpServer) refreshdata(w http.ResponseWriter, r *http.Request) {
+	log.Debugf("Refresdata WS handle Send JSON : %s", msgJSON)
+
 	upgrader := websocket.Upgrader{}
 	var err error
+
 	conn, err = upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Infof("upgrade: %v", err)
+		log.Errorf("Upgrade upgrader : %v", err)
 		return
 	}
 
 	err = conn.WriteMessage(websocket.TextMessage, msgJSON)
 	if err != nil {
-		log.Infof("Impossible to write to websocket : %v", err)
+		log.Errorf("Impossible to write to websocket : %v", err)
 	}
 
 }
 
 func (h *httpServer) home(w http.ResponseWriter, r *http.Request) {
+	log.Debugf("Home Http handle Send JSON : %s", msgJSON)
 
 	var err error
 	var templateHeader *template.Template
@@ -75,13 +80,15 @@ func (h *httpServer) home(w http.ResponseWriter, r *http.Request) {
 		}).ParseFiles("tmpl/bloomsky_header.html")
 
 		if err != nil {
-			log.Fatal(fmt.Errorf("template part 1 : %v", err))
+			log.Fatalf("Template part 1 : %v", err)
 		}
-	} else {
+	}
+
+	if !config.dev {
 		assetHeader, err := assembly.Asset("tmpl/bloomsky_header.html")
 
 		if err != nil {
-			log.Fatal(fmt.Errorf("template part 1 : %v", err))
+			log.Fatalf("Template part 1 assembly: %v", err)
 		}
 
 		templateHeader, err = template.New("bloomsky_header.html").Funcs(map[string]interface{}{
@@ -89,15 +96,13 @@ func (h *httpServer) home(w http.ResponseWriter, r *http.Request) {
 		}).Parse(string(assetHeader[:]))
 
 		if err != nil {
-			log.Fatal(fmt.Errorf("template part 1 : %v", err))
+			log.Fatalf("Template part 1 : %v", err)
 		}
 	}
 
-	//fmt.Println(T("program_greeting"))
-
 	err = templateHeader.Execute(w, "ws://"+r.Host+"/refreshdata")
 	if err != nil {
-		log.Fatal(fmt.Errorf("write part 1 : %v", err))
+		log.Fatalf("Write part 1 : %v", err)
 	}
 
 	if config.dev {
@@ -105,33 +110,31 @@ func (h *httpServer) home(w http.ResponseWriter, r *http.Request) {
 			"T": config.translateFunc,
 		}).ParseFiles("tmpl/bloomsky_body.html")
 		if err != nil {
-			log.Fatal(fmt.Errorf("template part 2 : %v", err))
+			log.Fatalf("Template part 2 : %v", err)
 		}
+	}
 
-	} else {
+	if !config.dev {
 		assetBody, err := assembly.Asset("tmpl/bloomsky_body.html")
 		if err != nil {
-			log.Fatal(fmt.Errorf("template part 2 : %v", err))
+			log.Fatalf("Template part 2 assembly: %v", err)
 		}
 
 		templateBody, err = template.New("bloomsky_body.html").Funcs(map[string]interface{}{
 			"T": config.translateFunc,
 		}).Parse(string(assetBody[:]))
 		if err != nil {
-			log.Fatal(fmt.Errorf("template part 2 : %v", err))
+			log.Fatalf("Template part 2 : %v", err)
 		}
 	}
 
-	//fmt.Println(T("program_greeting"))
-
 	err = templateBody.Execute(w, mybloomsky)
 	if err != nil {
-		log.Fatal(fmt.Errorf("write part 2 : %v", err))
+		log.Fatalf("Write part 2 : %v", err)
 	}
 }
 
 //createWebServer create web server
-
 func createWebServer(in chan bloomsky.BloomskyStructure, HTTPPort string) (*httpServer, error) {
 	server := &httpServer{bloomskyMessageToHTTP: in}
 
