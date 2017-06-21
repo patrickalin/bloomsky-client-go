@@ -162,7 +162,7 @@ func main() {
 	log.Debugf("Level trace: %s", level)
 
 	//TODO pourquoi on redefini un deuxième context ?
-	ctxsch, cancelsch := context.WithCancel(myContext)
+	ctxsch := context.Context(myContext)
 
 	if config.consoleActivated {
 		channels["console"] = make(chan bloomsky.BloomskyStructure)
@@ -213,7 +213,7 @@ func main() {
 	schedule(ctxsch)
 
 	<-myContext.Done()
-	cancelsch()
+	//cancelsch()
 	if c.h != nil {
 		log.Debug("Shutting down ws")
 		c.h.Shutdown(myContext)
