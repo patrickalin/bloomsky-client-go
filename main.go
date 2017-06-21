@@ -131,7 +131,7 @@ func main() {
 	myContext, cancel := context.WithCancel(context.Background())
 
 	signalCh := make(chan os.Signal, 1)
-	signal.Notify(signalCh)
+	signal.Notify(signalCh, os.Interrupt)
 	go func() {
 		select {
 		case i := <-signalCh:
