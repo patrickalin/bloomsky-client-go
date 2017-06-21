@@ -11,7 +11,6 @@ import (
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
 	"github.com/patrickalin/bloomsky-client-go/assembly-assetfs"
 	"github.com/patrickalin/bloomsky-client-go/utils"
-	log "github.com/sirupsen/logrus"
 )
 
 var conn *websocket.Conn

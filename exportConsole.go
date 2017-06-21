@@ -9,7 +9,6 @@ import (
 	"github.com/jroimartin/gocui"
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
 	"github.com/patrickalin/bloomsky-client-go/utils"
-	log "github.com/sirupsen/logrus"
 )
 
 type console struct {
