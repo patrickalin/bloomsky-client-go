@@ -17,11 +17,11 @@ type console struct {
 	testTemplate *template.Template
 }
 
-func initTemplate() *template.Template {
-	if config.dev {
-		t, err := template.New("bloomsky.txt").Funcs(map[string]interface{}{
-			"T": config.translateFunc,
-		}).ParseFiles("tmpl/bloomsky.txt")
+//bloomsky "bloomsky.txt" "tmpl/bloomsky.txt" map[string]interface{}{
+//			"T": config.translateFunc
+func getTemplate(templateName string, templateLocation string, funcs map[string]interface{}, dev bool) *template.Template {
+	if dev {
+		t, err := template.New(templateName).Funcs(funcs).ParseFiles(templateLocation)
 
 		if err != nil {
 			log.Fatalf("Load template console : %v", err)
@@ -29,9 +29,8 @@ func initTemplate() *template.Template {
 		return t
 	}
 
-	assetBloomsky, err := assembly.Asset("tmpl/bloomsky.txt")
-	t, err := template.New("bloomsky.txt").Funcs(map[string]interface{}{
-		"T": config.translateFunc}).Parse(string(assetBloomsky[:]))
+	assetBloomsky, err := assembly.Asset(templateLocation)
+	t, err := template.New(templateName).Funcs(funcs).Parse(string(assetBloomsky[:]))
 	if err != nil {
 		log.Fatalf("Load template console : %v", err)
 	}
@@ -40,7 +39,8 @@ func initTemplate() *template.Template {
 
 //InitConsole listen on the chanel
 func initConsole(messages chan bloomsky.BloomskyStructure) (console, error) {
-	c := console{in: messages, testTemplate: initTemplate()}
+	f := map[string]interface{}{"T": config.translateFunc}
+	c := console{in: messages, testTemplate: getTemplate("bloomsky.txt", "tmpl/bloomsky.txt", f, config.dev)}
 	return c, nil
 }
 
