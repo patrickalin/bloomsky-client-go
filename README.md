@@ -120,6 +120,3 @@ In order to use the mock (if you do not have a bloomsky station)
 ## 4] License
 
 The code is licensed under the permissive Apache v2.0 licence. This means you can do what you like with the software, as long as you include the required notices. [Read this](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)) for a summary.
-
-
-## test
