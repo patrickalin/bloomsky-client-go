@@ -27,8 +27,8 @@ func (h *httpServer) listen(context context.Context) {
 	go func() {
 		for {
 			mybloomsky := <-h.bloomskyMessageToHTTP
-
-			msgJSON, err := json.Marshal(mybloomsky)
+			var err error
+			msgJSON, err = json.Marshal(mybloomsky)
 			log.Debugf("JSON : %s", msgJSON)
 
 			if err != nil {
