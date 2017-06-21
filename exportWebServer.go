@@ -9,8 +9,8 @@ import (
 	"github.com/elazarl/go-bindata-assetfs"
 	"github.com/gorilla/websocket"
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
-	"github.com/patrickalin/bloomsky-client-go/assembly"
 	"github.com/patrickalin/bloomsky-client-go/assembly-assetfs"
+	"github.com/patrickalin/bloomsky-client-go/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -74,59 +74,13 @@ func (h *httpServer) home(w http.ResponseWriter, r *http.Request) {
 	var templateHeader *template.Template
 	var templateBody *template.Template
 
-	if config.dev {
-		templateHeader, err = template.New("bloomsky_header.html").Funcs(map[string]interface{}{
-			"T": config.translateFunc,
-		}).ParseFiles("tmpl/bloomsky_header.html")
-
-		if err != nil {
-			log.Fatalf("Template part 1 : %v", err)
-		}
-	}
-
-	if !config.dev {
-		assetHeader, err := assembly.Asset("tmpl/bloomsky_header.html")
-
-		if err != nil {
-			log.Fatalf("Template part 1 assembly: %v", err)
-		}
-
-		templateHeader, err = template.New("bloomsky_header.html").Funcs(map[string]interface{}{
-			"T": config.translateFunc,
-		}).Parse(string(assetHeader[:]))
-
-		if err != nil {
-			log.Fatalf("Template part 1 : %v", err)
-		}
-	}
+	templateHeader = utils.GetHtmlTemplate("bloomsky_header.html", "tmpl/bloomsky_header.html", map[string]interface{}{"T": config.translateFunc}, config.dev)
 
 	err = templateHeader.Execute(w, "ws://"+r.Host+"/refreshdata")
 	if err != nil {
 		log.Fatalf("Write part 1 : %v", err)
 	}
-
-	if config.dev {
-		templateBody, err = template.New("bloomsky_body.html").Funcs(map[string]interface{}{
-			"T": config.translateFunc,
-		}).ParseFiles("tmpl/bloomsky_body.html")
-		if err != nil {
-			log.Fatalf("Template part 2 : %v", err)
-		}
-	}
-
-	if !config.dev {
-		assetBody, err := assembly.Asset("tmpl/bloomsky_body.html")
-		if err != nil {
-			log.Fatalf("Template part 2 assembly: %v", err)
-		}
-
-		templateBody, err = template.New("bloomsky_body.html").Funcs(map[string]interface{}{
-			"T": config.translateFunc,
-		}).Parse(string(assetBody[:]))
-		if err != nil {
-			log.Fatalf("Template part 2 : %v", err)
-		}
-	}
+	templateBody = utils.GetHtmlTemplate("bloomsky_body.html", "tmpl/bloomsky_body.html", map[string]interface{}{"T": config.translateFunc}, config.dev)
 
 	err = templateBody.Execute(w, mybloomsky)
 	if err != nil {
