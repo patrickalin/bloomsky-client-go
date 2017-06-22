@@ -70,12 +70,12 @@ func (httpServ *httpServer) refreshdata(w http.ResponseWriter, r *http.Request) 
 func (httpServ *httpServer) home(w http.ResponseWriter, r *http.Request) {
 	log.Debugf("Home Http handle home")
 
-	templateHeader := utils.GetHtmlTemplate("bloomsky_header.html", "tmpl/bloomsky_header.html", map[string]interface{}{"T": config.translateFunc}, config.dev)
+	templateHeader := utils.GetHTMLTemplate("bloomsky_header.html", "tmpl/bloomsky_header.html", map[string]interface{}{"T": config.translateFunc}, config.dev)
 	if err := templateHeader.Execute(w, "ws://"+r.Host+"/refreshdata"); err != nil {
 		log.Fatalf("Write part 1 : %v", err)
 	}
 
-	templateBody := utils.GetHtmlTemplate("bloomsky_body.html", "tmpl/bloomsky_body.html", map[string]interface{}{"T": config.translateFunc}, config.dev)
+	templateBody := utils.GetHTMLTemplate("bloomsky_body.html", "tmpl/bloomsky_body.html", map[string]interface{}{"T": config.translateFunc}, config.dev)
 	if err := templateBody.Execute(w, mybloomsky); err != nil {
 		log.Fatalf("Write part 2 : %v", err)
 	}
