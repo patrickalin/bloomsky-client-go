@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"html/template"
 	"net/http"
 
@@ -12,6 +11,7 @@ import (
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
 	"github.com/patrickalin/bloomsky-client-go/assembly-assetfs"
 	"github.com/patrickalin/bloomsky-client-go/utils"
+	"github.com/sirupsen/logrus"
 )
 
 var conn *websocket.Conn
@@ -106,7 +106,7 @@ func createWebServer(in chan bloomsky.BloomskyStructure, HTTPPort string) (*http
 			log.Errorf("Error when I create the server : %v", err)
 		}
 	}()
-	fmt.Printf("Server listen on port %s\n", HTTPPort)
+	logrus.Infof("Server listen on port %s", HTTPPort)
 	server.h = h
 	return server, nil
 }
