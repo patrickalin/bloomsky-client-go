@@ -279,7 +279,7 @@ func readTranslationResource(name string) []byte {
 
 //If mock activated load the file mock and place it in the responseBloomsky
 func readMockFile() []byte {
-	fmt.Print("Mock activated !!!")
+	fmt.Print("Mock activated !!!\n")
 
 	if config.dev {
 		mockFile, err := ioutil.ReadFile(fileMock)
