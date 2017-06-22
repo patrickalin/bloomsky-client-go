@@ -109,6 +109,6 @@ func createWebServer(in chan bloomsky.BloomskyStructure, HTTPPort string) (*http
 		}
 	}()
 	logrus.Infof("Server listen on port %s", HTTPPort)
-	server.h = h
+	server.httpServ = h
 	return server, nil
 }

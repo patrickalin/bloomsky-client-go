@@ -148,9 +148,9 @@ func main() {
 	schedule(ctxsch)
 
 	<-myContext.Done()
-	if httpServ.h != nil {
+	if httpServ.httpServ != nil {
 		log.Debug("Shutting down ws")
-		httpServ.h.Shutdown(myContext)
+		httpServ.httpServ.Shutdown(myContext)
 	}
 
 	log.Debug("Terminated")
