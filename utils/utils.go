@@ -9,9 +9,7 @@ import (
 	"github.com/patrickalin/bloomsky-client-go/assembly"
 )
 
-/*
-GetTemplate retrieve a template
-*/
+//GetTemplate retrieve a template
 func GetTemplate(templateName string, templateLocation string, funcs map[string]interface{}, dev bool) *text.Template {
 	if dev {
 		t, err := text.New(templateName).Funcs(funcs).ParseFiles(templateLocation)
@@ -30,8 +28,8 @@ func GetTemplate(templateName string, templateLocation string, funcs map[string]
 	return t
 }
 
-// "bloomsky_header.html","tmpl/bloomsky_header.html",map[string]interface{}{"T": config.translateFunc,}
-func GetHtmlTemplate(templateName string, templateLocation string, funcs map[string]interface{}, dev bool) *template.Template {
+// GetHTMLTemplate retrieve "bloomsky_header.html","tmpl/bloomsky_header.html",map[string]interface{}{"T": config.translateFunc,}
+func GetHTMLTemplate(templateName string, templateLocation string, funcs map[string]interface{}, dev bool) *template.Template {
 	if dev {
 		t, err := template.New(templateName).Funcs(funcs).ParseFiles(templateLocation)
 
