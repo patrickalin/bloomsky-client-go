@@ -142,7 +142,7 @@ func main() {
 	}
 
 	if config.mock {
-		responseBloomsky = readMockFile()
+		responseBloomsky = readMockFile(fileMock)
 	}
 
 	schedule(ctxsch)
@@ -278,7 +278,7 @@ func readTranslationResource(name string) []byte {
 }
 
 //If mock activated load the file mock and place it in the responseBloomsky
-func readMockFile() []byte {
+func readMockFile(name string) []byte {
 	logrus.Warn("Mock activated !!!")
 
 	if config.dev {
