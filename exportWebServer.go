@@ -14,20 +14,22 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var conn *websocket.Conn
-var mybloomsky bloomsky.BloomskyStructure
-var msgJSON []byte
+var (
+	conn       *websocket.Conn
+	mybloomsky bloomsky.BloomskyStructure
+	msgJSON    []byte
+)
 
 type httpServer struct {
 	bloomskyMessageToHTTP chan bloomsky.BloomskyStructure
-	h                     *http.Server
+	httpServ              *http.Server
 }
 
-func (h *httpServer) listen(context context.Context) {
+func (httpServ *httpServer) listen(context context.Context) {
 	go func() {
 		for {
-			mybloomsky := <-h.bloomskyMessageToHTTP
 			var err error
+			mybloomsky := <-httpServ.bloomskyMessageToHTTP
 			msgJSON, err = json.Marshal(mybloomsky)
 			log.Debugf("JSON : %s", msgJSON)
 
@@ -47,8 +49,8 @@ func (h *httpServer) listen(context context.Context) {
 	}()
 }
 
-// Websocket handler
-func (h *httpServer) refreshdata(w http.ResponseWriter, r *http.Request) {
+// Websocket handler to send data
+func (httpServ *httpServer) refreshdata(w http.ResponseWriter, r *http.Request) {
 	log.Debugf("Refresdata WS handle Send JSON : %s", msgJSON)
 
 	upgrader := websocket.Upgrader{}
@@ -60,14 +62,14 @@ func (h *httpServer) refreshdata(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = conn.WriteMessage(websocket.TextMessage, msgJSON)
-	if err != nil {
+	if err = conn.WriteMessage(websocket.TextMessage, msgJSON); err != nil {
 		log.Errorf("Impossible to write to websocket : %v", err)
 	}
 
 }
 
-func (h *httpServer) home(w http.ResponseWriter, r *http.Request) {
+//Handler for the page without data
+func (httpServ *httpServer) home(w http.ResponseWriter, r *http.Request) {
 	log.Debugf("Home Http handle Send JSON : %s", msgJSON)
 
 	var err error
