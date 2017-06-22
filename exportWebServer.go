@@ -68,7 +68,7 @@ func (httpServ *httpServer) refreshdata(w http.ResponseWriter, r *http.Request) 
 
 //Handler for the page without data
 func (httpServ *httpServer) home(w http.ResponseWriter, r *http.Request) {
-	log.Debugf("Home Http handle Send JSON : %s", msgJSON)
+	log.Debugf("Home Http handle home")
 
 	templateHeader := utils.GetHtmlTemplate("bloomsky_header.html", "tmpl/bloomsky_header.html", map[string]interface{}{"T": config.translateFunc}, config.dev)
 	if err := templateHeader.Execute(w, "ws://"+r.Host+"/refreshdata"); err != nil {
@@ -79,20 +79,25 @@ func (httpServ *httpServer) home(w http.ResponseWriter, r *http.Request) {
 	if err := templateBody.Execute(w, mybloomsky); err != nil {
 		log.Fatalf("Write part 2 : %v", err)
 	}
-	logrus.Info("here")
 }
 
 //createWebServer create web server
 func createWebServer(in chan bloomsky.BloomskyStructure, HTTPPort string) (*httpServer, error) {
 	server := &httpServer{bloomskyMessageToHTTP: in}
 
-	fs := http.FileServer(&assetfs.AssetFS{Asset: assemblyAssetfs.Asset, AssetDir: assemblyAssetfs.AssetDir, AssetInfo: assemblyAssetfs.AssetInfo, Prefix: "static"})
+	var fs http.Handler
+	if config.dev {
+		fs = http.FileServer(http.Dir("static"))
+	} else {
+		fs = http.FileServer(&assetfs.AssetFS{Asset: assemblyAssetfs.Asset, AssetDir: assemblyAssetfs.AssetDir, AssetInfo: assemblyAssetfs.AssetInfo, Prefix: "static"})
+	}
 
 	s := http.NewServeMux()
 
 	s.Handle("/static/", http.StripPrefix("/static/", fs))
 	s.HandleFunc("/refreshdata", server.refreshdata)
 	s.HandleFunc("/", server.home)
+	s.Handle("/favicon.ico", fs)
 
 	h := &http.Server{Addr: HTTPPort, Handler: s}
 	go func() {
