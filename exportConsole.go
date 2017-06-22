@@ -8,8 +8,7 @@ import (
 
 	"github.com/jroimartin/gocui"
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
-	"github.com/patrickalin/bloomsky-client-go/assembly"
-	log "github.com/sirupsen/logrus"
+	"github.com/patrickalin/bloomsky-client-go/utils"
 )
 
 type console struct {
@@ -17,30 +16,10 @@ type console struct {
 	testTemplate *template.Template
 }
 
-func initTemplate() *template.Template {
-	if config.dev {
-		t, err := template.New("bloomsky.txt").Funcs(map[string]interface{}{
-			"T": config.translateFunc,
-		}).ParseFiles("tmpl/bloomsky.txt")
-
-		if err != nil {
-			log.Fatalf("Load template console : %v", err)
-		}
-		return t
-	}
-
-	assetBloomsky, err := assembly.Asset("tmpl/bloomsky.txt")
-	t, err := template.New("bloomsky.txt").Funcs(map[string]interface{}{
-		"T": config.translateFunc}).Parse(string(assetBloomsky[:]))
-	if err != nil {
-		log.Fatalf("Load template console : %v", err)
-	}
-	return t
-}
-
 //InitConsole listen on the chanel
 func initConsole(messages chan bloomsky.BloomskyStructure) (console, error) {
-	c := console{in: messages, testTemplate: initTemplate()}
+	f := map[string]interface{}{"T": config.translateFunc}
+	c := console{in: messages, testTemplate: utils.GetTemplate("bloomsky.txt", "tmpl/bloomsky.txt", f, config.dev)}
 	return c, nil
 }
 

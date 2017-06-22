@@ -15,7 +15,7 @@ import (
 	"github.com/nicksnyder/go-i18n/i18n"
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
 	"github.com/patrickalin/bloomsky-client-go/assembly"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
@@ -24,6 +24,7 @@ const configName = "config"
 
 //Version of the code
 var Version = "No Version Provided"
+var log = logrus.New()
 
 var body []byte
 
@@ -154,11 +155,11 @@ func main() {
 		config.logLevel = *debug
 	}
 
-	level, err := log.ParseLevel(config.logLevel)
+	level, err := logrus.ParseLevel(config.logLevel)
 	if err != nil {
 		log.Fatalf("Error parse level %v", err)
 	}
-	log.SetLevel(level)
+	log.Level = level
 	log.Debugf("Level trace: %s", level)
 
 	//TODO pourquoi on redefini un deuxième context ?
@@ -279,4 +280,17 @@ func readTranslationResource(name string) []byte {
 		log.Fatalf("Error read language file from assembly : %v", err)
 	}
 	return b
+}
+func init() {
+
+	log.Formatter = new(logrus.JSONFormatter)
+	log.Formatter = new(logrus.TextFormatter) // default
+
+	file, err := os.OpenFile("bloomsky.log", os.O_CREATE|os.O_WRONLY, 0666)
+	if err == nil {
+		log.Out = file
+	} else {
+		log.Info("Failed to log to file, using default stderr")
+	}
+
 }
