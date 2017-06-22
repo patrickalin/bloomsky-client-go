@@ -72,20 +72,17 @@ func (httpServ *httpServer) refreshdata(w http.ResponseWriter, r *http.Request) 
 func (httpServ *httpServer) home(w http.ResponseWriter, r *http.Request) {
 	log.Debugf("Home Http handle Send JSON : %s", msgJSON)
 
-	var err error
 	var templateHeader *template.Template
 	var templateBody *template.Template
 
 	templateHeader = utils.GetHtmlTemplate("bloomsky_header.html", "tmpl/bloomsky_header.html", map[string]interface{}{"T": config.translateFunc}, config.dev)
 
-	err = templateHeader.Execute(w, "ws://"+r.Host+"/refreshdata")
-	if err != nil {
+	if err := templateHeader.Execute(w, "ws://"+r.Host+"/refreshdata"); err != nil {
 		log.Fatalf("Write part 1 : %v", err)
 	}
 	templateBody = utils.GetHtmlTemplate("bloomsky_body.html", "tmpl/bloomsky_body.html", map[string]interface{}{"T": config.translateFunc}, config.dev)
 
-	err = templateBody.Execute(w, mybloomsky)
-	if err != nil {
+	if err := templateBody.Execute(w, mybloomsky); err != nil {
 		log.Fatalf("Write part 2 : %v", err)
 	}
 }
