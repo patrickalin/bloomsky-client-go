@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"net/http"
 
@@ -105,7 +106,7 @@ func createWebServer(in chan bloomsky.BloomskyStructure, HTTPPort string) (*http
 			log.Errorf("Error when I create the server : %v", err)
 		}
 	}()
-	log.Infof("Server listen on port %s", HTTPPort)
+	fmt.Printf("Server listen on port %s\n", HTTPPort)
 	server.h = h
 	return server, nil
 }
