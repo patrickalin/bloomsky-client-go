@@ -1,8 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
-    "http://www.w3.org/TR/html4/strict.dtd">
-<html lang="en">
-
-<head>
+{{define "header"}}
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -57,7 +53,7 @@
                 d.innerHTML = message;
                 output.appendChild(d);
             };
-            socket = new WebSocket("{{.}}");
+            socket = new WebSocket("{{.Websockerurl}}");
             //ON OPEN
             socket.onopen = function(evt) {
                     // print("OPEN");
@@ -237,5 +233,4 @@
             }
         });
     </script>
-
-</head>
+{{ end }}

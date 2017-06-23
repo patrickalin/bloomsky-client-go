@@ -24,6 +24,10 @@ type httpServer struct {
 	httpServ              *http.Server
 }
 
+type page struct {
+	Websockerurl string
+}
+
 func (httpServ *httpServer) listen(context context.Context) {
 	go func() {
 		for {
@@ -66,19 +70,16 @@ func (httpServ *httpServer) refreshdata(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
-//Handler for the page without data
-func (httpServ *httpServer) home(w http.ResponseWriter, r *http.Request) {
-	log.Debugf("Home Http handle home")
+func (h *httpServer) home(w http.ResponseWriter, r *http.Request) {
+	log.Debugf("Home Http handle Send JSON : %s", msgJSON)
 
-	templateHeader := utils.GetHtmlTemplate("bloomsky_header.html", []string{"tmpl/bloomsky_header.html"}, map[string]interface{}{"T": config.translateFunc}, config.dev)
-	if err := templateHeader.Execute(w, "ws://"+r.Host+"/refreshdata"); err != nil {
+	t := utils.GetHtmlTemplate("bloomsky", []string{"tmpl/bloomsky.html", "tmpl/bloomsky_header.html", "tmpl/bloomsky_body.html"}, map[string]interface{}{"T": config.translateFunc}, config.dev)
+
+	p := page{Websockerurl: "ws://" + r.Host + "/refreshdata"}
+	if err := t.Execute(w, p); err != nil {
 		log.Fatalf("Write part 1 : %v", err)
 	}
 
-	templateBody := utils.GetHtmlTemplate("bloomsky_body.html", []string{"tmpl/bloomsky_body.html"}, map[string]interface{}{"T": config.translateFunc}, config.dev)
-	if err := templateBody.Execute(w, mybloomsky); err != nil {
-		log.Fatalf("Write part 2 : %v", err)
-	}
 }
 
 //createWebServer create web server
