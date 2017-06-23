@@ -20,8 +20,9 @@ import (
 )
 
 //configName name of the config file
-const configName = "config"
-const fileMock = "test-mock/mock.json"
+const configNameFile = "config"
+const mockFile = "test-mock/mock.json"
+const logFile = "bloomsky.log"
 
 // Configuration is the structure of the config YAML file
 //use http://mervine.net/json2struct
@@ -63,12 +64,12 @@ func init() {
 	log.Formatter = new(logrus.JSONFormatter)
 	log.Formatter = new(logrus.TextFormatter)
 
-	file, err := os.OpenFile("bloomsky.log", os.O_CREATE|os.O_WRONLY, 0666)
-	if err == nil {
-		log.Out = file
-	} else {
+	file, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
 		log.Info("Failed to log to file, using default stderr")
+		return
 	}
+	log.Out = file
 }
 
 //go:generate ./command/bindata.sh
@@ -92,7 +93,7 @@ func main() {
 	log.Infof("%s : Bloomsky API %s in Go", time.Now().Format(time.RFC850), Version)
 
 	log.Debug("Get config from the file config.json")
-	if err := readConfig(configName); err != nil {
+	if err := readConfig(configNameFile); err != nil {
 		log.Fatalf("Problem with reading config file, %v", err)
 	}
 
@@ -142,15 +143,15 @@ func main() {
 	}
 
 	if config.mock {
-		responseBloomsky = readMockFile()
+		responseBloomsky = readMockFile(mockFile)
 	}
 
 	schedule(ctxsch)
 
 	<-myContext.Done()
-	if httpServ.h != nil {
+	if httpServ.httpServ != nil {
 		log.Debug("Shutting down ws")
-		httpServ.h.Shutdown(myContext)
+		httpServ.httpServ.Shutdown(myContext)
 	}
 
 	log.Debug("Terminated")
@@ -187,7 +188,7 @@ func collect() {
 		mybloomsky = bloomsky.NewBloomskyFromBody(responseBloomsky)
 	} else {
 		log.Debug("Mock desactivated")
-		mybloomsky = bloomsky.NewBloomsky(config.bloomskyURL, config.bloomskyAccessToken, true)
+		mybloomsky = bloomsky.NewBloomsky(config.bloomskyURL, config.bloomskyAccessToken, config.dev)
 	}
 
 	//send message on each channels
@@ -278,20 +279,20 @@ func readTranslationResource(name string) []byte {
 }
 
 //If mock activated load the file mock and place it in the responseBloomsky
-func readMockFile() []byte {
-	fmt.Print("Mock activated !!!")
+func readMockFile(fMock string) []byte {
+	logrus.Warn("Mock activated !!!")
 
 	if config.dev {
-		mockFile, err := ioutil.ReadFile(fileMock)
+		mockFile, err := ioutil.ReadFile(fMock)
 		if err != nil {
-			log.Fatalf("Error in reading the file %s Err:  %v", fileMock, err)
+			log.Fatalf("Error in reading the file %s Err:  %v", fMock, err)
 		}
 		return mockFile
 	}
 
-	mockFile, err := assembly.Asset(fileMock)
+	mockFile, err := assembly.Asset(fMock)
 	if err != nil {
-		log.Fatalf("Error in reading the file %s Err:  %v", fileMock, err)
+		log.Fatalf("Error in reading the file %s Err:  %v", fMock, err)
 	}
 	return mockFile
 }
