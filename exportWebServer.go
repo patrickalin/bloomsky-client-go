@@ -3,8 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
-	"html/template"
 	"net/http"
 
 	"github.com/elazarl/go-bindata-assetfs"
@@ -12,22 +10,25 @@ import (
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
 	"github.com/patrickalin/bloomsky-client-go/assembly-assetfs"
 	"github.com/patrickalin/bloomsky-client-go/utils"
+	"github.com/sirupsen/logrus"
 )
 
-var conn *websocket.Conn
-var mybloomsky bloomsky.BloomskyStructure
-var msgJSON []byte
+var (
+	conn       *websocket.Conn
+	mybloomsky bloomsky.BloomskyStructure
+	msgJSON    []byte
+)
 
 type httpServer struct {
 	bloomskyMessageToHTTP chan bloomsky.BloomskyStructure
-	h                     *http.Server
+	httpServ              *http.Server
 }
 
-func (h *httpServer) listen(context context.Context) {
+func (httpServ *httpServer) listen(context context.Context) {
 	go func() {
 		for {
-			mybloomsky := <-h.bloomskyMessageToHTTP
 			var err error
+			mybloomsky := <-httpServ.bloomskyMessageToHTTP
 			msgJSON, err = json.Marshal(mybloomsky)
 			log.Debugf("JSON : %s", msgJSON)
 
@@ -47,8 +48,8 @@ func (h *httpServer) listen(context context.Context) {
 	}()
 }
 
-// Websocket handler
-func (h *httpServer) refreshdata(w http.ResponseWriter, r *http.Request) {
+// Websocket handler to send data
+func (httpServ *httpServer) refreshdata(w http.ResponseWriter, r *http.Request) {
 	log.Debugf("Refresdata WS handle Send JSON : %s", msgJSON)
 
 	upgrader := websocket.Upgrader{}
@@ -60,30 +61,22 @@ func (h *httpServer) refreshdata(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = conn.WriteMessage(websocket.TextMessage, msgJSON)
-	if err != nil {
+	if err = conn.WriteMessage(websocket.TextMessage, msgJSON); err != nil {
 		log.Errorf("Impossible to write to websocket : %v", err)
 	}
-
 }
 
-func (h *httpServer) home(w http.ResponseWriter, r *http.Request) {
-	log.Debugf("Home Http handle Send JSON : %s", msgJSON)
+//Handler for the page without data
+func (httpServ *httpServer) home(w http.ResponseWriter, r *http.Request) {
+	log.Debugf("Home Http handle home")
 
-	var err error
-	var templateHeader *template.Template
-	var templateBody *template.Template
-
-	templateHeader = utils.GetHtmlTemplate("bloomsky_header.html", "tmpl/bloomsky_header.html", map[string]interface{}{"T": config.translateFunc}, config.dev)
-
-	err = templateHeader.Execute(w, "ws://"+r.Host+"/refreshdata")
-	if err != nil {
+	templateHeader := utils.GetHtmlTemplate("bloomsky_header.html", []string{"tmpl/bloomsky_header.html"}, map[string]interface{}{"T": config.translateFunc}, config.dev)
+	if err := templateHeader.Execute(w, "ws://"+r.Host+"/refreshdata"); err != nil {
 		log.Fatalf("Write part 1 : %v", err)
 	}
-	templateBody = utils.GetHtmlTemplate("bloomsky_body.html", "tmpl/bloomsky_body.html", map[string]interface{}{"T": config.translateFunc}, config.dev)
 
-	err = templateBody.Execute(w, mybloomsky)
-	if err != nil {
+	templateBody := utils.GetHtmlTemplate("bloomsky_body.html", []string{"tmpl/bloomsky_body.html"}, map[string]interface{}{"T": config.translateFunc}, config.dev)
+	if err := templateBody.Execute(w, mybloomsky); err != nil {
 		log.Fatalf("Write part 2 : %v", err)
 	}
 }
@@ -92,13 +85,19 @@ func (h *httpServer) home(w http.ResponseWriter, r *http.Request) {
 func createWebServer(in chan bloomsky.BloomskyStructure, HTTPPort string) (*httpServer, error) {
 	server := &httpServer{bloomskyMessageToHTTP: in}
 
-	fs := http.FileServer(&assetfs.AssetFS{Asset: assemblyAssetfs.Asset, AssetDir: assemblyAssetfs.AssetDir, AssetInfo: assemblyAssetfs.AssetInfo, Prefix: "static"})
+	var fs http.Handler
+	if config.dev {
+		fs = http.FileServer(http.Dir("static"))
+	} else {
+		fs = http.FileServer(&assetfs.AssetFS{Asset: assemblyAssetfs.Asset, AssetDir: assemblyAssetfs.AssetDir, AssetInfo: assemblyAssetfs.AssetInfo, Prefix: "static"})
+	}
 
 	s := http.NewServeMux()
 
 	s.Handle("/static/", http.StripPrefix("/static/", fs))
 	s.HandleFunc("/refreshdata", server.refreshdata)
 	s.HandleFunc("/", server.home)
+	s.Handle("/favicon.ico", fs)
 
 	h := &http.Server{Addr: HTTPPort, Handler: s}
 	go func() {
@@ -106,7 +105,7 @@ func createWebServer(in chan bloomsky.BloomskyStructure, HTTPPort string) (*http
 			log.Errorf("Error when I create the server : %v", err)
 		}
 	}()
-	fmt.Printf("Server listen on port %s\n", HTTPPort)
-	server.h = h
+	logrus.Infof("Server listen on port %s", HTTPPort)
+	server.httpServ = h
 	return server, nil
 }
