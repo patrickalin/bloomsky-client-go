@@ -31,17 +31,20 @@ func GetTemplate(templateName string, templateLocation string, funcs map[string]
 }
 
 // "bloomsky_header.html","tmpl/bloomsky_header.html",map[string]interface{}{"T": config.translateFunc,}
-func GetHtmlTemplate(templateName string, templateLocation string, funcs map[string]interface{}, dev bool) *template.Template {
+func GetHtmlTemplate(templateName string, templatesLocation []string, funcs map[string]interface{}, dev bool) *template.Template {
 	if dev {
-		t, err := template.New(templateName).Funcs(funcs).ParseFiles(templateLocation)
+		t := template.New(templateName)
+		t.Funcs(funcs)
+		t, err := t.ParseFiles(templatesLocation...)
 
 		if err != nil {
 			log.Fatalf("Template part 1 : %v", err)
 		}
+
 		return t
 	}
 
-	asset, err := assembly.Asset(templateLocation)
+	asset, err := assembly.Asset(templatesLocation[0])
 
 	if err != nil {
 		log.Fatalf("Template part 1 assembly: %v", err)

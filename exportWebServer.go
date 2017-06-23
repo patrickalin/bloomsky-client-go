@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"net/http"
 
 	"github.com/elazarl/go-bindata-assetfs"
@@ -21,6 +20,10 @@ var msgJSON []byte
 type httpServer struct {
 	bloomskyMessageToHTTP chan bloomsky.BloomskyStructure
 	h                     *http.Server
+}
+
+type page struct {
+	Websockerurl string
 }
 
 func (h *httpServer) listen(context context.Context) {
@@ -70,22 +73,13 @@ func (h *httpServer) refreshdata(w http.ResponseWriter, r *http.Request) {
 func (h *httpServer) home(w http.ResponseWriter, r *http.Request) {
 	log.Debugf("Home Http handle Send JSON : %s", msgJSON)
 
-	var err error
-	var templateHeader *template.Template
-	var templateBody *template.Template
+	t := utils.GetHtmlTemplate("bloomsky", []string{"tmpl/bloomsky.html", "tmpl/bloomsky_header.html", "tmpl/bloomsky_body.html"}, map[string]interface{}{"T": config.translateFunc}, config.dev)
 
-	templateHeader = utils.GetHtmlTemplate("bloomsky_header.html", "tmpl/bloomsky_header.html", map[string]interface{}{"T": config.translateFunc}, config.dev)
-
-	err = templateHeader.Execute(w, "ws://"+r.Host+"/refreshdata")
-	if err != nil {
+	p := page{Websockerurl: "ws://" + r.Host + "/refreshdata"}
+	if err := t.Execute(w, p); err != nil {
 		log.Fatalf("Write part 1 : %v", err)
 	}
-	templateBody = utils.GetHtmlTemplate("bloomsky_body.html", "tmpl/bloomsky_body.html", map[string]interface{}{"T": config.translateFunc}, config.dev)
 
-	err = templateBody.Execute(w, mybloomsky)
-	if err != nil {
-		log.Fatalf("Write part 2 : %v", err)
-	}
 }
 
 //createWebServer create web server
