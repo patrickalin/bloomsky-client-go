@@ -188,7 +188,7 @@ func collect() {
 		mybloomsky = bloomsky.NewBloomskyFromBody(responseBloomsky)
 	} else {
 		log.Debug("Mock desactivated")
-		mybloomsky = bloomsky.NewBloomsky(config.bloomskyURL, config.bloomskyAccessToken, config.dev)
+		mybloomsky = bloomsky.NewBloomsky(config.bloomskyURL, config.bloomskyAccessToken)
 	}
 
 	//send message on each channels
