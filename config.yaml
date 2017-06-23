@@ -26,5 +26,5 @@
 # to use the code in offline mode put mock: true
   mock: true
 # use template, static file in folder not in bundled
-  dev: false
+  dev: true
 #########
