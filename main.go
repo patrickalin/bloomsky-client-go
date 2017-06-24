@@ -1,6 +1,10 @@
 // Bloomsky application to export Data bloomsky to console or to influxdb.
 package main
 
+//go:generate echo Go Generate!
+//go:generate ./command/bindata.sh
+//go:generate ./command/bindata-assetfs.sh
+
 import (
 	"context"
 	"flag"
@@ -71,9 +75,6 @@ func init() {
 	}
 	log.Out = file
 }
-
-//go:generate ./command/bindata.sh
-//go:generate ./command/bindata-assetfs.sh
 
 func main() {
 	log.Debug("Create context")

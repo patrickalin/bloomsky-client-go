@@ -5,7 +5,7 @@
 # Normally don't change
   bloomskyURL: "https://api.bloomsky.com/api/skydata/"
 # the key, it's free : https://dashboard.bloomsky.com/
-  bloomskyAccessToken: "yourToken"
+  bloomskyAccessToken: "***REMOVED***"
 ######## Refresh time, be not to small because you are blocked by openweather and bloomsky (in second)
   refreshTimer: "60"
 ######## If true display informations on console

@@ -75,11 +75,10 @@ func (h *httpServer) home(w http.ResponseWriter, r *http.Request) {
 
 	t := utils.GetHtmlTemplate("bloomsky", []string{"tmpl/bloomsky.html", "tmpl/bloomsky_header.html", "tmpl/bloomsky_body.html"}, map[string]interface{}{"T": config.translateFunc}, config.dev)
 
-	p := page{Websockerurl: "ws://" + r.Host + "/refreshdata"}
+	p := page{Websockerurl: "wss://" + r.Host + "/refreshdata"}
 	if err := t.Execute(w, p); err != nil {
 		log.Fatalf("Write part 1 : %v", err)
 	}
-
 }
 
 //createWebServer create web server
@@ -101,6 +100,15 @@ func createWebServer(in chan bloomsky.BloomskyStructure, HTTPPort string) (*http
 	s.Handle("/favicon.ico", fs)
 
 	h := &http.Server{Addr: HTTPPort, Handler: s}
+
+	/*i := &http.Server{Addr: ":2222", Handler: s}
+
+	go func() {
+		if err := i.ListenAndServeTLS("server.crt", "server.key"); err != nil {
+			logrus.Errorf("Error when I create the server HTTPS : %v", err)
+		}
+	}()*/
+
 	go func() {
 		if err := h.ListenAndServe(); err != nil {
 			log.Errorf("Error when I create the server : %v", err)
