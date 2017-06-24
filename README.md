@@ -104,6 +104,9 @@ In the config file, you can change the dev mode to use template, lang locally.
 
 * dev: true
 
+When the dev = false you use assembly files.
+Execute "go generate" to refresh assembly files.
+
 ### Debug
 
 In the config file, you can change the log level (panic,fatal,error,warn,info,debug)
