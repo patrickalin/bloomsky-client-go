@@ -15,12 +15,12 @@ import (
 
 var (
 	conn       *websocket.Conn
-	mybloomsky bloomsky.BloomskyStructure
+	mybloomsky bloomsky.Bloomsky
 	msgJSON    []byte
 )
 
 type httpServer struct {
-	bloomskyMessageToHTTP chan bloomsky.BloomskyStructure
+	bloomskyMessageToHTTP chan bloomsky.Bloomsky
 	httpServ              *http.Server
 }
 
@@ -32,58 +32,82 @@ func (httpServ *httpServer) listen(context context.Context) {
 	go func() {
 		for {
 			var err error
-			mybloomsky := <-httpServ.bloomskyMessageToHTTP
-			msgJSON, err = json.Marshal(mybloomsky)
-			log.Debugf("JSON : %s", msgJSON)
 
+			mybloomsky := <-httpServ.bloomskyMessageToHTTP
+			msgJSON, err = json.Marshal(mybloomsky.GetBloomskyStruct())
 			if err != nil {
-				log.Infof("Marshal json Error: %v", err)
-				return
+				log.WithFields(logrus.Fields{
+					"error": err,
+					"fct":   "exportWebServer.listen",
+				}).Fatal("Marshal json Error")
+			}
+
+			if msgJSON == nil {
+				logrus.WithFields(logrus.Fields{
+					"fct": "exportWebServer.listen",
+				}).Fatal("JSON Empty")
 			}
 
 			if conn != nil {
 				err = conn.WriteMessage(websocket.TextMessage, msgJSON)
 				if err != nil {
-					log.Infof("Impossible to write to websocket : %v", err)
+					log.WithFields(logrus.Fields{
+						"error": err,
+						"fct":   "exportWebServer.listen",
+					}).Fatal("Impossible to write to websocket")
 				}
 			}
-			log.Debug("Message send to browser")
+
+			log.WithFields(logrus.Fields{
+				"fct": "exportWebServer.listen",
+			}).Debug("Message send to browser")
 		}
 	}()
 }
 
 // Websocket handler to send data
 func (httpServ *httpServer) refreshdata(w http.ResponseWriter, r *http.Request) {
-	log.Debugf("Refresdata WS handle Send JSON : %s", msgJSON)
+	log.WithFields(logrus.Fields{
+		"fct": "exportWebServer.refreshdata",
+	}).Info("Refresdata WS handle")
 
 	upgrader := websocket.Upgrader{}
 	var err error
 
 	conn, err = upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Errorf("Upgrade upgrader : %v", err)
+		log.WithFields(logrus.Fields{
+			"error": err,
+			"fct":   "exportWebServer.refreshdata",
+		}).Fatal("Upgrade upgrader")
 		return
 	}
 
 	if err = conn.WriteMessage(websocket.TextMessage, msgJSON); err != nil {
-		log.Errorf("Impossible to write to websocket : %v", err)
+		log.WithFields(logrus.Fields{
+			"error": err,
+			"fct":   "exportWebServer.refreshdata",
+		}).Fatal("Impossible to write to websocket")
 	}
 }
 
-func (h *httpServer) home(w http.ResponseWriter, r *http.Request) {
-	log.Debugf("Home Http handle Send JSON : %s", msgJSON)
+func (httpServ *httpServer) home(w http.ResponseWriter, r *http.Request) {
+	log.WithFields(logrus.Fields{
+		"JSON": string(msgJSON),
+		"fct":  "exportWebServer.refreshdata",
+	}).Debug("Home Http handle")
 
-	t := utils.GetHtmlTemplate("bloomsky", []string{"tmpl/bloomsky.html", "tmpl/bloomsky_header.html", "tmpl/bloomsky_body.html"}, map[string]interface{}{"T": config.translateFunc}, config.dev)
+	t := utils.GetHTMLTemplate("bloomsky", []string{"tmpl/bloomsky.html", "tmpl/bloomsky_header.html", "tmpl/bloomsky_body.html"}, map[string]interface{}{"T": config.translateFunc}, config.dev)
 
 	//p := page{Websockerurl: "wss://" + r.Host + "/refreshdata"}
 	p := page{Websockerurl: "ws://" + r.Host + "/refreshdata"}
 	if err := t.Execute(w, p); err != nil {
-		log.Fatalf("Write part 1 : %v", err)
+		log.Fatalf("Write field ws : %v", err)
 	}
 }
 
 //createWebServer create web server
-func createWebServer(in chan bloomsky.BloomskyStructure, HTTPPort string) (*httpServer, error) {
+func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string) (*httpServer, error) {
 	server := &httpServer{bloomskyMessageToHTTP: in}
 
 	var fs http.Handler
@@ -102,20 +126,30 @@ func createWebServer(in chan bloomsky.BloomskyStructure, HTTPPort string) (*http
 
 	h := &http.Server{Addr: HTTPPort, Handler: s}
 
-	/*i := &http.Server{Addr: ":2222", Handler: s}
-
-	go func() {
-		if err := i.ListenAndServeTLS("server.crt", "server.key"); err != nil {
-			logrus.Errorf("Error when I create the server HTTPS : %v", err)
-		}
-	}()*/
+	/*
+		HTTPS
+		i := &http.Server{Addr: ":2222", Handler: s}
+		go func() {
+			if err := i.ListenAndServeTLS("server.crt", "server.key"); err != nil {
+				logrus.Errorf("Error when I create the server HTTPS : %v", err)
+			}
+		}()
+	*/
 
 	go func() {
 		if err := h.ListenAndServe(); err != nil {
-			log.Errorf("Error when I create the server : %v", err)
+			log.WithFields(logrus.Fields{
+				"error": err,
+				"fct":   "exportWebServer.createWebServer",
+			}).Fatal("Error when I create the server")
 		}
 	}()
-	logrus.Infof("Server listen on port %s", HTTPPort)
+
+	logrus.WithFields(logrus.Fields{
+		"port": HTTPPort,
+		"fct":  "exportWebServer.createWebServer",
+	}).Info("Server listen")
+
 	server.httpServ = h
 	return server, nil
 }
