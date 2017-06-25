@@ -1,13 +1,20 @@
 package utils
 
 import (
-	"log"
 	text "text/template"
 
 	"html/template"
 
 	"github.com/patrickalin/bloomsky-client-go/assembly"
+	"github.com/sirupsen/logrus"
 )
+
+var log = logrus.New()
+
+// Init set the logger
+func Init(l *logrus.Logger) {
+	log = l
+}
 
 //GetTemplate retrieve a template
 func GetTemplate(templateName string, templateLocation string, funcs map[string]interface{}, dev bool) *text.Template {
@@ -28,8 +35,8 @@ func GetTemplate(templateName string, templateLocation string, funcs map[string]
 	return t
 }
 
-// "bloomsky_header.html","tmpl/bloomsky_header.html",map[string]interface{}{"T": config.translateFunc,}
-func GetHtmlTemplate(templateName string, templatesLocation []string, funcs map[string]interface{}, dev bool) *template.Template {
+// GetHTMLTemplate "bloomsky_header.html","tmpl/bloomsky_header.html",map[string]interface{}{"T": config.translateFunc,}
+func GetHTMLTemplate(templateName string, templatesLocation []string, funcs map[string]interface{}, dev bool) *template.Template {
 	t := template.New(templateName)
 	t.Funcs(funcs)
 	if dev {

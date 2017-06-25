@@ -10,12 +10,12 @@ import (
 )
 
 type client struct {
-	in       chan bloomsky.BloomskyStructure
+	in       chan bloomsky.Bloomsky
 	c        clientinfluxdb.Client
 	database string
 }
 
-func (c *client) sendbloomskyToInfluxDB(onebloomsky bloomsky.BloomskyStructure) {
+func (c *client) sendbloomskyToInfluxDB(onebloomsky bloomsky.Bloomsky) {
 
 	fmt.Printf("\n%s :> Send bloomsky Data to InfluxDB\n", time.Now().Format(time.RFC850))
 
@@ -87,7 +87,7 @@ func (c *client) createDB(InfluxDBDatabase string) error {
 	return nil
 }
 
-func initClient(messagesbloomsky chan bloomsky.BloomskyStructure, InfluxDBServer, InfluxDBServerPort, InfluxDBUsername, InfluxDBPassword, InfluxDatabase string) (*client, error) {
+func initClient(messagesbloomsky chan bloomsky.Bloomsky, InfluxDBServer, InfluxDBServerPort, InfluxDBUsername, InfluxDBPassword, InfluxDatabase string) (*client, error) {
 	c, err := clientinfluxdb.NewHTTPClient(
 		clientinfluxdb.HTTPConfig{
 			Addr:     fmt.Sprintf("http://%s:%s", InfluxDBServer, InfluxDBServerPort),
