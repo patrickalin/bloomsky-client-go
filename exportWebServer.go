@@ -69,7 +69,7 @@ func (httpServ *httpServer) listen(context context.Context) {
 func (httpServ *httpServer) refreshdata(w http.ResponseWriter, r *http.Request) {
 	log.WithFields(logrus.Fields{
 		"fct": "exportWebServer.refreshdata",
-	}).Info("Refresdata WS handle")
+	}).Debug("Refresh data Websocket handle")
 
 	upgrader := websocket.Upgrader{}
 	var err error
