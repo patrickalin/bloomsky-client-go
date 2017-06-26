@@ -91,7 +91,10 @@ func main() {
 	go func() {
 		select {
 		case i := <-signalCh:
-			log.Debugf("Receive interrupt  %v", i)
+			log.WithFields(logrus.Fields{
+				"msg": i,
+				"fct": "main.main",
+			}).Debug("Receive interrupt")
 			cancel()
 			return
 		}
