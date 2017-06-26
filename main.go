@@ -247,7 +247,6 @@ func collect() {
 	if config.mock {
 		mybloomsky.RefreshFromBody(responseBloomsky)
 	} else {
-		log.Debug("Mock desactivated")
 		mybloomsky.RefreshFromRest()
 	}
 
