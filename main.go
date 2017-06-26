@@ -16,10 +16,11 @@ import (
 	"reflect"
 	"time"
 
+	_ "net/http/pprof"
+
 	"github.com/nicksnyder/go-i18n/i18n"
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
 	"github.com/patrickalin/bloomsky-client-go/assembly"
-	"github.com/patrickalin/bloomsky-client-go/utils"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
@@ -75,8 +76,6 @@ func init() {
 		return
 	}
 	log.Out = file
-
-	utils.Init(log)
 }
 
 func main() {
