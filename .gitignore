@@ -4,5 +4,6 @@ config.yaml
 .vscode/
 debug
 coverage.out
-debug.log
 *.log
+*.
+vendor/*
