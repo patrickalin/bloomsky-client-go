@@ -141,7 +141,7 @@ func main() {
 
 	// Read mock file
 	if config.mock {
-		log.WithFields(logrus.Fields{
+		logrus.WithFields(logrus.Fields{
 			"fct": "main.main",
 		}).Warn("Mock activated !!!")
 		responseBloomsky = readFile(mockFile)
