@@ -201,7 +201,7 @@ func main() {
 	if httpServ.httpServ != nil {
 		log.WithFields(logrus.Fields{
 			"fct": "main.main",
-		}).Debug("Shutting down ws")
+		}).Debug("Shutting down webserver")
 		httpServ.httpServ.Shutdown(myContext)
 	}
 
