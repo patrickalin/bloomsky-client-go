@@ -49,7 +49,7 @@ func (c *console) listen(context context.Context) {
 			}*/
 
 		logrus.WithFields(logrus.Fields{
-			"fct": "exportConsole.initConsole",
+			"fct": "exportConsole.listen",
 		}).Info("Init the queue console to display message")
 
 		for {
