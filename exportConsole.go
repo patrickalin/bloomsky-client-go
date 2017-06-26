@@ -12,13 +12,14 @@ import (
 
 type console struct {
 	in           chan bloomsky.Bloomsky
-	testTemplate *template.Template
+	textTemplate *template.Template
 }
 
 //InitConsole listen on the chanel
 func createConsole(messages chan bloomsky.Bloomsky) (console, error) {
 	f := map[string]interface{}{"T": config.translateFunc}
-	c := console{in: messages, testTemplate: GetTemplate("bloomsky.txt", "tmpl/bloomsky.txt", f, config.dev)}
+	//Get template
+	c := console{in: messages, textTemplate: GetTemplate("bloomsky.txt", "tmpl/bloomsky.txt", f, config.dev)}
 	logrus.WithFields(logrus.Fields{
 		"fct": "exportConsole.initConsole",
 	}).Info("Init console")
@@ -47,12 +48,14 @@ func (c *console) listen(context context.Context) {
 				log.Panicln(err)
 			}*/
 
-		log.Debug("Init the queue to receive message to export to console")
+		logrus.WithFields(logrus.Fields{
+			"fct": "exportConsole.initConsole",
+		}).Info("Init the queue console to display message")
 
 		for {
 			msg := <-c.in
 
-			if err := c.testTemplate.Execute(os.Stdout, msg); err != nil {
+			if err := c.textTemplate.Execute(os.Stdout, msg); err != nil {
 				fmt.Printf("%v", err)
 			}
 		}
