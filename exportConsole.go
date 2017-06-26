@@ -48,7 +48,7 @@ func (c *console) listen(context context.Context) {
 				log.Panicln(err)
 			}*/
 
-		logrus.WithFields(logrus.Fields{
+		log.WithFields(logrus.Fields{
 			"fct": "exportConsole.listen",
 		}).Info("Init the queue console to display message")
 
