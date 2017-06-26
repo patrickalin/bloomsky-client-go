@@ -79,7 +79,11 @@ func init() {
 }
 
 func main() {
-	log.Debug("Create context")
+
+	//Create context
+	log.WithFields(logrus.Fields{
+		"fct": "main.main",
+	}).Debug("Create context")
 	myContext, cancel := context.WithCancel(context.Background())
 
 	signalCh := make(chan os.Signal, 1)
@@ -100,13 +104,15 @@ func main() {
 		"fct":     "main.main",
 	}).Info("Bloomsky API")
 
+	//Read configuration from config file
 	if err := readConfig(configNameFile); err != nil {
 		log.WithFields(logrus.Fields{
 			"error": err,
 			"fct":   "main.main",
-		}).Info("Problem reading config file")
+		}).Fatal("Problem reading config file")
 	}
 
+	//Read flag
 	log.WithFields(logrus.Fields{
 		"fct": "main.main",
 	}).Debug("Get flag from command line")
@@ -116,7 +122,7 @@ func main() {
 		config.logLevel = *debug
 	}
 
-	// Level Debug
+	// Set Level log
 	level, err := logrus.ParseLevel(config.logLevel)
 	if err != nil {
 		log.WithFields(logrus.Fields{
@@ -124,7 +130,6 @@ func main() {
 			"error": err,
 		}).Fatal("Error parse level")
 	}
-
 	log.Level = level
 	log.WithFields(logrus.Fields{
 		"fct":   "main.main",
@@ -134,12 +139,15 @@ func main() {
 	// Context
 	ctxsch := context.Context(myContext)
 
-	// Mock
+	// Read mock file
 	if config.mock {
-		responseBloomsky = readMockFile(mockFile)
+		log.WithFields(logrus.Fields{
+			"fct": "main.main",
+		}).Warn("Mock activated !!!")
+		responseBloomsky = readFile(mockFile)
 	}
 
-	// Console
+	// Console initialisation
 	if config.consoleActivated {
 		channels["console"] = make(chan bloomsky.Bloomsky)
 		c, err := createConsole(channels["console"])
@@ -152,7 +160,7 @@ func main() {
 		c.listen(context.Background())
 	}
 
-	// InfluxDB
+	// InfluxDB initialisation
 	if config.influxDBActivated {
 		channels["influxdb"] = make(chan bloomsky.Bloomsky)
 		c, err := initClient(channels["influxdb"], config.influxDBServer, config.influxDBServerPort, config.influxDBUsername, config.influxDBPassword, config.influxDBDatabase)
@@ -166,7 +174,7 @@ func main() {
 
 	}
 
-	// WebServer
+	// WebServer initialisation
 	var httpServ *httpServer
 	if config.hTTPActivated {
 		var err error
@@ -182,8 +190,10 @@ func main() {
 
 	}
 
+	//Call scheduler
 	schedule(ctxsch)
 
+	//If signal to close the program
 	<-myContext.Done()
 	if httpServ.httpServ != nil {
 		log.WithFields(logrus.Fields{
@@ -197,7 +207,7 @@ func main() {
 	}).Debug("Terminated see bloomsky.log")
 }
 
-// The scheduler execute each time collect
+// The scheduler executes each time "collect"
 func schedule(myContext context.Context) {
 	ticker := time.NewTicker(config.refreshTimer)
 	log.WithFields(logrus.Fields{
@@ -244,8 +254,7 @@ func collect() {
 	}
 }
 
-// ReadConfig read config from config.json
-// with the package viper
+// ReadConfig read config from config.json with the package viper
 func readConfig(configName string) (err error) {
 	viper.SetConfigName(configName)
 	viper.AddConfigPath(".")
@@ -255,14 +264,18 @@ func readConfig(configName string) (err error) {
 		return fmt.Errorf("%v", err)
 	}
 	dir = dir + "/" + configName
+
+	if err := viper.ReadInConfig(); err != nil {
+		log.WithFields(logrus.Fields{
+			"config": dir + configName,
+			"fct":    "main.readConfig",
+		}).Fatal("The config file loaded")
+		return err
+	}
 	log.WithFields(logrus.Fields{
 		"config": dir + configName,
 		"fct":    "main.readConfig",
 	}).Info("The config file loaded")
-
-	if err := viper.ReadInConfig(); err != nil {
-		return err
-	}
 
 	//TODO#16 find to simplify this section
 	config.bloomskyURL = viper.GetString("BloomskyURL")
@@ -282,16 +295,25 @@ func readConfig(configName string) (err error) {
 	config.language = viper.GetString("language")
 	config.dev = viper.GetBool("dev")
 
-	if err := i18n.ParseTranslationFileBytes("lang/en-us.all.json", readTranslationResource("lang/en-us.all.json")); err != nil {
-		log.Fatalf("Error read language file : %v check in config.yaml if dev=false", err)
+	if err := i18n.ParseTranslationFileBytes("lang/en-us.all.json", readFile("lang/en-us.all.json")); err != nil {
+		log.WithFields(logrus.Fields{
+			"msg": err,
+			"fct": "main.readConfig",
+		}).Fatal("Error read language file check in config.yaml if dev=false")
 	}
-	if err := i18n.ParseTranslationFileBytes("lang/fr.all.json", readTranslationResource("lang/fr.all.json")); err != nil {
-		log.Fatalf("Error read language file : %v check in config.yaml if dev=false", err)
+	if err := i18n.ParseTranslationFileBytes("lang/fr.all.json", readFile("lang/fr.all.json")); err != nil {
+		log.WithFields(logrus.Fields{
+			"msg": err,
+			"fct": "main.readConfig",
+		}).Fatal("Error read language file check in config.yaml if dev=false")
 	}
 
 	config.translateFunc, err = i18n.Tfunc(config.language)
 	if err != nil {
-		log.Errorf("Problem with loading translate file, %v", err)
+		log.WithFields(logrus.Fields{
+			"msg": err,
+			"fct": "main.readConfig",
+		}).Fatal("Problem with loading translate file")
 	}
 
 	// Check if one value of the structure is empty
@@ -311,38 +333,23 @@ func readConfig(configName string) (err error) {
 	return nil
 }
 
-//Read translation ressources from /lang or the assembly
-func readTranslationResource(name string) []byte {
-	if config.dev {
-		b, err := ioutil.ReadFile(name)
-		if err != nil {
-			log.Errorf("Error read language file from folder /lang : %v check in config.yaml if dev=false", err)
-		}
-		return b
-	}
-
-	b, err := assembly.Asset(name)
-	if err != nil {
-		log.Errorf("Error read language file from assembly : %v", err)
-	}
-	return b
-}
-
-//If mock activated load the file mock and place it in the responseBloomsky
-func readMockFile(fMock string) []byte {
-	logrus.Warn("Mock activated !!!")
+//Read file and return []byte
+func readFile(fileName string) []byte {
+	var fileByte []byte
+	var err error
 
 	if config.dev {
-		mockFile, err := ioutil.ReadFile(fMock)
-		if err != nil {
-			log.Fatalf("Error in reading the file %s Err:  %v", fMock, err)
-		}
-		return mockFile
+		fileByte, err = ioutil.ReadFile(fileName)
+	} else {
+		fileByte, err = assembly.Asset(fileName)
 	}
 
-	mockFile, err := assembly.Asset(fMock)
 	if err != nil {
-		log.Fatalf("Error in reading the file %s Err:  %v", fMock, err)
+		log.WithFields(logrus.Fields{
+			"file name": fileName,
+			"msg":       err,
+			"fct":       "main.readFile",
+		}).Fatal("Error reading the file")
 	}
-	return mockFile
+	return fileByte
 }
