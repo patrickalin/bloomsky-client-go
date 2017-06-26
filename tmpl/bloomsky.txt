@@ -1,5 +1,5 @@
 ---------------------
-Bloomsky {{.LastCall}}
+Bloomsky {{.GetLastCall}}
 ---------------------
 {{T "Timestamp bloomsky"}} :                     {{.GetTimeStamp}}
 {{T "City"}} :                         {{.GetCity}}

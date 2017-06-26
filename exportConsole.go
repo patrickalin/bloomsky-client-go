@@ -6,20 +6,23 @@ import (
 	"os"
 	"text/template"
 
-	"github.com/jroimartin/gocui"
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
 	"github.com/patrickalin/bloomsky-client-go/utils"
+	"github.com/sirupsen/logrus"
 )
 
 type console struct {
-	in           chan bloomsky.BloomskyStructure
+	in           chan bloomsky.Bloomsky
 	testTemplate *template.Template
 }
 
 //InitConsole listen on the chanel
-func initConsole(messages chan bloomsky.BloomskyStructure) (console, error) {
+func createConsole(messages chan bloomsky.Bloomsky) (console, error) {
 	f := map[string]interface{}{"T": config.translateFunc}
 	c := console{in: messages, testTemplate: utils.GetTemplate("bloomsky.txt", "tmpl/bloomsky.txt", f, config.dev)}
+	logrus.WithFields(logrus.Fields{
+		"fct": "exportConsole.initConsole",
+	}).Info("Init console")
 	return c, nil
 }
 
@@ -59,6 +62,7 @@ func (c *console) listen(context context.Context) {
 
 }
 
+/*
 func layout(g *gocui.Gui) error {
 	maxX, maxY := g.Size()
 	if v, err := g.SetView("hello", maxX/2-7, maxY/2, maxX/2+7, maxY/2+2); err != nil {
@@ -72,4 +76,4 @@ func layout(g *gocui.Gui) error {
 
 func quit(g *gocui.Gui, v *gocui.View) error {
 	return gocui.ErrQuit
-}
+}*/
