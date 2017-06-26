@@ -134,7 +134,7 @@ func main() {
 	log.WithFields(logrus.Fields{
 		"fct":   "main.main",
 		"level": level,
-	}).Info("Level trace")
+	}).Info("Level log")
 
 	// Context
 	ctxsch := context.Context(myContext)
