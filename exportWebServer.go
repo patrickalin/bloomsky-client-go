@@ -4,12 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"net/http/pprof"
 
 	"github.com/elazarl/go-bindata-assetfs"
 	"github.com/gorilla/websocket"
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
 	"github.com/patrickalin/bloomsky-client-go/assembly-assetfs"
-	"github.com/patrickalin/bloomsky-client-go/utils"
 	"github.com/sirupsen/logrus"
 )
 
@@ -97,7 +97,7 @@ func (httpServ *httpServer) home(w http.ResponseWriter, r *http.Request) {
 		"fct":  "exportWebServer.refreshdata",
 	}).Debug("Home Http handle")
 
-	t := utils.GetHTMLTemplate("bloomsky", []string{"tmpl/bloomsky.html", "tmpl/bloomsky_header.html", "tmpl/bloomsky_body.html"}, map[string]interface{}{"T": config.translateFunc}, config.dev)
+	t := GetHTMLTemplate("bloomsky", []string{"tmpl/bloomsky.html", "tmpl/bloomsky_header.html", "tmpl/bloomsky_body.html"}, map[string]interface{}{"T": config.translateFunc}, config.dev)
 
 	//p := page{Websockerurl: "wss://" + r.Host + "/refreshdata"}
 	p := page{Websockerurl: "ws://" + r.Host + "/refreshdata"}
@@ -122,6 +122,13 @@ func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string) (*httpServer, e
 	s.Handle("/static/", http.StripPrefix("/static/", fs))
 	s.HandleFunc("/refreshdata", server.refreshdata)
 	s.HandleFunc("/", server.home)
+
+	s.HandleFunc("/debug/pprof/", pprof.Index)
+	s.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
+	s.HandleFunc("/debug/pprof/profile", pprof.Profile)
+	s.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
+	s.HandleFunc("/debug/pprof/trace", pprof.Trace)
+
 	s.Handle("/favicon.ico", fs)
 
 	h := &http.Server{Addr: HTTPPort, Handler: s}

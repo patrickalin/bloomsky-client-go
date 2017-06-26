@@ -1,4 +1,4 @@
-package utils
+package main
 
 import (
 	text "text/template"
@@ -6,15 +6,7 @@ import (
 	"html/template"
 
 	"github.com/patrickalin/bloomsky-client-go/assembly"
-	"github.com/sirupsen/logrus"
 )
-
-var log = logrus.New()
-
-// Init set the logger
-func Init(l *logrus.Logger) {
-	log = l
-}
 
 //GetTemplate retrieve a template
 func GetTemplate(templateName string, templateLocation string, funcs map[string]interface{}, dev bool) *text.Template {

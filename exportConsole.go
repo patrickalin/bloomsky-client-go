@@ -7,7 +7,6 @@ import (
 	"text/template"
 
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
-	"github.com/patrickalin/bloomsky-client-go/utils"
 	"github.com/sirupsen/logrus"
 )
 
@@ -19,7 +18,7 @@ type console struct {
 //InitConsole listen on the chanel
 func createConsole(messages chan bloomsky.Bloomsky) (console, error) {
 	f := map[string]interface{}{"T": config.translateFunc}
-	c := console{in: messages, testTemplate: utils.GetTemplate("bloomsky.txt", "tmpl/bloomsky.txt", f, config.dev)}
+	c := console{in: messages, testTemplate: GetTemplate("bloomsky.txt", "tmpl/bloomsky.txt", f, config.dev)}
 	logrus.WithFields(logrus.Fields{
 		"fct": "exportConsole.initConsole",
 	}).Info("Init console")
