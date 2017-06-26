@@ -94,7 +94,7 @@ func (httpServ *httpServer) refreshdata(w http.ResponseWriter, r *http.Request) 
 func (httpServ *httpServer) home(w http.ResponseWriter, r *http.Request) {
 	log.WithFields(logrus.Fields{
 		"JSON": string(msgJSON),
-		"fct":  "exportWebServer.refreshdata",
+		"fct":  "exportWebServer.home",
 	}).Debug("Home Http handle")
 
 	t := GetHTMLTemplate("bloomsky", []string{"tmpl/bloomsky.html", "tmpl/bloomsky_header.html", "tmpl/bloomsky_body.html"}, map[string]interface{}{"T": config.translateFunc}, config.dev)
