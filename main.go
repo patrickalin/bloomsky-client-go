@@ -70,7 +70,7 @@ func init() {
 	//log.Formatter = new(logrus.JSONFormatter)
 	log.Formatter = new(logrus.TextFormatter)
 
-	file, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY, 0666)
+	file, err := os.OpenFile(logFile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Error("Failed to log to file, using default stderr")
 		return
