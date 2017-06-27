@@ -5,7 +5,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/patrickalin/bloomsky-client-go)](https://goreportcard.com/report/github.com/patrickalin/bloomsky-client-go)
 [![Coverage Status](https://coveralls.io/repos/github/patrickalin/bloomsky-client-go/badge.svg)](https://coveralls.io/github/patrickalin/bloomsky-client-go)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Join the chat at https://gitter.im/tockins/bloomsky-client-go](https://badges.gitter.im/tockins/bloomsky-client-go.svg)](https://gitter.im/tockins/bloomsky-client-go?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/tockins/bloomsky-client-go](https://badges.gitter.im/tockins/bloomsky-client-go.svg)](https://gitter.im/bloomsky-client-go/)
 
 A simple Go client for the BloomSky API.
 
