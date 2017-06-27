@@ -39,7 +39,7 @@ deploy:
     tags: true
     all_branches: true
 after_success:
-  - BRANCHES_TO_MERGE_REGEX='^devel' BRANCH_TO_MERGE_INTO=master GITHUB_REPO=patrickalin/bloomsky-client-go ./command/mergeScript.sh
+  - BRANCHES_TO_MERGE_REGEX='^dev' BRANCH_TO_MERGE_INTO=master GITHUB_REPO=patrickalin/bloomsky-client-go ./command/mergeScript.sh
 env:
   global:
   - secure: OnelAxGwR9hD1Qzl5/olfyWpIcFUdjn7UBpXEY5x6jRcThCb0DtSidBCQnRbESX89D9Sii7b2inh0/uhEWXqE+ZZG9Ld66bcWdnLb2GB48swZJ4c7LEZrCobIG7lE2u04nH+Iw09fdf93R/s28VeCDdGsiUGlFZxnPwxje1SCvyZvwJcNHvk8+9+tGl3ddvuvk5/+7mH2H/+Ai/xp4foTN73KqwIzphsJfcgpAfpJRnN6l5pmiwq8kqLVvbZJTjqJJNw5xcXen1jn5itUXSBxCjwpTjf6eAZIVlHND08R0vqRjDStzp+yx8/1mgT9XZPj+SXtagTLfvL665wZuL2iy0ALOa2NVN5++LLLx9SaXgBE2a7SH2CRZ5dKpCqhUFlUragwH3fk2vdgeBuZawAJ8OcTkL2LqyZals9JjAKYtT0cC7ZE3Ae5bxBUrbCc3MjDN1IfSqkzvQfhsisKh9A7I7IV+Q+5WhAmPRb/uxZ5Pt8oCw8Ju0szG0wSrkU/Z+a71HErt8ZCWYFC2xWlj4wUOXGFzzcPyBT/tCv6mjATq50nNZWkb/TraAeWMGXJ0nwRX+Z3qeewNduatSAAX52nU70tIEm0eKtKLGglqBvP0I44AMG5tSnDTygcPa26SWQ6n9JxSRYmbt7w7Y2ZOW+cvKyKA9XdyW5+GlGkqpCOvM=
