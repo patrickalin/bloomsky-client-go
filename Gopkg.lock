@@ -32,22 +32,10 @@
   version = "v1.3.0"
 
 [[projects]]
-  name = "github.com/jroimartin/gocui"
-  packages = ["."]
-  revision = "4e9ce9a8e26f2ef33dfe297dbdfca148733b6b9b"
-  version = "v0.3.0"
-
-[[projects]]
   name = "github.com/magiconair/properties"
   packages = ["."]
   revision = "f917359f079a3759162704eaa8caeec3d01d9f91"
   version = "v1.7.2"
-
-[[projects]]
-  name = "github.com/mattn/go-runewidth"
-  packages = ["."]
-  revision = "9e777a8366cce605130a531d2cd6363d07ad7317"
-  version = "v0.0.2"
 
 [[projects]]
   branch = "master"
@@ -62,22 +50,16 @@
   version = "v1.8.1"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/nsf/termbox-go"
-  packages = ["."]
-  revision = "72800b73ab9a3c78df350738298b0361354772ff"
-
-[[projects]]
-  branch = "master"
   name = "github.com/patrickalin/bloomsky-api-go"
   packages = ["."]
-  revision = "8cc1e2bbfbe192cd0c954813a81c682baad0778f"
+  revision = "41a6da6e23e9011f1dec5ce601055e61406bcd95"
+  version = "v0.1"
 
 [[projects]]
-  branch = "master"
   name = "github.com/patrickalin/http-go"
   packages = ["."]
-  revision = "4d4465a838e34175cb2c3575e553b536346d92fa"
+  revision = "835847fd2e9e8928d74b44e8edf1fc0aacbc5148"
+  version = "v0.1"
 
 [[projects]]
   name = "github.com/pelletier/go-buffruneio"
@@ -131,7 +113,7 @@
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "c23410a886927bab8ca5e80b08af6a56faeb330d"
+  revision = "f7928cfef4d09d1b080aa2b6fd3ca9ba1567c733"
 
 [[projects]]
   branch = "master"
@@ -148,6 +130,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "14ab1de245af60ec04d5fa2ae21e603c49a966a834ca8617a494bb8e4a54d51a"
+  inputs-digest = "be9037becde2a0943ca6d6eb7f4c8ab0317e3cff9d1ed5468143b812888ed664"
   solver-name = "gps-cdcl"
   solver-version = 1
