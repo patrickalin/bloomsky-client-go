@@ -127,4 +127,3 @@ In the config file, you can change the log level (panic,fatal,error,warn,info,de
 
 The code is licensed under the permissive Apache v2.0 licence. This means you can do what you like with the software, as long as you include the required notices. [Read this](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)) for a summary.
 
-Essai branch
