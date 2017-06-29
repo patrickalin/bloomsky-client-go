@@ -41,5 +41,4 @@ func GetHTMLTemplate(templateName string, templatesLocation []string, funcs map[
 	}
 
 	return t
-
 }
