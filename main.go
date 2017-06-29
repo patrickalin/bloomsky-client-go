@@ -100,7 +100,20 @@ func main() {
 
 	//Read configuration from config file
 	config, err := readConfig(configNameFile)
-	checkErr(err, funcName(), "Problem reading config file", "")
+	if err != nil {
+		logWarn(funcName(), "Config file not loaded error we use flag and default value", os.Args[0])
+		config.language = "en-us"
+		config.influxDBActivated = false
+		config.hTTPActivated = true
+		config.hTTPPort = ":1111"
+		config.hTTPSPort = ":1112"
+		config.consoleActivated = true
+		config.refreshTimer = time.Duration(60) * time.Second
+		config.bloomskyURL = "https://api.bloomsky.com/api/skydata/"
+		config.logLevel = "debug"
+		config.mock = true
+		config.dev = false
+	}
 
 	//Read flags
 	logDebug(funcName(), "Get flag from command line", "")
@@ -124,8 +137,6 @@ func main() {
 		config.mock, err = strconv.ParseBool(*mockF)
 		checkErr(err, funcName(), "error convert string to bol", "")
 	}
-
-	fmt.Println("ici:%v", config.bloomskyAccessToken)
 
 	// Set Level log
 	level, err := logrus.ParseLevel(config.logLevel)
@@ -245,7 +256,7 @@ func readConfig(configName string) (configuration, error) {
 	dir = dir + "/" + configName
 
 	if err := viper.ReadInConfig(); err != nil {
-		logFatal(err, funcName(), "The config file loaded", dir)
+		logWarn(funcName(), "Error loading the config file", dir)
 		return conf, err
 	}
 	logInfo(funcName(), "The config file loaded", dir)
