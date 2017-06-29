@@ -36,6 +36,7 @@ type configuration struct {
 	hTTPActivated       bool
 	historyActivated    bool
 	hTTPPort            string
+	hTTPSPort           string
 	influxDBActivated   bool
 	influxDBDatabase    string
 	influxDBPassword    string
@@ -139,7 +140,7 @@ func main() {
 	// Console initialisation
 	if config.consoleActivated {
 		channels["console"] = make(chan bloomsky.Bloomsky)
-		c, err := createConsole(channels["console"], translateFunc, dev)
+		c, err := createConsole(channels["console"], translateFunc, config.dev)
 		checkErr(err, funcName(), "Error with initConsol", "")
 		c.listen(context.Background())
 	}
@@ -157,7 +158,7 @@ func main() {
 	if config.hTTPActivated {
 		var err error
 		channels["web"] = make(chan bloomsky.Bloomsky)
-		httpServ, err = createWebServer(channels["web"], config.hTTPPort, translateFunc, config.dev)
+		httpServ, err = createWebServer(channels["web"], config.hTTPPort, config.hTTPSPort, translateFunc, config.dev)
 		checkErr(err, funcName(), "Error with initWebServer", "")
 		httpServ.listen(context.Background())
 
@@ -245,6 +246,7 @@ func readConfig(configName string) (configuration, error) {
 	conf.refreshTimer = time.Duration(viper.GetInt("RefreshTimer")) * time.Second
 	conf.hTTPActivated = viper.GetBool("HTTPActivated")
 	conf.hTTPPort = viper.GetString("HTTPPort")
+	conf.hTTPSPort = viper.GetString("hTTPSPort")
 	conf.logLevel = viper.GetString("LogLevel")
 	conf.mock = viper.GetBool("mock")
 	conf.language = viper.GetString("language")
