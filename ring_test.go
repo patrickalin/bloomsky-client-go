@@ -12,14 +12,6 @@ func TestSetsSize(t *testing.T) {
 	}
 }
 
-type measure struct {
-	i float64
-}
-
-func (m measure) Value() float64 {
-	return m.i
-}
-
 func TestSavesSomeData(t *testing.T) {
 	r := Ring{}
 	r.SetCapacity(7)

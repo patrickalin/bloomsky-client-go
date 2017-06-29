@@ -10,6 +10,7 @@
   refreshTimer: "60"
 ######## If true display informations on console
   consoleActivated: "true"
+  
 ######## If true display informations on webpage
   hTTPActivated: "true"
   hTTPPort : ":1111"
