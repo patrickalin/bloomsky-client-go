@@ -54,7 +54,7 @@ type configuration struct {
 }
 
 var (
-	//Version of the code
+	//Version of the code, fill in in compile.sh -ldflags "-X main.Version=`cat VERSION`"
 	Version = "No Version Provided"
 	//record the configuration parameter
 	config configuration
