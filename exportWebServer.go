@@ -134,26 +134,28 @@ func (httpServ *httpServer) log(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//createWebServer create web server
-func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string, translate i18n.TranslateFunc, deve bool) (*httpServer, error) {
-	server := &httpServer{bloomskyMessageToHTTP: in}
-
-	var fs http.Handler
+func getFileServer(dev bool) http.FileSystem {
 	if dev {
-		fs = http.FileServer(http.Dir("static"))
-	} else {
-		fs = http.FileServer(&assetfs.AssetFS{Asset: assemblyAssetfs.Asset, AssetDir: assemblyAssetfs.AssetDir, AssetInfo: assemblyAssetfs.AssetInfo, Prefix: "static"})
+		return http.Dir("static")
 	}
+	return &assetfs.AssetFS{Asset: assemblyAssetfs.Asset, AssetDir: assemblyAssetfs.AssetDir, AssetInfo: assemblyAssetfs.AssetInfo, Prefix: "static"}
+}
 
-	dev = deve
+//createWebServer create web server
+func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string, translate i18n.TranslateFunc, devel bool) (*httpServer, error) {
+	server := &httpServer{bloomskyMessageToHTTP: in}
+	dev = devel
 	translateFunc = translate
+
+	fs := http.FileServer(getFileServer(devel))
 
 	s := http.NewServeMux()
 
 	s.Handle("/static/", http.StripPrefix("/static/", fs))
+	s.Handle("/favicon.ico", fs)
+
 	s.HandleFunc("/refreshdata", server.refreshdata)
 	s.HandleFunc("/", server.home)
-
 	s.HandleFunc("/log", server.log)
 
 	s.HandleFunc("/debug/pprof/", pprof.Index)
@@ -161,8 +163,6 @@ func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string, translate i18n.
 	s.HandleFunc("/debug/pprof/profile", pprof.Profile)
 	s.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
 	s.HandleFunc("/debug/pprof/trace", pprof.Trace)
-
-	s.Handle("/favicon.ico", fs)
 
 	h := &http.Server{Addr: HTTPPort, Handler: s}
 
