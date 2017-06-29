@@ -113,13 +113,13 @@
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "f7928cfef4d09d1b080aa2b6fd3ca9ba1567c733"
+  revision = "90796e5a05ce440b41c768bd9af257005e470461"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/text"
   packages = ["internal/gen","internal/triegen","internal/ucd","transform","unicode/cldr","unicode/norm"]
-  revision = "4e9ab9ee170f2a39bd66c92b3e0a47ff47a4bc77"
+  revision = "6353ef0f924300eea566d3438817aa4d3374817e"
 
 [[projects]]
   branch = "v2"

@@ -34,6 +34,7 @@ const logFile = "bloomsky.log"
 //use http://mervine.net/json2struct
 type configuration struct {
 	consoleActivated    bool
+	historyActivated    bool
 	hTTPActivated       bool
 	hTTPPort            string
 	influxDBActivated   bool
@@ -87,7 +88,7 @@ func main() {
 	myContext, cancel := context.WithCancel(context.Background())
 
 	signalCh := make(chan os.Signal, 1)
-	signal.Notify(signalCh, os.Interrupt)
+	signal.Notify(signalCh)
 	go func() {
 		select {
 		case i := <-signalCh:
@@ -150,6 +151,17 @@ func main() {
 		responseBloomsky = readFile(mockFile)
 	}
 
+	if config.historyActivated {
+		channels["store"] = make(chan bloomsky.Bloomsky)
+		s, err := createStore(channels["store"])
+		if err != nil {
+			log.WithFields(logrus.Fields{
+				"fct":   "main.main",
+				"error": err,
+			}).Fatal("Error with initConsol")
+		}
+		s.listen(context.Background())
+	}
 	// Console initialisation
 	if config.consoleActivated {
 		channels["console"] = make(chan bloomsky.Bloomsky)
@@ -268,14 +280,15 @@ func readConfig(configName string) (err error) {
 	dir = dir + "/" + configName
 
 	if err := viper.ReadInConfig(); err != nil {
+		fmt.Println(err)
 		log.WithFields(logrus.Fields{
-			"config": dir + configName,
+			"config": dir,
 			"fct":    "main.readConfig",
 		}).Fatal("The config file loaded")
 		return err
 	}
 	log.WithFields(logrus.Fields{
-		"config": dir + configName,
+		"config": dir,
 		"fct":    "main.readConfig",
 	}).Info("The config file loaded")
 
@@ -289,6 +302,8 @@ func readConfig(configName string) (err error) {
 	config.influxDBUsername = viper.GetString("InfluxDBUsername")
 	config.consoleActivated = viper.GetBool("ConsoleActivated")
 	config.influxDBActivated = viper.GetBool("InfluxDBActivated")
+	config.historyActivated = viper.GetBool("historyActivated")
+
 	config.refreshTimer = time.Duration(viper.GetInt("RefreshTimer")) * time.Second
 	config.hTTPActivated = viper.GetBool("HTTPActivated")
 	config.hTTPPort = viper.GetString("HTTPPort")

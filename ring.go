@@ -5,7 +5,14 @@ var DefaultCapacity = 256
 type Ring struct {
 	head int
 	tail int
-	buff []interface{}
+	buff []Measure
+}
+
+/**
+* Measure  represents a measure that has a GetValue
+ */
+type Measure interface {
+	Value() float64
 }
 
 /**
@@ -23,7 +30,7 @@ func (r *Ring) Capacity() int {
 	return len(r.buff)
 }
 
-func (r *Ring) Enqueue(c interface{}) {
+func (r *Ring) Enqueue(c Measure) {
 	r.init()
 	r.set(r.head+1, c)
 	old := r.head
@@ -35,7 +42,7 @@ func (r *Ring) Enqueue(c interface{}) {
 
 }
 
-func (r *Ring) Dequeue() interface{} {
+func (r *Ring) Dequeue() Measure {
 	r.init()
 	if r.head == -1 {
 		return nil
@@ -53,12 +60,12 @@ func (r *Ring) Dequeue() interface{} {
 	return v
 }
 
-func (r *Ring) Values() []interface{} {
+func (r *Ring) Values() []Measure {
 	if r.head == -1 {
 		return nil
 	}
 
-	arr := make([]interface{}, 0, r.Capacity())
+	arr := make([]Measure, 0, r.Capacity())
 
 	for i := 0; i < r.Capacity(); i++ {
 		idx := r.mod(i + r.tail)
@@ -77,7 +84,7 @@ func (r *Ring) mod(p int) int {
 
 func (r *Ring) init() {
 	if r.buff == nil {
-		r.buff = make([]interface{}, DefaultCapacity)
+		r.buff = make([]Measure, DefaultCapacity)
 		for i := 0; i < len(r.buff); i++ {
 			r.buff[i] = nil
 		}
@@ -95,17 +102,17 @@ func (r *Ring) extends(size int) {
 		r.buff = r.buff[0:size]
 		return
 	}
-	newbuffer := make([]interface{}, size-len(r.buff))
+	newbuffer := make([]Measure, size-len(r.buff))
 	for i := 0; i < len(newbuffer); i++ {
 		newbuffer[i] = nil
 	}
 	r.buff = append(r.buff, newbuffer...)
 }
 
-func (r *Ring) set(i int, b interface{}) {
+func (r *Ring) set(i int, b Measure) {
 	r.buff[r.mod(i)] = b
 }
 
-func (r *Ring) get(i int) interface{} {
+func (r *Ring) get(i int) Measure {
 	return r.buff[r.mod(i)]
 }

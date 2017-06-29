@@ -12,17 +12,25 @@ func TestSetsSize(t *testing.T) {
 	}
 }
 
+type measure struct {
+	i float64
+}
+
+func (m measure) Value() float64 {
+	return m.i
+}
+
 func TestSavesSomeData(t *testing.T) {
 	r := Ring{}
 	r.SetCapacity(7)
 	for i := 0; i <= 14; i++ {
-		r.Enqueue(i)
+		r.Enqueue(measure{float64(i)})
 	}
 	fmt.Println(r.head)
 	fmt.Println(r.tail)
 
 	for i := 0; i < 7; i++ {
-		fmt.Println(r.Dequeue().(int))
+		fmt.Println(r.Dequeue().Value())
 
 	}
 }
