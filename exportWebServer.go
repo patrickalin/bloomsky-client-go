@@ -9,8 +9,6 @@ import (
 	"net/http/pprof"
 	"os"
 
-	"fmt"
-
 	"github.com/elazarl/go-bindata-assetfs"
 	"github.com/gorilla/websocket"
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
@@ -71,8 +69,6 @@ func (httpServ *httpServer) listen(context context.Context) {
 // Websocket handler to send data
 func (httpServ *httpServer) refreshdata(w http.ResponseWriter, r *http.Request) {
 	logDebug(funcName(), "Refresh data Websocket handle", "")
-
-	fmt.Printf("ici:%v", msgJSON)
 
 	upgrader := websocket.Upgrader{}
 
