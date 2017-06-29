@@ -27,7 +27,6 @@ import (
 
 //configName name of the config file
 const configNameFile = "config"
-const mockFile = "test-mock/mock.json"
 const logFile = "bloomsky.log"
 
 // Configuration is the structure of the config YAML file
@@ -56,13 +55,10 @@ type configuration struct {
 var (
 	//Version of the code, fill in in compile.sh -ldflags "-X main.Version=`cat VERSION`"
 	Version = "No Version Provided"
-	//record the configuration parameter
-	config configuration
 
 	debug = flag.String("debug", "", "Error=1, Warning=2, Info=3, Trace=4")
 	//logger
-	log              = logrus.New()
-	responseBloomsky []byte
+	log = logrus.New()
 )
 
 func init() {
@@ -122,13 +118,17 @@ func main() {
 	// Context
 	ctxsch := context.Context(myContext)
 
-	// Read mock file
-	if config.mock {
-		logWarn(funcName(), "Mock activated !!!", "")
-		responseBloomsky = readFile(mockFile)
+	channels := make(map[string]chan bloomsky.Bloomsky)
+
+	if err := i18n.ParseTranslationFileBytes("lang/en-us.all.json", readFile("lang/en-us.all.json", config.dev)); err != nil {
+		logFatal(err, funcName(), "Error read language file check in config.yaml if dev=false", "")
+	}
+	if err := i18n.ParseTranslationFileBytes("lang/fr.all.json", readFile("lang/fr.all.json", config.dev)); err != nil {
+		logFatal(err, funcName(), "Error read language file check in config.yaml if dev=false", "")
 	}
 
-	channels := make(map[string]chan bloomsky.Bloomsky)
+	translateFunc, err := i18n.Tfunc(config.language)
+	checkErr(err, funcName(), "Problem with loading translate file", "")
 
 	if config.historyActivated {
 		channels["store"] = make(chan bloomsky.Bloomsky)
@@ -140,7 +140,7 @@ func main() {
 	// Console initialisation
 	if config.consoleActivated {
 		channels["console"] = make(chan bloomsky.Bloomsky)
-		c, err := createConsole(channels["console"])
+		c, err := createConsole(channels["console"], translateFunc, dev)
 		checkErr(err, funcName(), "Error with initConsol", "")
 		c.listen(context.Background())
 	}
@@ -158,14 +158,16 @@ func main() {
 	if config.hTTPActivated {
 		var err error
 		channels["web"] = make(chan bloomsky.Bloomsky)
-		httpServ, err = createWebServer(channels["web"], config.hTTPPort)
+		httpServ, err = createWebServer(channels["web"], config.hTTPPort, translateFunc, config.dev)
 		checkErr(err, funcName(), "Error with initWebServer", "")
 		httpServ.listen(context.Background())
 
 	}
 
+	// get bloomsky JSON and parse information in bloomsky Go Structure
+	mybloomsky := bloomsky.New(config.bloomskyURL, config.bloomskyAccessToken, config.mock, log)
 	//Call scheduler
-	schedule(ctxsch, channels)
+	schedule(ctxsch, mybloomsky, channels, config.refreshTimer)
 
 	//If signal to close the program
 	<-myContext.Done()
@@ -180,12 +182,9 @@ func main() {
 }
 
 // The scheduler executes each time "collect"
-func schedule(myContext context.Context, channels map[string]chan bloomsky.Bloomsky) {
-	ticker := time.NewTicker(config.refreshTimer)
-	logDebug(funcName(), "Create scheduler", "")
-
-	// get bloomsky JSON and parse information in bloomsky Go Structure
-	mybloomsky := bloomsky.New(config.bloomskyURL, config.bloomskyAccessToken, log)
+func schedule(myContext context.Context, mybloomsky bloomsky.Bloomsky, channels map[string]chan bloomsky.Bloomsky, refreshTime time.Duration) {
+	ticker := time.NewTicker(refreshTime)
+	logDebug(funcName(), "Create scheduler", refreshTime.String())
 
 	collect(mybloomsky, channels)
 	for {
@@ -205,13 +204,9 @@ func schedule(myContext context.Context, channels map[string]chan bloomsky.Bloom
 
 //Principal function which one loops each Time Variable
 func collect(mybloomsky bloomsky.Bloomsky, channels map[string]chan bloomsky.Bloomsky) {
-	logDebug(funcName(), "Parse informations from API bloomsky", config.refreshTimer.String())
+	logDebug(funcName(), "Parse informations from API bloomsky", "")
 
-	if config.mock {
-		mybloomsky.RefreshFromBody(responseBloomsky)
-	} else {
-		mybloomsky.RefreshFromRest()
-	}
+	mybloomsky.Refresh()
 
 	//send message on each channels
 	for _, v := range channels {
@@ -255,18 +250,8 @@ func readConfig(configName string) (configuration, error) {
 	conf.language = viper.GetString("language")
 	conf.dev = viper.GetBool("dev")
 
-	if err := i18n.ParseTranslationFileBytes("lang/en-us.all.json", readFile("lang/en-us.all.json")); err != nil {
-		logFatal(err, funcName(), "Error read language file check in config.yaml if dev=false", "")
-	}
-	if err := i18n.ParseTranslationFileBytes("lang/fr.all.json", readFile("lang/fr.all.json")); err != nil {
-		logFatal(err, funcName(), "Error read language file check in config.yaml if dev=false", "")
-	}
-
-	conf.translateFunc, err = i18n.Tfunc(conf.language)
-	checkErr(err, funcName(), "Problem with loading translate file", "")
-
 	// Check if one value of the structure is empty
-	v := reflect.ValueOf(config)
+	v := reflect.ValueOf(conf)
 	values := make([]interface{}, v.NumField())
 	for i := 0; i < v.NumField(); i++ {
 		values[i] = v.Field(i)
@@ -283,11 +268,11 @@ func readConfig(configName string) (configuration, error) {
 }
 
 //Read file and return []byte
-func readFile(fileName string) []byte {
+func readFile(fileName string, dev bool) []byte {
 	var fileByte []byte
 	var err error
 
-	if config.dev {
+	if dev {
 		fileByte, err = ioutil.ReadFile(fileName)
 	} else {
 		fileByte, err = assembly.Asset(fileName)

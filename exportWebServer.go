@@ -11,14 +11,17 @@ import (
 
 	"github.com/elazarl/go-bindata-assetfs"
 	"github.com/gorilla/websocket"
+	"github.com/nicksnyder/go-i18n/i18n"
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
 	"github.com/patrickalin/bloomsky-client-go/assembly-assetfs"
 )
 
 var (
-	conn       *websocket.Conn
-	mybloomsky bloomsky.Bloomsky
-	msgJSON    []byte
+	conn          *websocket.Conn
+	mybloomsky    bloomsky.Bloomsky
+	msgJSON       []byte
+	translateFunc i18n.TranslateFunc
+	dev           bool
 )
 
 type httpServer struct {
@@ -84,7 +87,7 @@ func (httpServ *httpServer) refreshdata(w http.ResponseWriter, r *http.Request) 
 func (httpServ *httpServer) home(w http.ResponseWriter, r *http.Request) {
 	logDebug(funcName(), "Home Http handle", "")
 
-	t := GetHTMLTemplate("bloomsky", []string{"tmpl/bloomsky.html", "tmpl/bloomsky_header.html", "tmpl/bloomsky_body.html"}, map[string]interface{}{"T": config.translateFunc}, config.dev)
+	t := GetHTMLTemplate("bloomsky", []string{"tmpl/bloomsky.html", "tmpl/bloomsky_header.html", "tmpl/bloomsky_body.html"}, map[string]interface{}{"T": translateFunc}, dev)
 
 	p := pageHome{Websockerurl: "ws://" + r.Host + "/refreshdata"}
 	if err := t.Execute(w, p); err != nil {
@@ -125,22 +128,25 @@ func (httpServ *httpServer) log(w http.ResponseWriter, r *http.Request) {
 
 	p := map[string]interface{}{"LogTxt": template.HTML(str)}
 
-	t := GetHTMLTemplate("bloomsky", []string{"tmpl/bloomsky.html", "tmpl/log_header.html", "tmpl/log_body.html"}, map[string]interface{}{"T": config.translateFunc}, config.dev)
+	t := GetHTMLTemplate("bloomsky", []string{"tmpl/bloomsky.html", "tmpl/log_header.html", "tmpl/log_body.html"}, map[string]interface{}{"T": translateFunc}, dev)
 	if err := t.Execute(w, p); err != nil {
 		logFatal(err, funcName(), "Compile template log", "")
 	}
 }
 
 //createWebServer create web server
-func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string) (*httpServer, error) {
+func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string, translate i18n.TranslateFunc, deve bool) (*httpServer, error) {
 	server := &httpServer{bloomskyMessageToHTTP: in}
 
 	var fs http.Handler
-	if config.dev {
+	if dev {
 		fs = http.FileServer(http.Dir("static"))
 	} else {
 		fs = http.FileServer(&assetfs.AssetFS{Asset: assemblyAssetfs.Asset, AssetDir: assemblyAssetfs.AssetDir, AssetInfo: assemblyAssetfs.AssetInfo, Prefix: "static"})
 	}
+
+	dev = deve
+	translateFunc = translate
 
 	s := http.NewServeMux()
 
