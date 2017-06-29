@@ -269,15 +269,13 @@ func readConfig(configName string) (configuration, error) {
 
 //Read file and return []byte
 func readFile(fileName string, dev bool) []byte {
-	var fileByte []byte
-	var err error
-
 	if dev {
-		fileByte, err = ioutil.ReadFile(fileName)
-	} else {
-		fileByte, err = assembly.Asset(fileName)
+		fileByte, err := ioutil.ReadFile(fileName)
+		checkErr(err, funcName(), "Error reading the file", fileName)
+		return fileByte
 	}
 
+	fileByte, err := assembly.Asset(fileName)
 	checkErr(err, funcName(), "Error reading the file", fileName)
 	return fileByte
 }
