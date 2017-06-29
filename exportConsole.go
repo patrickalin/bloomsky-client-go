@@ -7,7 +7,6 @@ import (
 	"text/template"
 
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
-	"github.com/sirupsen/logrus"
 )
 
 type console struct {
@@ -20,9 +19,7 @@ func createConsole(messages chan bloomsky.Bloomsky) (console, error) {
 	f := map[string]interface{}{"T": config.translateFunc}
 	//Get template
 	c := console{in: messages, textTemplate: GetTemplate("bloomsky.txt", "tmpl/bloomsky.txt", f, config.dev)}
-	logrus.WithFields(logrus.Fields{
-		"fct": "exportConsole.initConsole",
-	}).Info("Init console")
+	logInfo(funcName(), "Init console", "")
 	return c, nil
 }
 
@@ -48,9 +45,7 @@ func (c *console) listen(context context.Context) {
 				log.Panicln(err)
 			}*/
 
-		log.WithFields(logrus.Fields{
-			"fct": "exportConsole.listen",
-		}).Info("Init the queue console to display message")
+		logDebug(funcName(), "Init the queue console to display message", "")
 
 		for {
 			msg := <-c.in

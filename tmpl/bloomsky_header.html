@@ -86,9 +86,8 @@
                 //console.log(evt.data)
                 
                 var json = JSON.parse(evt.data);
-                //console.log(json)
                 // build date
-                /*var a = new Date GetTS * 1000);
+                var a = new Date(json.Data.TS * 1000);
                 var months = ['{{T "Jan"}}', '{{T "Feb"}}', '{{T "Mar"}}', '{{T "Apr"}}', '{{T "May"}}', '{{T "Jun"}}', '{{T "Jul"}}', '{{T "Aug"}}', '{{T "Sep"}}', '{{T "Oct"}}', '{{T "Nov"}}', '{{T "Dec"}}'];
                 var year = a.getFullYear();
                 var month = months[a.getMonth()];
@@ -109,7 +108,7 @@
                 document.getElementById("formattedTime5").innerHTML = formattedTime5;
 
                 document.getElementById("timestamp").innerHTML = formattedTime0;
-                */
+                
                 document.getElementById("city").innerHTML = json.CityName;
                 document.getElementById("device").innerHTML = json.DeviceID;
                 document.getElementById("followers").innerHTML = json.NumOfFollowers + " {{T "followers"}}";

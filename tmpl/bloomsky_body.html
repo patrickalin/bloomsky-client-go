@@ -1,256 +1,245 @@
 {{define "content"}}
 
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
             <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-                <a class="navbar-brand" href="#">Bloomsky</a>
-            </div>
-            <div id="navbar" class="collapse navbar-collapse">
-                <ul class="nav navbar-nav">
-                    <li class="active"><a href="#">{{T "Home"}}</a></li>
-                    <li><a href="https://github.com/patrickalin/bloomsky-client-go" target="_blank">Github</a></li>
-                    <li><a href="https://dashboard.bloomsky.com/" target="_blank">Bloomsky Dashboard</a></li>
-
-                </ul>
-            </div>
+            <a class="navbar-brand" href="#">Bloomsky</a>
         </div>
-    </nav>
-    <!--/.nav-collapse -->
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="/">{{T "Home"}}</a></li>
+                <li><a href="/log">Log</a></li>
+                <li><a href="https://github.com/patrickalin/bloomsky-client-go" target="_blank">Github</a></li>
+                <li><a href="https://dashboard.bloomsky.com/" target="_blank">Bloomsky Dashboard</a></li>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-md-3">
-                <img src="/static/bloomsky.png" width=60%>
-                <p class="lead">{{T "Bloomsky client in Go"}}</p>
-                <div id="timestamp">{{.GetTimeStamp}}</div>
-                <img src="" alt="Bloomsky img" id="bloomimg0" height="200" width="200">
-            </div>
-            <!--/.div md3 -->
+            </ul>
+        </div>
+    </div>
+</nav>
+<!--/.nav-collapse -->
 
-            <div class="col-md-5">
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <img src="/static/bloomsky.png" width=60%>
+            <p class="lead">{{T "Bloomsky client in Go"}}</p>
+            <div id="timestamp"></div>
+            <img src="" alt="Bloomsky img" id="bloomimg0" height="200" width="200">
+        </div>
+        <!--/.div md3 -->
 
-                <br>
+        <div class="col-md-5">
 
-                <div id="output"> </div>
+            <br>
 
-                <table class="table table-striped">
-                    <tr>
-                        <td><span class="glyphicon glyphicon-map-marker"></span> {{T "City"}}</td>
-                        <td>
-                            <div id="city">{{.GetCity}}</div>
-                        </td>
-                        <td>
-                            &nbsp;
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div id="night">{{.IsNight}}</div>
-                        </td>
-                        <td>
-                            &nbsp;
-                        </td>
-                        <td>
-                            &nbsp;
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><i class="wi wi-sunset"></i> {{T "Index UV"}} </td>
-                        <td>
-                            <div id="uv"> {{.GetIndexUV}}</div>
-                        </td>
-                        <td>
-                            &nbsp;
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><i class="wi wi-small-craft-advisory"></i> {{T "Wind Direction"}}</td>
-                        <td>
-                            <div id="winddir">{{.GetWindDirection}}</div>
-                        </td>
-                        <td>
-                            &nbsp;
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><i class="wi wi-small-craft-advisory"></i> {{T "Wind Gust"}}</td>
-                        <td>
-                            <div id="windgust">{{.GetWindGustMph}}</div>
-                        </td>
-                        <td>
-                            <div id="wingustms">{{.GetWindGustMs}}</div>
-                            <div id="wingustkmh">{{.GetWindGustkmh}}</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><i class="wi wi-small-craft-advisory"></i> {{T "Sustained Wind"}}</td>
-                        <td>
-                            <div id="sustwind">{{.GetSustainedWindSpeedMph}}</div>
-                        </td>
-                        <td>
-                            <div id="sustwindms">{{.GetSustainedWindSpeedMs}}</div>
-                            <div id="sustwindkmh">{{.GetSustainedWindSpeedkmh}}</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><i class="wi wi-raindrop"></i> {{T "Rain"}}</td>
-                        <td>
-                            <div id="rain">{{.IsRain}} </div>
-                        </td>
-                        <td>
-                            &nbsp;
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><i class="wi wi-raindrop"></i> {{T "Rain Daily"}}</td>
-                        <td>
-                            <div id="raindaily">{{.GetRainDailyIn}}</div>
-                        </td>
-                        <td>
-                            <div id="raindailymm"> {{.GetRainDailyMm}}</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><i class="wi wi-raindrop"></i> {{T "Rain Rate Last hour"}}</td>
-                        <td>
-                            <div id="rainrate">{{.GetRainRateIn}}</div>
-                        </td>
-                        <td>
-                            <div id="rainratemm">{{.GetRainRateMm}}</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><i class="wi wi-thermometer"></i> {{T "Temperature"}}</td>
-                        <td>
-                            <div id="tempf">{{.GetTemperatureFahrenheit}} °F</div>
-                        </td>
-                        <td>
-                            <div id="tempc">{{.GetTemperatureCelsius}} °C</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><i class="wi wi-humidity"></i> {{T "Humidity"}} patrikc</td>
-                        <td>
-                            <div id="humidity">{{.GetHumidity}}</div>
-                        </td>
-                        <td>
-                            &nbsp;
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><i class="wi wi-barometer"></i> {{T "Pressure"}}</td>
-                        <td>
-                            <div id="pressureinhg">{{.GetPressureInHg}}</div>
-                        </td>
-                        <td>
-                            <div id="pressurehpa">{{.GetPressureHPa}}</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><span class="glyphicon glyphicon-equalizer"></span> Voltage</td>
-                        <td>
-                            <div id="voltage">{{.GetPressureHPa}}</div>
-                        </td>
-                        <td>
-                            &nbsp;
-                        </td>
-                    </tr>
-                    <!-- <tr>
-<a href="http://s3.amazonaws.com/bskytimelapses/faBiuZWsnpaoqZqr_2_2017-06-04.mp4"> <img src="tmp.gif" alt="Bloomsky img" id="bloomimg1" height="200" width="200"> </a>
-                       
+            <div id="output"> </div>
 
-                        <img src="tmp.gif" alt="Bloomsky img" id="bloomimg2" height="200" width="200">
+            <table class="table table-striped">
+                <tr>
+                    <td><span class="glyphicon glyphicon-map-marker"></span> {{T "City"}}</td>
+                    <td>
+                        <div id="city"></div>
+                    </td>
+                    <td>
+                        &nbsp;
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div id="night"></div>
+                    </td>
+                    <td>
+                        &nbsp;
+                    </td>
+                    <td>
+                        &nbsp;
+                    </td>
+                </tr>
+                <tr>
+                    <td><i class="wi wi-sunset"></i> {{T "Index UV"}} </td>
+                    <td>
+                        <div id="uv"></div>
+                    </td>
+                    <td>
+                        &nbsp;
+                    </td>
+                </tr>
+                <tr>
+                    <td><i class="wi wi-small-craft-advisory"></i> {{T "Wind Direction"}}</td>
+                    <td>
+                        <div id="winddir"></div>
+                    </td>
+                    <td>
+                        &nbsp;
+                    </td>
+                </tr>
+                <tr>
+                    <td><i class="wi wi-small-craft-advisory"></i> {{T "Wind Gust"}}</td>
+                    <td>
+                        <div id="windgust"></div>
+                    </td>
+                    <td>
+                        <div id="wingustms"></div>
+                        <div id="wingustkmh"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><i class="wi wi-small-craft-advisory"></i> {{T "Sustained Wind"}}</td>
+                    <td>
+                        <div id="sustwind"></div>
+                    </td>
+                    <td>
+                        <div id="sustwindms"></div>
+                        <div id="sustwindkmh"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><i class="wi wi-raindrop"></i> {{T "Rain"}}</td>
+                    <td>
+                        <div id="rain"></div>
+                    </td>
+                    <td>
+                        &nbsp;
+                    </td>
+                </tr>
+                <tr>
+                    <td><i class="wi wi-raindrop"></i> {{T "Rain Daily"}}</td>
+                    <td>
+                        <div id="raindaily"></div>
+                    </td>
+                    <td>
+                        <div id="raindailymm"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><i class="wi wi-raindrop"></i> {{T "Rain Rate Last hour"}}</td>
+                    <td>
+                        <div id="rainrate"></div>
+                    </td>
+                    <td>
+                        <div id="rainratemm"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><i class="wi wi-thermometer"></i> {{T "Temperature"}}</td>
+                    <td>
+                        <div id="tempf"></div>
+                    </td>
+                    <td>
+                        <div id="tempc"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><i class="wi wi-humidity"></i> {{T "Humidity"}} patrikc</td>
+                    <td>
+                        <div id="humidity"></div>
+                    </td>
+                    <td>
+                        &nbsp;
+                    </td>
+                </tr>
+                <tr>
+                    <td><i class="wi wi-barometer"></i> {{T "Pressure"}}</td>
+                    <td>
+                        <div id="pressureinhg"></div>
+                    </td>
+                    <td>
+                        <div id="pressurehpa"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="glyphicon glyphicon-equalizer"></span> Voltage</td>
+                    <td>
+                        <div id="voltage"></div>
+                    </td>
+                    <td>
+                        &nbsp;
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="glyphicon glyphicon-globe"></span> {{T "Number Of Followers"}}</td>
+                    <td>
+                        <div id="followers"></div>
+                    </td>
+                    <td>
+                        &nbsp;
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="glyphicon glyphicon glyphicon-cog"></span> {{T "Device Id"}}</td>
+                    <td>
+                        <div id="device"></div>
+                    </td>
+                    <td>
+                        &nbsp;
+                    </td>
+                </tr>
+            </table>
 
-                        <img src="tmp.gif" alt="Bloomsky img" id="bloomimg3" height="200" width="200">
-
-                        <img src="tmp.gif" alt="Bloomsky img" id="bloomimg4" height="200" width="200">
-
-                        <img src="tmp.gif" alt="Bloomsky img" id="bloomimg5" height="200" width="200">
-                    </tr>-->
-                    <tr>
-                        <td><span class="glyphicon glyphicon-globe"></span> {{T "Number Of Followers"}}</td>
-                        <td>
-                            <div id="followers">{{.GetNumOfFollowers}}</div>
-                        </td>
-                        <td>
-                            &nbsp;
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><span class="glyphicon glyphicon glyphicon-cog"></span> {{T "Device Id"}}</td>
-                        <td>
-                            <div id="device">{{.GetDeviceID}}</div>
-                        </td>
-                        <td>
-                            &nbsp;
-                        </td>
-                    </tr>
-                </table>
-
-                <br>
-                <div id="refreshtime"></div>
+            <br>
+            <div id="refreshtime"></div>
 
 
-            </div>
-            <!--/.div md3 -->
+        </div>
+        <!--/.div md3 -->
 
-            <div class="col-md-4">
-                <table class="table table-striped">
-                    <tr>
-                        <br>
-                        <div id="formattedTime5"></div>
-                        <video id="vid0" width="320" height="240" controls loop>
+        <div class="col-md-4">
+            <table class="table table-striped">
+                <tr>
+                    <br>
+                    <div id="formattedTime5"></div>
+                    <video id="vid0" width="320" height="240" controls loop>
   <source src="" id="bloomvid0" type="video/mp4">Your browser does not support the video tag.
 </video>
-                    </tr>
-                    <tr>
-                        <br>
-                        <div id="formattedTime4"></div>
-                        <video id="vid1" width="320" height="240" controls loop>
+                </tr>
+                <tr>
+                    <br>
+                    <div id="formattedTime4"></div>
+                    <video id="vid1" width="320" height="240" controls loop>
   <source src="" id="bloomvid1" type="video/mp4">Your browser does not support the video tag.
 </video>
-                    </tr>
-                    <tr>
-                        <br>
-                        <div id="formattedTime3"></div>
-                        <video id="vid2" width="320" height="240" controls loop>
+                </tr>
+                <tr>
+                    <br>
+                    <div id="formattedTime3"></div>
+                    <video id="vid2" width="320" height="240" controls loop>
   <source src="" id="bloomvid2" type="video/mp4">Your browser does not support the video tag.
 </video>
-                    </tr>
-                    <tr>
-                        <br>
-                        <div id="formattedTime2"></div>
-                        <video id="vid3" width="320" height="240" controls loop>
+                </tr>
+                <tr>
+                    <br>
+                    <div id="formattedTime2"></div>
+                    <video id="vid3" width="320" height="240" controls loop>
   <source src="" id="bloomvid3" type="video/mp4">Your browser does not support the video tag.
 </video>
-                    </tr>
-                    <tr>
-                        <br>
-                        <div id="formattedTime1"></div>
-                        <video id="vid4" width="320" height="240" controls loop>
+                </tr>
+                <tr>
+                    <br>
+                    <div id="formattedTime1"></div>
+                    <video id="vid4" width="320" height="240" controls loop>
   <source src="" id="bloomvid4" type="video/mp4">Your browser does not support the video tag.
 </video>
-                    </tr>
-                </table>
+                </tr>
+            </table>
 
 
-            </div>
-            <!-- /.div md3 -->
         </div>
-        <!-- /.row -->
+        <!-- /.div md3 -->
     </div>
-    <!-- /.container -->
+    <!-- /.row -->
+</div>
+<!-- /.container -->
 
-    <!-- Bootstrap core JavaScript
+<!-- Bootstrap core JavaScript
                     ===
                     === === === === === === === === === === === === === === === == -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="/static/js/jquery-3.2.1.min.js">
-    </script>
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="/static/js/jquery-3.2.1.min.js">
+</script>
 {{ end }}
