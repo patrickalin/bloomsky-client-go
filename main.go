@@ -55,8 +55,6 @@ type configuration struct {
 var (
 	//Version of the code, fill in in compile.sh -ldflags "-X main.Version=`cat VERSION`"
 	Version = "No Version Provided"
-
-	debug = flag.String("debug", "", "Error=1, Warning=2, Info=3, Trace=4")
 	//logger
 	log = logrus.New()
 )
@@ -102,8 +100,9 @@ func main() {
 	config, err := readConfig(configNameFile)
 	checkErr(err, funcName(), "Problem reading config file", "")
 
-	//Read flag
+	//Read flags
 	logDebug(funcName(), "Get flag from command line", "")
+	debug := flag.String("debug", "", "Error=1, Warning=2, Info=3, Trace=4")
 	flag.Parse()
 	if *debug != "" {
 		config.logLevel = *debug
