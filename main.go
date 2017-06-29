@@ -172,7 +172,8 @@ func main() {
 	<-myContext.Done()
 	if httpServ.httpServ != nil {
 		logDebug(funcName(), "Shutting down webserver", "")
-		httpServ.httpServ.Shutdown(myContext)
+		err := httpServ.httpServ.Shutdown(myContext)
+		checkErr(err, funcName(), "Impossible to shutdown context", "")
 	}
 
 	logrus.WithFields(logrus.Fields{
