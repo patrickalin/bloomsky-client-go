@@ -103,9 +103,8 @@ func main() {
 	}).Info("Bloomsky API")
 
 	//Read configuration from config file
-	if err := readConfig(configNameFile); err != nil {
-		logFatal(err, funcName(), "Problem reading config file", "")
-	}
+	config, err := readConfig(configNameFile)
+	checkErr(err, funcName(), "Problem reading config file", "")
 
 	//Read flag
 	logDebug(funcName(), "Get flag from command line", "")
@@ -221,7 +220,9 @@ func collect(mybloomsky bloomsky.Bloomsky, channels map[string]chan bloomsky.Blo
 }
 
 // ReadConfig read config from config.json with the package viper
-func readConfig(configName string) (err error) {
+func readConfig(configName string) (configuration, error) {
+
+	var conf configuration
 	viper.SetConfigName(configName)
 	viper.AddConfigPath(".")
 
@@ -231,28 +232,28 @@ func readConfig(configName string) (err error) {
 
 	if err := viper.ReadInConfig(); err != nil {
 		logFatal(err, funcName(), "The config file loaded", dir)
-		return err
+		return conf, err
 	}
 	logInfo(funcName(), "The config file loaded", dir)
 
 	//TODO#16 find to simplify this section
-	config.bloomskyURL = viper.GetString("BloomskyURL")
-	config.bloomskyAccessToken = viper.GetString("BloomskyAccessToken")
-	config.influxDBDatabase = viper.GetString("InfluxDBDatabase")
-	config.influxDBPassword = viper.GetString("InfluxDBPassword")
-	config.influxDBServer = viper.GetString("InfluxDBServer")
-	config.influxDBServerPort = viper.GetString("InfluxDBServerPort")
-	config.influxDBUsername = viper.GetString("InfluxDBUsername")
-	config.consoleActivated = viper.GetBool("ConsoleActivated")
-	config.influxDBActivated = viper.GetBool("InfluxDBActivated")
-	config.historyActivated = viper.GetBool("historyActivated")
-	config.refreshTimer = time.Duration(viper.GetInt("RefreshTimer")) * time.Second
-	config.hTTPActivated = viper.GetBool("HTTPActivated")
-	config.hTTPPort = viper.GetString("HTTPPort")
-	config.logLevel = viper.GetString("LogLevel")
-	config.mock = viper.GetBool("mock")
-	config.language = viper.GetString("language")
-	config.dev = viper.GetBool("dev")
+	conf.bloomskyURL = viper.GetString("BloomskyURL")
+	conf.bloomskyAccessToken = viper.GetString("BloomskyAccessToken")
+	conf.influxDBDatabase = viper.GetString("InfluxDBDatabase")
+	conf.influxDBPassword = viper.GetString("InfluxDBPassword")
+	conf.influxDBServer = viper.GetString("InfluxDBServer")
+	conf.influxDBServerPort = viper.GetString("InfluxDBServerPort")
+	conf.influxDBUsername = viper.GetString("InfluxDBUsername")
+	conf.consoleActivated = viper.GetBool("ConsoleActivated")
+	conf.influxDBActivated = viper.GetBool("InfluxDBActivated")
+	conf.historyActivated = viper.GetBool("historyActivated")
+	conf.refreshTimer = time.Duration(viper.GetInt("RefreshTimer")) * time.Second
+	conf.hTTPActivated = viper.GetBool("HTTPActivated")
+	conf.hTTPPort = viper.GetString("HTTPPort")
+	conf.logLevel = viper.GetString("LogLevel")
+	conf.mock = viper.GetBool("mock")
+	conf.language = viper.GetString("language")
+	conf.dev = viper.GetBool("dev")
 
 	if err := i18n.ParseTranslationFileBytes("lang/en-us.all.json", readFile("lang/en-us.all.json")); err != nil {
 		logFatal(err, funcName(), "Error read language file check in config.yaml if dev=false", "")
@@ -261,7 +262,7 @@ func readConfig(configName string) (err error) {
 		logFatal(err, funcName(), "Error read language file check in config.yaml if dev=false", "")
 	}
 
-	config.translateFunc, err = i18n.Tfunc(config.language)
+	conf.translateFunc, err = i18n.Tfunc(conf.language)
 	checkErr(err, funcName(), "Problem with loading translate file", "")
 
 	// Check if one value of the structure is empty
@@ -272,13 +273,13 @@ func readConfig(configName string) (err error) {
 		//TODO#16
 		//v.Field(i).SetString(viper.GetString(v.Type().Field(i).Name))
 		if values[i] == "" {
-			return fmt.Errorf("Check if the key " + v.Type().Field(i).Name + " is present in the file " + dir)
+			return conf, fmt.Errorf("Check if the key " + v.Type().Field(i).Name + " is present in the file " + dir)
 		}
 	}
 	if token := os.Getenv("bloomskyAccessToken"); token != "" {
-		config.bloomskyAccessToken = token
+		conf.bloomskyAccessToken = token
 	}
-	return nil
+	return conf, nil
 }
 
 //Read file and return []byte
