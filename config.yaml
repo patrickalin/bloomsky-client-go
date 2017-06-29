@@ -13,6 +13,7 @@
 ######## If true display informations on webpage
   hTTPActivated: true
   hTTPPort : ":1111"
+  hTTPSPort : ":1112"
 ######## Params influxDB necessary if true
   influxDBActivated: "false"
   influxDBServer: "localhost"
