@@ -14,6 +14,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"reflect"
+	"strconv"
 	"time"
 
 	_ "net/http/pprof"
@@ -103,11 +104,28 @@ func main() {
 
 	//Read flags
 	logDebug(funcName(), "Get flag from command line", "")
-	debug := flag.String("debug", "", "Error=1, Warning=2, Info=3, Trace=4")
+	levelF := flag.String("debug", "", "panic,fatal,error,warning,info,debug")
+	tokenF := flag.String("token", "", "yourtoken")
+	develF := flag.String("devel", "", "true,false")
+	mockF := flag.String("mock", "", "true,false")
 	flag.Parse()
-	if *debug != "" {
-		config.logLevel = *debug
+
+	if *levelF != "" {
+		config.logLevel = *levelF
 	}
+	if *tokenF != "" {
+		config.bloomskyAccessToken = *tokenF
+	}
+	if *develF != "" {
+		config.dev, err = strconv.ParseBool(*develF)
+		checkErr(err, funcName(), "error convert string to bol", "")
+	}
+	if *mockF != "" {
+		config.mock, err = strconv.ParseBool(*mockF)
+		checkErr(err, funcName(), "error convert string to bol", "")
+	}
+
+	fmt.Println("ici:%v", config.bloomskyAccessToken)
 
 	// Set Level log
 	level, err := logrus.ParseLevel(config.logLevel)
