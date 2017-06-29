@@ -83,7 +83,7 @@ func (httpServ *httpServer) refreshdata(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	if err = conn.WriteMessage(websocket.TextMessage, msgJSON); err != nil {
+		if err = conn.WriteMessage(websocket.TextMessage, msgJSON); err != nil {
 		log.WithFields(logrus.Fields{
 			"error": err,
 			"fct":   "exportWebServer.refreshdata",
