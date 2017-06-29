@@ -12,6 +12,11 @@ func funcName() string {
 }
 
 func logFatal(err error, fct string, msg string, param string) {
+	logrus.WithFields(logrus.Fields{
+		"param": param,
+		"error": err,
+		"fct":   fct,
+	}).Warn(msg)
 	log.WithFields(logrus.Fields{
 		"param": param,
 		"error": err,
