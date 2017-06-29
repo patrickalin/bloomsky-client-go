@@ -59,8 +59,6 @@ var (
 	//record the configuration parameter
 	config configuration
 
-	channels = make(map[string]chan bloomsky.Bloomsky)
-
 	debug = flag.String("debug", "", "Error=1, Warning=2, Info=3, Trace=4")
 	//logger
 	log              = logrus.New()
@@ -131,6 +129,8 @@ func main() {
 		responseBloomsky = readFile(mockFile)
 	}
 
+	channels := make(map[string]chan bloomsky.Bloomsky)
+
 	if config.historyActivated {
 		channels["store"] = make(chan bloomsky.Bloomsky)
 		s, err := createStore(channels["store"])
@@ -166,7 +166,7 @@ func main() {
 	}
 
 	//Call scheduler
-	schedule(ctxsch)
+	schedule(ctxsch, channels)
 
 	//If signal to close the program
 	<-myContext.Done()
@@ -181,15 +181,18 @@ func main() {
 }
 
 // The scheduler executes each time "collect"
-func schedule(myContext context.Context) {
+func schedule(myContext context.Context, channels map[string]chan bloomsky.Bloomsky) {
 	ticker := time.NewTicker(config.refreshTimer)
 	logDebug(funcName(), "Create scheduler", "")
 
-	collect()
+	// get bloomsky JSON and parse information in bloomsky Go Structure
+	mybloomsky := bloomsky.New(config.bloomskyURL, config.bloomskyAccessToken, log)
+
+	collect(mybloomsky, channels)
 	for {
 		select {
 		case <-ticker.C:
-			collect()
+			collect(mybloomsky, channels)
 		case <-myContext.Done():
 			logDebug(funcName(), "Stoping ticker", "")
 			ticker.Stop()
@@ -202,11 +205,9 @@ func schedule(myContext context.Context) {
 }
 
 //Principal function which one loops each Time Variable
-func collect() {
+func collect(mybloomsky bloomsky.Bloomsky, channels map[string]chan bloomsky.Bloomsky) {
 	logDebug(funcName(), "Parse informations from API bloomsky", config.refreshTimer.String())
 
-	// get bloomsky JSON and parse information in bloomsky Go Structure
-	var mybloomsky = bloomsky.New(config.bloomskyURL, config.bloomskyAccessToken, log)
 	if config.mock {
 		mybloomsky.RefreshFromBody(responseBloomsky)
 	} else {
