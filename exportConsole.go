@@ -20,7 +20,7 @@ func createConsole(messages chan bloomsky.Bloomsky, translateFunc i18n.Translate
 	f := map[string]interface{}{"T": translateFunc}
 	//Get template
 	c := console{in: messages, textTemplate: GetTemplate("bloomsky.txt", "tmpl/bloomsky.txt", f, dev)}
-	logInfo(funcName(), "Init console", "")
+	logInfo(funcName(), "Console listen", "")
 	return c, nil
 }
 
