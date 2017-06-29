@@ -6,6 +6,7 @@ import (
 	"os"
 	"text/template"
 
+	"github.com/nicksnyder/go-i18n/i18n"
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
 )
 
@@ -15,10 +16,10 @@ type console struct {
 }
 
 //InitConsole listen on the chanel
-func createConsole(messages chan bloomsky.Bloomsky) (console, error) {
-	f := map[string]interface{}{"T": config.translateFunc}
+func createConsole(messages chan bloomsky.Bloomsky, translateFunc i18n.TranslateFunc, dev bool) (console, error) {
+	f := map[string]interface{}{"T": translateFunc}
 	//Get template
-	c := console{in: messages, textTemplate: GetTemplate("bloomsky.txt", "tmpl/bloomsky.txt", f, config.dev)}
+	c := console{in: messages, textTemplate: GetTemplate("bloomsky.txt", "tmpl/bloomsky.txt", f, dev)}
 	logInfo(funcName(), "Init console", "")
 	return c, nil
 }
