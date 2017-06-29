@@ -16,17 +16,13 @@ import (
 	"github.com/patrickalin/bloomsky-client-go/assembly-assetfs"
 )
 
-var (
-	conn          *websocket.Conn
-	mybloomsky    bloomsky.Bloomsky
-	msgJSON       []byte
-	translateFunc i18n.TranslateFunc
-	dev           bool
-)
-
 type httpServer struct {
 	bloomskyMessageToHTTP chan bloomsky.Bloomsky
 	httpServ              *http.Server
+	conn                  *websocket.Conn
+	msgJSON               []byte
+	translateFunc         i18n.TranslateFunc
+	dev                   bool
 }
 
 type pageHome struct {
@@ -50,21 +46,21 @@ func (httpServ *httpServer) listen(context context.Context) {
 	go func() {
 		for {
 			mybloomsky := <-httpServ.bloomskyMessageToHTTP
+			var err error
 
-			localJSON, err := json.Marshal(mybloomsky.GetBloomskyStruct())
-			msgJSON = localJSON
+			httpServ.msgJSON, err = json.Marshal(mybloomsky.GetBloomskyStruct())
 			checkErr(err, funcName(), "Marshal json Error", "")
 
-			if msgJSON == nil {
+			if httpServ.msgJSON == nil {
 				logFatal(err, funcName(), "JSON Empty", "")
 			}
 
-			if conn != nil {
-				err = conn.WriteMessage(websocket.TextMessage, msgJSON)
+			if httpServ.conn != nil {
+				err = httpServ.conn.WriteMessage(websocket.TextMessage, httpServ.msgJSON)
 				checkErr(err, funcName(), "Impossible to write to websocket", "")
 			}
 
-			logDebug(funcName(), "Listen", string(msgJSON))
+			logDebug(funcName(), "Listen", string(httpServ.msgJSON))
 		}
 	}()
 }
@@ -75,21 +71,43 @@ func (httpServ *httpServer) refreshdata(w http.ResponseWriter, r *http.Request) 
 
 	upgrader := websocket.Upgrader{}
 
-	conn, err := upgrader.Upgrade(w, r, nil)
+	var err error
+
+	httpServ.conn, err = upgrader.Upgrade(w, r, nil)
 	checkErr(err, funcName(), "Upgrade upgrader", "")
 
-	if err = conn.WriteMessage(websocket.TextMessage, msgJSON); err != nil {
+	if err = httpServ.conn.WriteMessage(websocket.TextMessage, httpServ.msgJSON); err != nil {
 		logFatal(err, funcName(), "Impossible to write to websocket", "")
 	}
 }
 
+func getWs(r *http.Request) string {
+	if r.TLS == nil {
+		return "ws://"
+	}
+	return "wss://"
+}
+
 // Home bloomsky handler
 func (httpServ *httpServer) home(w http.ResponseWriter, r *http.Request) {
+
 	logDebug(funcName(), "Home Http handle", "")
 
-	t := GetHTMLTemplate("bloomsky", []string{"tmpl/bloomsky.html", "tmpl/bloomsky_header.html", "tmpl/bloomsky_body.html"}, map[string]interface{}{"T": translateFunc}, dev)
+	t := GetHTMLTemplate("bloomsky", []string{"tmpl/bloomsky.html", "tmpl/bloomsky_header.html", "tmpl/bloomsky_body.html"}, map[string]interface{}{"T": httpServ.translateFunc}, httpServ.dev)
 
-	p := pageHome{Websockerurl: "ws://" + r.Host + "/refreshdata"}
+	p := pageHome{Websockerurl: getWs(r) + r.Host + "/refreshdata"}
+	if err := t.Execute(w, p); err != nil {
+		logFatal(err, funcName(), "Execute template home", "")
+	}
+}
+
+// Home bloomsky handler
+func (httpServ *httpServer) homes(w http.ResponseWriter, r *http.Request) {
+	logDebug(funcName(), "Home Https handle", "")
+
+	t := GetHTMLTemplate("bloomsky", []string{"tmpl/bloomsky.html", "tmpl/bloomsky_header.html", "tmpl/bloomsky_body.html"}, map[string]interface{}{"T": httpServ.translateFunc}, httpServ.dev)
+
+	p := pageHome{Websockerurl: "wss://" + r.Host + "/refreshdata"}
 	if err := t.Execute(w, p); err != nil {
 		logFatal(err, funcName(), "Execute template home", "")
 	}
@@ -128,7 +146,7 @@ func (httpServ *httpServer) log(w http.ResponseWriter, r *http.Request) {
 
 	p := map[string]interface{}{"LogTxt": template.HTML(str)}
 
-	t := GetHTMLTemplate("bloomsky", []string{"tmpl/bloomsky.html", "tmpl/log_header.html", "tmpl/log_body.html"}, map[string]interface{}{"T": translateFunc}, dev)
+	t := GetHTMLTemplate("bloomsky", []string{"tmpl/bloomsky.html", "tmpl/log_header.html", "tmpl/log_body.html"}, map[string]interface{}{"T": httpServ.translateFunc}, httpServ.dev)
 	if err := t.Execute(w, p); err != nil {
 		logFatal(err, funcName(), "Compile template log", "")
 	}
@@ -142,10 +160,10 @@ func getFileServer(dev bool) http.FileSystem {
 }
 
 //createWebServer create web server
-func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string, translate i18n.TranslateFunc, devel bool) (*httpServer, error) {
-	server := &httpServer{bloomskyMessageToHTTP: in}
-	dev = devel
-	translateFunc = translate
+func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string, HTTPSPort string, translate i18n.TranslateFunc, devel bool) (*httpServer, error) {
+	server := &httpServer{bloomskyMessageToHTTP: in,
+		dev:           devel,
+		translateFunc: translate}
 
 	fs := http.FileServer(getFileServer(devel))
 
@@ -153,11 +171,9 @@ func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string, translate i18n.
 
 	s.Handle("/static/", http.StripPrefix("/static/", fs))
 	s.Handle("/favicon.ico", fs)
-
-	s.HandleFunc("/refreshdata", server.refreshdata)
 	s.HandleFunc("/", server.home)
+	s.HandleFunc("/refreshdata", server.refreshdata)
 	s.HandleFunc("/log", server.log)
-
 	s.HandleFunc("/debug/pprof/", pprof.Index)
 	s.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
 	s.HandleFunc("/debug/pprof/profile", pprof.Profile)
@@ -165,24 +181,19 @@ func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string, translate i18n.
 	s.HandleFunc("/debug/pprof/trace", pprof.Trace)
 
 	h := &http.Server{Addr: HTTPPort, Handler: s}
-
-	/*
-		HTTPS
-		i := &http.Server{Addr: ":2222", Handler: s}
-		go func() {
-			if err := i.ListenAndServeTLS("server.crt", "server.key"); err != nil {
-				logrus.Errorf("Error when I create the server HTTPS : %v", err)
-			}
-		}()
-	*/
-
 	go func() {
-		if err := h.ListenAndServe(); err != nil {
-			logFatal(err, funcName(), "Error when I create the server", "")
-		}
+		err := h.ListenAndServe()
+		checkErr(err, funcName(), "Error when I create the server HTTP (don't forget ':')", "")
 	}()
 
-	logInfo(funcName(), "Server listen on port", HTTPPort)
+	hs := &http.Server{Addr: HTTPSPort, Handler: s}
+	go func() {
+		err := hs.ListenAndServeTLS("server.crt", "server.key")
+		checkErr(err, funcName(), "Error when I create the server HTTPS (don't forget ':')", "")
+	}()
+
+	logInfo(funcName(), "Server HTTP listen on port", HTTPPort)
+	logInfo(funcName(), "Server HTTPS listen on port", HTTPSPort)
 
 	server.httpServ = h
 	return server, nil
