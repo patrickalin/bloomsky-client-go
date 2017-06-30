@@ -6,6 +6,7 @@ import (
 	"os"
 	"text/template"
 
+	"github.com/fatih/color"
 	"github.com/nicksnyder/go-i18n/i18n"
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
 )
@@ -51,9 +52,15 @@ func (c *console) listen(context context.Context) {
 		for {
 			select {
 			case msg := <-c.in:
+
+				color.Set(color.FgBlack)
+				color.Set(color.BgWhite)
+
 				if err := c.textTemplate.Execute(os.Stdout, msg); err != nil {
 					fmt.Printf("%v", err)
 				}
+
+				color.Unset()
 
 			case <-context.Done():
 				fmt.Println("console done")
