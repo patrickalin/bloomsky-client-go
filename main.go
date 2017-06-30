@@ -14,6 +14,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"reflect"
+	"strconv"
 	"time"
 
 	_ "net/http/pprof"
@@ -27,16 +28,16 @@ import (
 
 //configName name of the config file
 const configNameFile = "config"
-const mockFile = "test-mock/mock.json"
 const logFile = "bloomsky.log"
 
 // Configuration is the structure of the config YAML file
 //use http://mervine.net/json2struct
 type configuration struct {
 	consoleActivated    bool
-	historyActivated    bool
 	hTTPActivated       bool
+	historyActivated    bool
 	hTTPPort            string
+	hTTPSPort           string
 	influxDBActivated   bool
 	influxDBDatabase    string
 	influxDBPassword    string
@@ -54,22 +55,16 @@ type configuration struct {
 }
 
 var (
-	//Version of the code
+	//Version of the code, fill in in compile.sh -ldflags "-X main.Version=`cat VERSION`"
 	Version = "No Version Provided"
-	//record the configuration parameter
-	config configuration
-
-	channels = make(map[string]chan bloomsky.Bloomsky)
-
-	debug = flag.String("debug", "", "Error=1, Warning=2, Info=3, Trace=4")
 	//logger
-	log              = logrus.New()
-	responseBloomsky []byte
+	log = logrus.New()
 )
 
 func init() {
-	//log.Formatter = new(logrus.JSONFormatter)
-	log.Formatter = new(logrus.TextFormatter)
+	log.Formatter = new(logrus.JSONFormatter)
+
+	err := os.Remove(logFile)
 
 	file, err := os.OpenFile(logFile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
 	if err != nil {
@@ -82,9 +77,7 @@ func init() {
 func main() {
 
 	//Create context
-	log.WithFields(logrus.Fields{
-		"fct": "main.main",
-	}).Debug("Create context")
+	logDebug(funcName(), "Create context", "")
 	myContext, cancel := context.WithCancel(context.Background())
 
 	signalCh := make(chan os.Signal, 1)
@@ -92,10 +85,7 @@ func main() {
 	go func() {
 		select {
 		case i := <-signalCh:
-			log.WithFields(logrus.Fields{
-				"msg": i,
-				"fct": "main.main",
-			}).Debug("Receive interrupt")
+			logDebug(funcName(), "Receive interrupt", i.String())
 			cancel()
 			return
 		}
@@ -105,73 +95,82 @@ func main() {
 		"time":    time.Now().Format(time.RFC850),
 		"version": Version,
 		"config":  configNameFile,
-		"fct":     "main.main",
+		"fct":     funcName(),
 	}).Info("Bloomsky API")
 
 	//Read configuration from config file
-	if err := readConfig(configNameFile); err != nil {
-		log.WithFields(logrus.Fields{
-			"error": err,
-			"fct":   "main.main",
-		}).Fatal("Problem reading config file")
+	config, err := readConfig(configNameFile)
+	if err != nil {
+		logWarn(funcName(), "Config file not loaded error we use flag and default value", os.Args[0])
+		config.language = "en-us"
+		config.influxDBActivated = false
+		config.hTTPActivated = true
+		config.hTTPPort = ":1111"
+		config.hTTPSPort = ":1112"
+		config.consoleActivated = true
+		config.refreshTimer = time.Duration(60) * time.Second
+		config.bloomskyURL = "https://api.bloomsky.com/api/skydata/"
+		config.logLevel = "debug"
+		config.mock = true
+		config.dev = false
 	}
 
-	//Read flag
-	log.WithFields(logrus.Fields{
-		"fct": "main.main",
-	}).Debug("Get flag from command line")
-
+	//Read flags
+	logDebug(funcName(), "Get flag from command line", "")
+	levelF := flag.String("debug", "", "panic,fatal,error,warning,info,debug")
+	tokenF := flag.String("token", "", "yourtoken")
+	develF := flag.String("devel", "", "true,false")
+	mockF := flag.String("mock", "", "true,false")
 	flag.Parse()
-	if *debug != "" {
-		config.logLevel = *debug
+
+	if *levelF != "" {
+		config.logLevel = *levelF
+	}
+	if *tokenF != "" {
+		config.bloomskyAccessToken = *tokenF
+	}
+	if *develF != "" {
+		config.dev, err = strconv.ParseBool(*develF)
+		checkErr(err, funcName(), "error convert string to bol", "")
+	}
+	if *mockF != "" {
+		config.mock, err = strconv.ParseBool(*mockF)
+		checkErr(err, funcName(), "error convert string to bol", "")
 	}
 
 	// Set Level log
 	level, err := logrus.ParseLevel(config.logLevel)
-	if err != nil {
-		log.WithFields(logrus.Fields{
-			"fct":   "main.main",
-			"error": err,
-		}).Fatal("Error parse level")
-	}
+	checkErr(err, funcName(), "Error parse level", "")
 	log.Level = level
-	log.WithFields(logrus.Fields{
-		"fct":   "main.main",
-		"level": level,
-	}).Info("Level log")
+	logInfo(funcName(), "Level log", config.logLevel)
 
 	// Context
 	ctxsch := context.Context(myContext)
 
-	// Read mock file
-	if config.mock {
-		logrus.WithFields(logrus.Fields{
-			"fct": "main.main",
-		}).Warn("Mock activated !!!")
-		responseBloomsky = readFile(mockFile)
+	channels := make(map[string]chan bloomsky.Bloomsky)
+
+	if err := i18n.ParseTranslationFileBytes("lang/en-us.all.json", readFile("lang/en-us.all.json", config.dev)); err != nil {
+		logFatal(err, funcName(), "Error read language file check in config.yaml if dev=false", "")
 	}
+	if err := i18n.ParseTranslationFileBytes("lang/fr.all.json", readFile("lang/fr.all.json", config.dev)); err != nil {
+		logFatal(err, funcName(), "Error read language file check in config.yaml if dev=false", "")
+	}
+
+	translateFunc, err := i18n.Tfunc(config.language)
+	checkErr(err, funcName(), "Problem with loading translate file", "")
 
 	if config.historyActivated {
 		channels["store"] = make(chan bloomsky.Bloomsky)
 		s, err := createStore(channels["store"])
-		if err != nil {
-			log.WithFields(logrus.Fields{
-				"fct":   "main.main",
-				"error": err,
-			}).Fatal("Error with initConsol")
-		}
+		checkErr(err, funcName(), "Error with history create store", "")
 		s.listen(context.Background())
 	}
+
 	// Console initialisation
 	if config.consoleActivated {
 		channels["console"] = make(chan bloomsky.Bloomsky)
-		c, err := createConsole(channels["console"])
-		if err != nil {
-			log.WithFields(logrus.Fields{
-				"fct":   "main.main",
-				"error": err,
-			}).Fatal("Error with initConsol")
-		}
+		c, err := createConsole(channels["console"], translateFunc, config.dev)
+		checkErr(err, funcName(), "Error with initConsol", "")
 		c.listen(context.Background())
 	}
 
@@ -179,14 +178,8 @@ func main() {
 	if config.influxDBActivated {
 		channels["influxdb"] = make(chan bloomsky.Bloomsky)
 		c, err := initClient(channels["influxdb"], config.influxDBServer, config.influxDBServerPort, config.influxDBUsername, config.influxDBPassword, config.influxDBDatabase)
-		if err != nil {
-			log.WithFields(logrus.Fields{
-				"fct":   "main.main",
-				"error": err,
-			}).Fatal("Error with initClientInfluxDB")
-		}
+		checkErr(err, funcName(), "Error with initClientInfluxDB", "")
 		c.listen(context.Background())
-
 	}
 
 	// WebServer initialisation
@@ -194,27 +187,23 @@ func main() {
 	if config.hTTPActivated {
 		var err error
 		channels["web"] = make(chan bloomsky.Bloomsky)
-		httpServ, err = createWebServer(channels["web"], config.hTTPPort)
-		if err != nil {
-			log.WithFields(logrus.Fields{
-				"fct":   "main.main",
-				"error": err,
-			}).Fatal("Error with initWebServer")
-		}
+		httpServ, err = createWebServer(channels["web"], config.hTTPPort, config.hTTPSPort, translateFunc, config.dev)
+		checkErr(err, funcName(), "Error with initWebServer", "")
 		httpServ.listen(context.Background())
 
 	}
 
+	// get bloomsky JSON and parse information in bloomsky Go Structure
+	mybloomsky := bloomsky.New(config.bloomskyURL, config.bloomskyAccessToken, config.mock, log)
 	//Call scheduler
-	schedule(ctxsch)
+	schedule(ctxsch, mybloomsky, channels, config.refreshTimer)
 
 	//If signal to close the program
 	<-myContext.Done()
 	if httpServ.httpServ != nil {
-		log.WithFields(logrus.Fields{
-			"fct": "main.main",
-		}).Debug("Shutting down webserver")
-		httpServ.httpServ.Shutdown(myContext)
+		logDebug(funcName(), "Shutting down webserver", "")
+		err := httpServ.httpServ.Shutdown(myContext)
+		checkErr(err, funcName(), "Impossible to shutdown context", "")
 	}
 
 	logrus.WithFields(logrus.Fields{
@@ -223,21 +212,17 @@ func main() {
 }
 
 // The scheduler executes each time "collect"
-func schedule(myContext context.Context) {
-	ticker := time.NewTicker(config.refreshTimer)
-	log.WithFields(logrus.Fields{
-		"fct": "main.schedule",
-	}).Debug("Create scheduler")
+func schedule(myContext context.Context, mybloomsky bloomsky.Bloomsky, channels map[string]chan bloomsky.Bloomsky, refreshTime time.Duration) {
+	ticker := time.NewTicker(refreshTime)
+	logDebug(funcName(), "Create scheduler", refreshTime.String())
 
-	collect()
+	collect(mybloomsky, channels)
 	for {
 		select {
 		case <-ticker.C:
-			collect()
+			collect(mybloomsky, channels)
 		case <-myContext.Done():
-			log.WithFields(logrus.Fields{
-				"fct": "main.schedule",
-			}).Debug("Stoping ticker")
+			logDebug(funcName(), "Stoping ticker", "")
 			ticker.Stop()
 			for _, v := range channels {
 				close(v)
@@ -248,19 +233,10 @@ func schedule(myContext context.Context) {
 }
 
 //Principal function which one loops each Time Variable
-func collect() {
-	log.WithFields(logrus.Fields{
-		"fct":          "main.collect",
-		"Refresh Time": config.refreshTimer,
-	}).Debug("Parse informations from API bloomsky")
+func collect(mybloomsky bloomsky.Bloomsky, channels map[string]chan bloomsky.Bloomsky) {
+	logDebug(funcName(), "Parse informations from API bloomsky", "")
 
-	// get bloomsky JSON and parse information in bloomsky Go Structure
-	var mybloomsky = bloomsky.New(config.bloomskyURL, config.bloomskyAccessToken, log)
-	if config.mock {
-		mybloomsky.RefreshFromBody(responseBloomsky)
-	} else {
-		mybloomsky.RefreshFromRest()
-	}
+	mybloomsky.Refresh()
 
 	//send message on each channels
 	for _, v := range channels {
@@ -269,104 +245,68 @@ func collect() {
 }
 
 // ReadConfig read config from config.json with the package viper
-func readConfig(configName string) (err error) {
+func readConfig(configName string) (configuration, error) {
+
+	var conf configuration
 	viper.SetConfigName(configName)
 	viper.AddConfigPath(".")
 
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	if err != nil {
-		return fmt.Errorf("%v", err)
-	}
+	checkErr(err, funcName(), "Fielpaths", "")
 	dir = dir + "/" + configName
 
 	if err := viper.ReadInConfig(); err != nil {
-		fmt.Println(err)
-		log.WithFields(logrus.Fields{
-			"config": dir,
-			"fct":    "main.readConfig",
-		}).Fatal("The config file loaded")
-		return err
+		logWarn(funcName(), "Error loading the config file", dir)
+		return conf, err
 	}
-	log.WithFields(logrus.Fields{
-		"config": dir,
-		"fct":    "main.readConfig",
-	}).Info("The config file loaded")
+	logInfo(funcName(), "The config file loaded", dir)
 
 	//TODO#16 find to simplify this section
-	config.bloomskyURL = viper.GetString("BloomskyURL")
-	config.bloomskyAccessToken = viper.GetString("BloomskyAccessToken")
-	config.influxDBDatabase = viper.GetString("InfluxDBDatabase")
-	config.influxDBPassword = viper.GetString("InfluxDBPassword")
-	config.influxDBServer = viper.GetString("InfluxDBServer")
-	config.influxDBServerPort = viper.GetString("InfluxDBServerPort")
-	config.influxDBUsername = viper.GetString("InfluxDBUsername")
-	config.consoleActivated = viper.GetBool("ConsoleActivated")
-	config.influxDBActivated = viper.GetBool("InfluxDBActivated")
-	config.historyActivated = viper.GetBool("historyActivated")
-
-	config.refreshTimer = time.Duration(viper.GetInt("RefreshTimer")) * time.Second
-	config.hTTPActivated = viper.GetBool("HTTPActivated")
-	config.hTTPPort = viper.GetString("HTTPPort")
-	config.logLevel = viper.GetString("LogLevel")
-	config.mock = viper.GetBool("mock")
-	config.language = viper.GetString("language")
-	config.dev = viper.GetBool("dev")
-
-	if err := i18n.ParseTranslationFileBytes("lang/en-us.all.json", readFile("lang/en-us.all.json")); err != nil {
-		log.WithFields(logrus.Fields{
-			"msg": err,
-			"fct": "main.readConfig",
-		}).Fatal("Error read language file check in config.yaml if dev=false")
-	}
-	if err := i18n.ParseTranslationFileBytes("lang/fr.all.json", readFile("lang/fr.all.json")); err != nil {
-		log.WithFields(logrus.Fields{
-			"msg": err,
-			"fct": "main.readConfig",
-		}).Fatal("Error read language file check in config.yaml if dev=false")
-	}
-
-	config.translateFunc, err = i18n.Tfunc(config.language)
-	if err != nil {
-		log.WithFields(logrus.Fields{
-			"msg": err,
-			"fct": "main.readConfig",
-		}).Fatal("Problem with loading translate file")
-	}
+	conf.bloomskyURL = viper.GetString("BloomskyURL")
+	conf.bloomskyAccessToken = viper.GetString("BloomskyAccessToken")
+	conf.influxDBDatabase = viper.GetString("InfluxDBDatabase")
+	conf.influxDBPassword = viper.GetString("InfluxDBPassword")
+	conf.influxDBServer = viper.GetString("InfluxDBServer")
+	conf.influxDBServerPort = viper.GetString("InfluxDBServerPort")
+	conf.influxDBUsername = viper.GetString("InfluxDBUsername")
+	conf.consoleActivated = viper.GetBool("ConsoleActivated")
+	conf.influxDBActivated = viper.GetBool("InfluxDBActivated")
+	conf.historyActivated = viper.GetBool("historyActivated")
+	conf.refreshTimer = time.Duration(viper.GetInt("RefreshTimer")) * time.Second
+	conf.hTTPActivated = viper.GetBool("HTTPActivated")
+	conf.hTTPPort = viper.GetString("HTTPPort")
+	conf.hTTPSPort = viper.GetString("hTTPSPort")
+	conf.logLevel = viper.GetString("LogLevel")
+	conf.mock = viper.GetBool("mock")
+	conf.language = viper.GetString("language")
+	conf.dev = viper.GetBool("dev")
 
 	// Check if one value of the structure is empty
-	v := reflect.ValueOf(config)
+	v := reflect.ValueOf(conf)
 	values := make([]interface{}, v.NumField())
 	for i := 0; i < v.NumField(); i++ {
 		values[i] = v.Field(i)
 		//TODO#16
 		//v.Field(i).SetString(viper.GetString(v.Type().Field(i).Name))
 		if values[i] == "" {
-			return fmt.Errorf("Check if the key " + v.Type().Field(i).Name + " is present in the file " + dir)
+			return conf, fmt.Errorf("Check if the key " + v.Type().Field(i).Name + " is present in the file " + dir)
 		}
 	}
 	if token := os.Getenv("bloomskyAccessToken"); token != "" {
-		config.bloomskyAccessToken = token
+		conf.bloomskyAccessToken = token
 	}
-	return nil
+	return conf, nil
 }
 
 //Read file and return []byte
-func readFile(fileName string) []byte {
-	var fileByte []byte
-	var err error
-
-	if config.dev {
-		fileByte, err = ioutil.ReadFile(fileName)
-	} else {
-		fileByte, err = assembly.Asset(fileName)
+func readFile(fileName string, dev bool) []byte {
+	if dev {
+		fileByte, err := ioutil.ReadFile(fileName)
+		checkErr(err, funcName(), "Error reading the file", fileName)
+		return fileByte
 	}
 
-	if err != nil {
-		log.WithFields(logrus.Fields{
-			"file name": fileName,
-			"msg":       err,
-			"fct":       "main.readFile",
-		}).Fatal("Error reading the file")
-	}
+	fileByte, err := assembly.Asset(fileName)
+	checkErr(err, funcName(), "Error reading the file", fileName)
 	return fileByte
 }

@@ -6,8 +6,8 @@ import (
 	"os"
 	"text/template"
 
+	"github.com/nicksnyder/go-i18n/i18n"
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
-	"github.com/sirupsen/logrus"
 )
 
 type console struct {
@@ -16,13 +16,11 @@ type console struct {
 }
 
 //InitConsole listen on the chanel
-func createConsole(messages chan bloomsky.Bloomsky) (console, error) {
-	f := map[string]interface{}{"T": config.translateFunc}
+func createConsole(messages chan bloomsky.Bloomsky, translateFunc i18n.TranslateFunc, dev bool) (console, error) {
+	f := map[string]interface{}{"T": translateFunc}
 	//Get template
-	c := console{in: messages, textTemplate: GetTemplate("bloomsky.txt", "tmpl/bloomsky.txt", f, config.dev)}
-	logrus.WithFields(logrus.Fields{
-		"fct": "exportConsole.initConsole",
-	}).Info("Init console")
+	c := console{in: messages, textTemplate: GetTemplate("bloomsky.txt", "tmpl/bloomsky.txt", f, dev)}
+	logInfo(funcName(), "Console listen", "")
 	return c, nil
 }
 
@@ -48,9 +46,7 @@ func (c *console) listen(context context.Context) {
 				log.Panicln(err)
 			}*/
 
-		log.WithFields(logrus.Fields{
-			"fct": "exportConsole.listen",
-		}).Info("Init the queue console to display message")
+		logDebug(funcName(), "Init the queue console to display message", "")
 
 		for {
 			select {

@@ -51,9 +51,9 @@
 
 [[projects]]
   name = "github.com/patrickalin/bloomsky-api-go"
-  packages = ["."]
-  revision = "41a6da6e23e9011f1dec5ce601055e61406bcd95"
-  version = "v0.1"
+  packages = [".","assembly"]
+  revision = "b7b927d4e6949def01528d8800d4ffa73efdd367"
+  version = "v0.2"
 
 [[projects]]
   name = "github.com/patrickalin/http-go"
@@ -130,6 +130,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "be9037becde2a0943ca6d6eb7f4c8ab0317e3cff9d1ed5468143b812888ed664"
+  inputs-digest = "13e6626ac788ea1a97c5bcc8b2c448ec16538eac56df6b09e447e8b990bfa48c"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -12,18 +12,13 @@ import (
 func GetTemplate(templateName string, templateLocation string, funcs map[string]interface{}, dev bool) *text.Template {
 	if dev {
 		t, err := text.New(templateName).Funcs(funcs).ParseFiles(templateLocation)
-
-		if err != nil {
-			log.Fatalf("Load template console : %v", err)
-		}
+		checkErr(err, funcName(), "Load template console", templateLocation)
 		return t
 	}
 
 	assetBloomsky, err := assembly.Asset(templateLocation)
 	t, err := text.New(templateName).Funcs(funcs).Parse(string(assetBloomsky[:]))
-	if err != nil {
-		log.Fatalf("Load template console : %v", err)
-	}
+	checkErr(err, funcName(), "Load template console", templateLocation)
 	return t
 }
 
@@ -32,28 +27,18 @@ func GetHTMLTemplate(templateName string, templatesLocation []string, funcs map[
 	t := template.New(templateName)
 	t.Funcs(funcs)
 	if dev {
-
 		t, err := t.ParseFiles(templatesLocation...)
-
-		if err != nil {
-			log.Fatalf("Template part 1 : %v", err)
-		}
-
+		checkErr(err, funcName(), "ParseFiles", "")
 		return t
 	}
 
 	for _, l := range templatesLocation {
 		asset, err := assembly.Asset(l)
+		checkErr(err, funcName(), "Assembly template", l)
 
-		if err != nil {
-			log.Fatalf("Template part 1 assembly: %v", err)
-		}
 		t, err = t.Parse(string(asset[:]))
-		if err != nil {
-			log.Fatalf("Template part 1 : %v", err)
-		}
+		checkErr(err, funcName(), "Parse file", "")
 	}
 
 	return t
-
 }

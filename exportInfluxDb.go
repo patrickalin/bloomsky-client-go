@@ -100,7 +100,8 @@ func initClient(messagesbloomsky chan bloomsky.Bloomsky, InfluxDBServer, InfluxD
 	}
 	cl := &client{c: c, in: messagesbloomsky, database: InfluxDatabase}
 	//need to check how to verify that the db is running
-	cl.createDB(InfluxDatabase)
+	err = cl.createDB(InfluxDatabase)
+	checkErr(err, funcName(), "impossible to create DB", InfluxDatabase)
 	return cl, nil
 }
 
