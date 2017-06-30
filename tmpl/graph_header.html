@@ -40,9 +40,75 @@
 
 
 
+
+
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js "></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js "></script>
+    <![endif]-->
+
+
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
 <script type="text/javascript">
+    var humidity
+
+    window.addEventListener("load", function(evt) {
+        var output = document.getElementById("output");
+        var ws;
+        var print = function(message) {
+            var d = document.createElement("div");
+            d.innerHTML = message;
+            output.appendChild(d);
+        };
+        socket = new WebSocket("{{.Websockerurl}}");
+        //ON OPEN
+        socket.onopen = function(evt) {
+                // print("OPEN");
+                //print(socket.protocol)
+                //print(socket.readyState)
+                //print(socket.url)
+                socket.send("open")
+            }
+            // ON ERROR
+        socket.onerror = function(error) {
+            console.error(error);
+            print(error);
+        };
+        socket.onclose = function(evt) {
+            print("<b>Connection closed.</b>");
+        };
+        // ON MESSAGE
+        socket.onmessage = function(evt) {
+                var currentdate = new Date();
+                var datetime = '{{T "Last Sync"}}: ' + currentdate.getDate() + "/" +
+                    (currentdate.getMonth() + 1) + "/" +
+                    currentdate.getFullYear() + " @ " +
+                    currentdate.getHours() + ":" +
+                    currentdate.getMinutes() + ":" +
+                    currentdate.getSeconds();
+                document.getElementById("refreshtime").innerHTML = datetime;
+
+                //To show the data 
+                //print("MESSAGE");
+                //console.log(evt.data)
+
+                var json = JSON.parse(evt.data);
+
+                humidity = json.Data.Humidity
+
+                drawHumidityPercentage()
+
+            } //end on message
+
+    });
+
+
+    //CHARTS
+
     google.charts.load('current', {
         packages: ['corechart', 'line']
     });
@@ -51,13 +117,14 @@
 
 
     function drawHumidityPercentage() {
+
         // Define the chart to be drawn.
         var data = new google.visualization.DataTable();
         data.addColumn('string', 'Element');
         data.addColumn('number', 'Percentage');
         data.addRows([
-            ['Humidity', 78],
-            ['_', 21],
+            ['Humidity', humidity],
+            ['_', 100 - humidity],
         ]);
 
         // Instantiate and draw the chart.
@@ -159,12 +226,4 @@
     }
 </script>
 
-
-
-<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-<!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js "></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js "></script>
-    <![endif]-->
 {{ end }}

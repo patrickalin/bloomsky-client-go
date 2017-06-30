@@ -107,7 +107,8 @@ func (httpServ *httpServer) graph(w http.ResponseWriter, r *http.Request) {
 
 	t := GetHTMLTemplate("bloomsky", []string{"tmpl/bloomsky.html", "tmpl/graph_header.html", "tmpl/graph_body.html"}, map[string]interface{}{"T": httpServ.translateFunc}, httpServ.dev)
 
-	if err := t.Execute(w, nil); err != nil {
+	p := pageHome{Websockerurl: getWs(r) + r.Host + "/refreshdata"}
+	if err := t.Execute(w, p); err != nil {
 		logFatal(err, funcName(), "Execute template home", "")
 	}
 }
