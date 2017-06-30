@@ -102,18 +102,6 @@ func (httpServ *httpServer) home(w http.ResponseWriter, r *http.Request) {
 }
 
 // Home bloomsky handler
-func (httpServ *httpServer) homes(w http.ResponseWriter, r *http.Request) {
-	logDebug(funcName(), "Home Https handle", "")
-
-	t := GetHTMLTemplate("bloomsky", []string{"tmpl/bloomsky.html", "tmpl/bloomsky_header.html", "tmpl/bloomsky_body.html"}, map[string]interface{}{"T": httpServ.translateFunc}, httpServ.dev)
-
-	p := pageHome{Websockerurl: "wss://" + r.Host + "/refreshdata"}
-	if err := t.Execute(w, p); err != nil {
-		logFatal(err, funcName(), "Execute template home", "")
-	}
-}
-
-// Home bloomsky handler
 func (httpServ *httpServer) graph(w http.ResponseWriter, r *http.Request) {
 	logDebug(funcName(), "Home Graph handle", "")
 
