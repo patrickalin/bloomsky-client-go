@@ -1,3 +1,3 @@
 #!/bin/sh
 #go get -u github.com/jteeuwen/go-bindata/...
-go-bindata -pkg assembly -o assembly/assembly.go -ignore=lang/en-us.untranslated.json -ignore=lang/fr.untranslated.json -ignore=lang/merge.sh -ignore=lang/noTranslation.sh  ./tmpl/* lang/* test-mock/*
+go-bindata -pkg assembly -o assembly/assembly.go -ignore=lang/en-us.untranslated.json -ignore=lang/fr.untranslated.json -ignore=lang/merge.sh -ignore=lang/noTranslation.sh  ./tmpl/* lang/* test/*
