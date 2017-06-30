@@ -73,7 +73,7 @@
             // ON MESSAGE
             socket.onmessage = function(evt) {
                 var currentdate = new Date();
-                var datetime = "{{T "Last Sync"}}: " + currentdate.getDate() + "/" +
+                var datetime = '{{T "Last Sync"}}: ' + currentdate.getDate() + "/" +
                     (currentdate.getMonth() + 1) + "/" +
                     currentdate.getFullYear() + " @ " +
                     currentdate.getHours() + ":" +
@@ -111,45 +111,45 @@
                 
                 document.getElementById("city").innerHTML = json.CityName;
                 document.getElementById("device").innerHTML = json.DeviceID;
-                document.getElementById("followers").innerHTML = json.NumOfFollowers + " {{T "followers"}}";
+                document.getElementById("followers").innerHTML = json.NumOfFollowers + ' {{T "followers"}}';
 
                 if (json.Data.Night) {
-                    document.getElementById("night").innerHTML = "<i class=\"wi wi-moon-waning-crescent-3\"></i> {{T "Night"}}"
+                    document.getElementById("night").innerHTML = '<i class=\"wi wi-moon-waning-crescent-3\"></i> {{T "Night"}}'
                 } else {
-                    document.getElementById("night").innerHTML = "<i class=\"wi wi-day-sunny\"></i> {{T "Day"}}"
+                    document.getElementById("night").innerHTML = '<i class=\"wi wi-day-sunny\"></i> {{T "Day"}}'
                 };
                 if (json.Storm.UVIndex <= 2) {
-                    document.getElementById("uv").innerHTML = json.Storm.UVIndex + "/11 {{T "low"}}" + " <i class=\"wi wi-cloudy\"></i>"
+                    document.getElementById("uv").innerHTML = json.Storm.UVIndex + '/11 {{T "low"}}' + " <i class=\"wi wi-cloudy\"></i>"
                 } else
                 if (json.Storm.UVIndex <= 4) {
-                    document.getElementById("uv").innerHTML = json.Storm.UVIndex + "/11 {{T "medium"}}" + " <i class=\"wi wi-day-cloudy\"></i>"
+                    document.getElementById("uv").innerHTML = json.Storm.UVIndex + '/11 {{T "medium"}}' + " <i class=\"wi wi-day-cloudy\"></i>"
                 } else {
-                    document.getElementById("uv").innerHTML = json.Storm.UVIndex + "/11 {{T "high"}}" + " <i class=\"wi wi-day-sunny\"></i>"
+                    document.getElementById("uv").innerHTML = json.Storm.UVIndex + '/11 {{T "high"}}' + " <i class=\"wi wi-day-sunny\"></i>"
                 };
 
                 if (json.Storm.WindDirection == "N") {
-                    document.getElementById("winddir").innerHTML = "{{T "North"}}  <i class=\"wi wi-wind towards-0-deg\"></i>"
+                    document.getElementById("winddir").innerHTML = '{{T "North"}}  <i class=\"wi wi-wind towards-0-deg\"></i>'
                 } else
                 if (json.Storm.WindDirection == "NE") {
-                    document.getElementById("winddir").innerHTML = "{{T "North"}} {{T "Est"}} <i class=\"wi wi-wind towards-45-deg\"></i>"
+                    document.getElementById("winddir").innerHTML = '{{T "North"}} {{T "Est"}} <i class=\"wi wi-wind towards-45-deg\"></i>'
                 } else
                 if (json.Storm.WindDirection == "E") {
-                    document.getElementById("winddir").innerHTML = "{{T "Est"}} <i class=\"wi wi-wind towards-90-deg\"></i>"
+                    document.getElementById("winddir").innerHTML = '{{T "Est"}} <i class=\"wi wi-wind towards-90-deg\"></i>'
                 } else
                 if (json.Storm.WindDirection == "SE") {
-                    document.getElementById("winddir").innerHTML = "{{T "South"}} {{T "Est"}}<i class=\"wi wi-wind towards-135-deg\"></i>"
+                    document.getElementById("winddir").innerHTML = '{{T "South"}} {{T "Est"}}<i class=\"wi wi-wind towards-135-deg\"></i>'
                 } else
                 if (json.Storm.WindDirection == "S") {
-                    document.getElementById("winddir").innerHTML = "{{T "South"}} <i class=\"wi wi-wind towards-180-deg\"></i>"
+                    document.getElementById("winddir").innerHTML = '{{T "South"}} <i class=\"wi wi-wind towards-180-deg\"></i>'
                 } else
                 if (json.Storm.WindDirection == "SW") {
-                    document.getElementById("winddir").innerHTML = "{{T "South"}} {{T "West"}} <i class=\"wi wi-wind towards-225-deg\"></i>"
+                    document.getElementById("winddir").innerHTML = '{{T "South"}} {{T "West"}} <i class=\"wi wi-wind towards-225-deg\"></i>'
                 } else
                 if (json.Storm.WindDirection == "W") {
-                    document.getElementById("winddir").innerHTML = "{{T "West"}} <i class=\"wi wi-wind towards-270-deg\"></i>"
+                    document.getElementById("winddir").innerHTML = '{{T "West"}} <i class=\"wi wi-wind towards-270-deg\"></i>'
                 } else
                 if (json.Storm.WindDirection == "NW") {
-                    document.getElementById("winddir").innerHTML = "{{T "North"}} {{T "West"}} <i class=\"wi wi-wind towards-315-deg\"></i>"
+                    document.getElementById("winddir").innerHTML = '{{T "North"}} {{T "West"}} <i class=\"wi wi-wind towards-315-deg\"></i>'
                 };
 
                 if (json.Storm.SustainedWindSpeed <= 1) {
@@ -179,9 +179,9 @@
 
 
                 if (json.Storm.Rain == 0) {
-                    document.getElementById("rain").innerHTML = "{{T "No"}} <i class=\"wi wi-day-sunny\"></i>"
+                    document.getElementById("rain").innerHTML = '{{T "No"}} <i class=\"wi wi-day-sunny\"></i>'
                 } else {
-                    document.getElementById("rain").innerHTML = "{{T "Yes"}} <i class=\"wi wi-umbrellax\"></i>"
+                    document.getElementById("rain").innerHTML = '{{T "Yes"}} <i class=\"wi wi-umbrellax\"></i>'
                 };
                 if (json.Storm.RainDaily == 0) {
                     document.getElementById("raindaily").innerHTML = "-"
@@ -235,4 +235,73 @@
             }
         });
     </script>
+
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+        <script type="text/javascript">
+google.charts.load('current', {packages: ['corechart', 'line']});
+google.charts.setOnLoadCallback(drawBasic);
+
+function drawBasic() {
+
+      var data = new google.visualization.DataTable();
+      data.addColumn('number', 'X');
+      data.addColumn('number', 'Temperature');
+
+      data.addRows([
+        [0, 0],   [1, 10],  [2, 23],  [3, 17],  [4, 18],  [5, 9],
+        [6, 11],  [7, 27],  [8, 33],  [9, 40],  [10, 32], [11, 35],
+        [12, 30], [13, 40], [14, 42], [15, 47], [16, 44], [17, 48],
+        [18, 52], [19, 54], [20, 42], [21, 55], [22, 56], [23, 57],
+        [24, 60], [25, 50], [26, 52], [27, 51], [28, 49], [29, 53],
+        [30, 55], [31, 60], [32, 61], [33, 59], [34, 62], [35, 65],
+        [36, 62], [37, 58], [38, 55], [39, 61], [40, 64], [41, 65],
+        [42, 63], [43, 66], [44, 67], [45, 69], [46, 69], [47, 70],
+        [48, 72], [49, 68], [50, 66], [51, 65], [52, 67], [53, 70],
+        [54, 71], [55, 72], [56, 73], [57, 75], [58, 70], [59, 68],
+        [60, 64], [61, 60], [62, 65], [63, 67], [64, 68], [65, 69],
+        [66, 70], [67, 72], [68, 75], [69, 80]
+      ]);
+
+      var options = {
+        hAxis: {
+          title: 'Time'
+        },
+        vAxis: {
+          title: 'Temperature'
+        }
+      };
+
+      var chart = new google.visualization.LineChart(document.getElementById('temperatureChart'));
+
+      chart.draw(data, options);
+    }
+    </script>
+
+        <script type="text/javascript">
+        google.charts.load('current', {
+            packages: ['corechart']
+        });
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            // Define the chart to be drawn.
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Element');
+            data.addColumn('number', 'Percentage');
+            data.addRows([
+                ['Humidity', 78],
+                ['_', 21],
+            ]);
+
+            // Instantiate and draw the chart.
+            var chart = new google.visualization.PieChart(document.getElementById('humidityChart'));
+            chart.draw(data, null);
+        }
+    </script>
+
+
+  </head>
+
 {{ end }}
