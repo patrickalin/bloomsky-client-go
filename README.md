@@ -26,19 +26,38 @@ A simple Go client for the BloomSky API.
 ### Configuration
 
 * Don't forget !!!! : You have to change the API Key in the config.yaml.
+* Or use flag "-token xxxxxx"
 
 ### Traduction
 
 * This application supports en-us and fr
 * Cette application supporte l'anglais et le français
 
-### Usage
+### Usage with config.yaml
 
-Execute the binary with the config file in the same folder.
+Execute the binary with the config file "config.yaml" in the same folder.
 
 * Windows : goBloomsky-windows-amd64.exe
 * Linux : ./goBloomsky-linux-amd64.bin
 * Mac : ./goBloomsky-darwin-amd64.bin
+
+### Usage with flag
+
+* Windows : goBloomsky-windows-amd64.exe -token xxxxxxx
+* Linux : ./goBloomsky-linux-amd64.bin -token xxxxxxx
+* Mac : ./goBloomsky-darwin-amd64.bin -token xxxxxxx
+
+There are some others flags : --help for doc
+
+   Usage of ./bloomsky-client-go:
+     -debug string
+       	panic,fatal,error,warning,info,debug
+     -devel string
+       	true,false
+     -mock string
+       	true,false
+     -token string
+       	yourtoken
 
 ### Example : result in the webserver
 
