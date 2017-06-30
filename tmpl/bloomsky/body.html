@@ -1,31 +1,4 @@
-{{define "content"}}
-
-<nav class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-            <a class="navbar-brand" href="#">Bloomsky</a>
-        </div>
-        <div id="navbar" class="collapse navbar-collapse">
-            <ul class="nav navbar-nav">
-                <li class="active">
-                    <a href="/">{{T "Home"}}</a></li>
-                <li> <a href="/graph">{{T "History"}}</a></li>
-                <li><a href="/log">Log</a></li>
-                <li><a href="https://github.com/patrickalin/bloomsky-client-go" target="_blank">Github</a></li>
-                <li><a href="https://dashboard.bloomsky.com/" target="_blank">Bloomsky Dashboard</a></li>
-
-            </ul>
-        </div>
-    </div>
-</nav>
-<!--/.nav-collapse -->
-
+{{define "body"}} {{ template "menu"}}
 <div class="container">
     <div class="row">
         <div class="col-md-3">
@@ -237,16 +210,4 @@
     <!-- /.row -->
 </div>
 <!-- /.container -->
-
-
-<div id="humidityChart" />
-
-<div id="temperatureChart" />
-
-<!-- Bootstrap core JavaScript
-                    ===
-                    === === === === === === === === === === === === === === === == -->
-<!-- Placed at the end of the document so the pages load faster -->
-<script src="/static/js/jquery-3.2.1.min.js">
-</script>
 {{ end }}
