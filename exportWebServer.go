@@ -113,6 +113,17 @@ func (httpServ *httpServer) homes(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Home bloomsky handler
+func (httpServ *httpServer) graph(w http.ResponseWriter, r *http.Request) {
+	logDebug(funcName(), "Home Graph handle", "")
+
+	t := GetHTMLTemplate("bloomsky", []string{"tmpl/bloomsky.html", "tmpl/graph_header.html", "tmpl/graph_body.html"}, map[string]interface{}{"T": httpServ.translateFunc}, httpServ.dev)
+
+	if err := t.Execute(w, nil); err != nil {
+		logFatal(err, funcName(), "Execute template home", "")
+	}
+}
+
 // Log handler
 func (httpServ *httpServer) log(w http.ResponseWriter, r *http.Request) {
 	logDebug(funcName(), "Log Http handle", "")
@@ -174,6 +185,7 @@ func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string, HTTPSPort strin
 	s.HandleFunc("/", server.home)
 	s.HandleFunc("/refreshdata", server.refreshdata)
 	s.HandleFunc("/log", server.log)
+	s.HandleFunc("/graph", server.graph)
 	s.HandleFunc("/debug/pprof/", pprof.Index)
 	s.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
 	s.HandleFunc("/debug/pprof/profile", pprof.Profile)
