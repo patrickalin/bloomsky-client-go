@@ -1,0 +1,28 @@
+{{define "body"}}{{ template "menu"}}
+<div class="container">
+
+    <br>
+    <table class="table table-striped">
+        <tr>
+            <th> Line </th>
+            <th> Time </th>
+            <th> Level </th>
+            <th> Fonction </th>
+            <th> Message </th>
+            <th> Parameter </th>
+        </tr>
+        {{ range $key, $value := .logRange }}
+        <tr>
+            <th><strong>{{ $key }}</strong></th>
+            <th>{{ $value.Time }}</th>
+            <th><img src="\static\{{ $value.Level }}.png" width="40"></th>
+            <th>{{ $value.Fct }}</th>
+            <th>{{ $value.Msg }}</th>
+            <th>{{ $value.Param }}</th>
+        </tr>
+        {{ end }}
+
+    </table>
+
+</div>
+{{ end }}

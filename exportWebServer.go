@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"context"
 	"encoding/json"
-	"html/template"
 	"net/http"
 	"net/http/pprof"
 	"os"
@@ -93,7 +92,7 @@ func (httpServ *httpServer) home(w http.ResponseWriter, r *http.Request) {
 
 	logDebug(funcName(), "Home Http handle", "")
 
-	t := GetHTMLTemplate("bloomsky", []string{"tmpl/bloomsky.html", "tmpl/bloomsky_header.html", "tmpl/bloomsky_body.html"}, map[string]interface{}{"T": httpServ.translateFunc}, httpServ.dev)
+	t := GetHTMLTemplate("bloomsky", []string{"tmpl/index.html", "tmpl/bloomsky/script.html", "tmpl/bloomsky/body.html", "tmpl/bloomsky/menu.html", "tmpl/header.html", "tmpl/endScript.html"}, map[string]interface{}{"T": httpServ.translateFunc}, httpServ.dev)
 
 	p := pageHome{Websockerurl: getWs(r) + r.Host + "/refreshdata"}
 	if err := t.Execute(w, p); err != nil {
@@ -102,10 +101,10 @@ func (httpServ *httpServer) home(w http.ResponseWriter, r *http.Request) {
 }
 
 // Home bloomsky handler
-func (httpServ *httpServer) graph(w http.ResponseWriter, r *http.Request) {
-	logDebug(funcName(), "Home Graph handle", "")
+func (httpServ *httpServer) history(w http.ResponseWriter, r *http.Request) {
+	logDebug(funcName(), "Home History handle", "")
 
-	t := GetHTMLTemplate("bloomsky", []string{"tmpl/bloomsky.html", "tmpl/graph_header.html", "tmpl/graph_body.html"}, map[string]interface{}{"T": httpServ.translateFunc}, httpServ.dev)
+	t := GetHTMLTemplate("bloomsky", []string{"tmpl/index.html", "tmpl/history/script.html", "tmpl/history/body.html", "tmpl/history/menu.html", "tmpl/header.html", "tmpl/endScript.html"}, map[string]interface{}{"T": httpServ.translateFunc}, httpServ.dev)
 
 	p := pageHome{Websockerurl: getWs(r) + r.Host + "/refreshdata"}
 	if err := t.Execute(w, p); err != nil {
@@ -123,30 +122,23 @@ func (httpServ *httpServer) log(w http.ResponseWriter, r *http.Request) {
 
 	scanner := bufio.NewScanner(file)
 
-	str := "<table class=\"table table-striped\"> <tr> <th> Time </th><th> Level </th><th> Fonction </th><th> Message </th> <th> Parameter </th></tr>"
+	var logRange []logStru
+
 	for scanner.Scan() {
 		var tt logStru
 		if err := json.Unmarshal([]byte(scanner.Text()), &tt); err != nil {
 			logFatal(err, funcName(), "Impossible to unmarshall log", scanner.Text())
 		}
-
-		str += "<tr>"
-		str += "<th>" + tt.Time + "</th>"
-		str += "<th> <img src=\"\\static\\" + tt.Level + ".png\" width=\"40\"> </th>"
-		str += "<th>" + tt.Fct + "</th>"
-		str += "<th>" + tt.Msg + "</th>"
-		str += "<th>" + tt.Param + "</th>"
-		str += "</tr>"
+		logRange = append(logRange, tt)
 	}
-	str += "</table>"
 
 	if err := scanner.Err(); err != nil {
 		logFatal(err, funcName(), "Scanner Err", "")
 	}
 
-	p := map[string]interface{}{"LogTxt": template.HTML(str)}
+	p := map[string]interface{}{"logRange": logRange}
 
-	t := GetHTMLTemplate("bloomsky", []string{"tmpl/bloomsky.html", "tmpl/log_header.html", "tmpl/log_body.html"}, map[string]interface{}{"T": httpServ.translateFunc}, httpServ.dev)
+	t := GetHTMLTemplate("bloomsky", []string{"tmpl/index.html", "tmpl/log/script.html", "tmpl/log/body.html", "tmpl/log/menu.html", "tmpl/header.html", "tmpl/endScript.html"}, map[string]interface{}{"T": httpServ.translateFunc}, httpServ.dev)
 	if err := t.Execute(w, p); err != nil {
 		logFatal(err, funcName(), "Compile template log", "")
 	}
@@ -174,7 +166,7 @@ func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string, HTTPSPort strin
 	s.HandleFunc("/", server.home)
 	s.HandleFunc("/refreshdata", server.refreshdata)
 	s.HandleFunc("/log", server.log)
-	s.HandleFunc("/graph", server.graph)
+	s.HandleFunc("/history", server.history)
 	s.HandleFunc("/debug/pprof/", pprof.Index)
 	s.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
 	s.HandleFunc("/debug/pprof/profile", pprof.Profile)
