@@ -53,13 +53,16 @@ func (c *console) listen(context context.Context) {
 		}).Info("Init the queue console to display message")
 
 		for {
-			msg := <-c.in
+			select {
+			case msg := <-c.in:
+				if err := c.textTemplate.Execute(os.Stdout, msg); err != nil {
+					fmt.Printf("%v", err)
+				}
 
-			if err := c.textTemplate.Execute(os.Stdout, msg); err != nil {
-				fmt.Printf("%v", err)
+			case <-context.Done():
+				fmt.Println("console done")
 			}
 		}
-
 	}()
 
 }
