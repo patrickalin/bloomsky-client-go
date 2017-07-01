@@ -114,30 +114,10 @@ func (httpServ *httpServer) history(w http.ResponseWriter, r *http.Request) {
 func (httpServ *httpServer) log(w http.ResponseWriter, r *http.Request) {
 	logDebug(funcName(), "Log Http handle", "")
 
-	file, err := os.Open("bloomsky.log")
-	checkErr(err, funcName(), "Imposible to open file", "bloomsky.log")
-	defer file.Close()
+	p := map[string]interface{}{"logRange": createArrayLog()}
 
-	scanner := bufio.NewScanner(file)
-
-	var logRange []logStru
-
-	for scanner.Scan() {
-		var tt logStru
-		if err := json.Unmarshal([]byte(scanner.Text()), &tt); err != nil {
-			logFatal(err, funcName(), "Impossible to unmarshall log", scanner.Text())
-		}
-		logRange = append(logRange, tt)
-	}
-
-	if err := scanner.Err(); err != nil {
-		logFatal(err, funcName(), "Scanner Err", "")
-	}
-
-	p := map[string]interface{}{"logRange": logRange}
-	if err := httpServ.templateLog.Execute(w, p); err != nil {
-		logFatal(err, funcName(), "Compile template log", "")
-	}
+	err := httpServ.templateLog.Execute(w, p)
+	checkErr(err, funcName(), "Compile template log", "")
 }
 
 func getFileServer(dev bool) http.FileSystem {
@@ -192,4 +172,25 @@ func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string, HTTPSPort strin
 
 	server.httpServ = h
 	return server, nil
+}
+
+func createArrayLog() (logRange []logStru) {
+	file, err := os.Open("bloomsky.log")
+	checkErr(err, funcName(), "Imposible to open file", "bloomsky.log")
+
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+
+	var tt logStru
+	for scanner.Scan() {
+		json.Unmarshal([]byte(scanner.Text()), &tt)
+		checkErr(err, funcName(), "Impossible to unmarshall log", scanner.Text())
+
+		logRange = append(logRange, tt)
+	}
+
+	scanner.Err()
+	checkErr(err, funcName(), "Scanner Err", "")
+
+	return logRange
 }
