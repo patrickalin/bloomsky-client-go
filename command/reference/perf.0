@@ -1,0 +1,25 @@
+==========================BENCHMARK==========================
+URL:				http://localhost:1111
+
+Used Connections:		100
+Used Threads:			1
+Total number of calls:		5
+
+===========================TIMINGS===========================
+Total time passed:		2.13s
+Avg time per request:		35.45ms
+Requests per second:		2.35
+Median time per request:	38.95ms
+99th percentile time:		22.08ms
+Slowest time for request:	41.00ms
+
+=============================DATA=============================
+Total response body sizes:		0
+Avg response body per request:		0.00ms
+Transfer rate per second:		0.00 Byte/s (0.00 MByte/s)
+==========================RESPONSES==========================
+20X Responses:		0	(0.00%)
+30X Responses:		0	(0.00%)
+40X Responses:		0	(0.00%)
+50X Responses:		0	(0.00%)
+Errors:			5	(100.00%)

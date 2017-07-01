@@ -1,0 +1,1 @@
+go test -bench . -cpuprofile prof.cpu
