@@ -49,7 +49,7 @@ Execute the binary with the config file "config.yaml" in the same folder.
 
 There are some others flags : --help for doc
 
-   Usage of ./bloomsky-client-go:
+      Usage of ./bloomsky-client-go:
      -debug string
        	panic,fatal,error,warning,info,debug
      -devel string
