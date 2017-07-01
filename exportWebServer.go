@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/pprof"
 	"os"
+	"time"
 
 	"github.com/elazarl/go-bindata-assetfs"
 	"github.com/gorilla/websocket"
@@ -24,6 +25,12 @@ type httpServer struct {
 	templateHome          *template.Template
 	templateHistory       *template.Template
 	templateLog           *template.Template
+	store                 store
+}
+
+type meas struct {
+	Timestamp time.Time
+	Value     float64
 }
 
 type pageHome struct {
@@ -32,6 +39,11 @@ type pageHome struct {
 
 type pageLog struct {
 	LogTxt string
+}
+
+type pageHistory struct {
+	Websockerurl string
+	Store        template.JS
 }
 
 type logStru struct {
@@ -104,9 +116,25 @@ func (httpServ *httpServer) home(w http.ResponseWriter, r *http.Request) {
 func (httpServ *httpServer) history(w http.ResponseWriter, r *http.Request) {
 	logDebug(funcName(), "Home History handle", "")
 
-	p := pageHome{Websockerurl: getWs(r) + r.Host + "/refreshdata"}
+	/*primes := [6]meas{{new Date(1416013200000), 22},
+	{new Date(2014, 10, 15, 0, 30), 23},
+		{new Date(2014, 10, 15, 0, 00), 22},
+			{new Date(2014, 10, 14, 23, 30), 21},
+				{new Date(2014, 10, 14, 23, 00), 22},
+					{new Date(2014, 10, 14, 22, 30), 18},}*/
+
+	/*var prim []meas
+	a := meas{time.Now(), 23}
+	prim = append(prim, a)
+	a = meas{time.Now(), 22}
+	prim = append(prim, a)*/
+
+	var prim template.JS
+	prim = "[[new Date(1416013200000), 22],[new Date(2014, 10, 15, 0, 30), 23],[new Date(2014, 10, 15, 0, 00), 22],[new Date(2014, 10, 14, 23, 30), 21],[new Date(2014, 10, 14, 23, 00), 22],[new Date(2014, 10, 14, 22, 30), 18],]"
+
+	p := pageHistory{Websockerurl: getWs(r) + r.Host + "/refreshdata", Store: prim}
 	if err := httpServ.templateHistory.Execute(w, p); err != nil {
-		logFatal(err, funcName(), "Execute template home", "")
+		logFatal(err, funcName(), "Execute template history", "")
 	}
 }
 
@@ -128,7 +156,7 @@ func getFileServer(dev bool) http.FileSystem {
 }
 
 //createWebServer create web server
-func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string, HTTPSPort string, translate i18n.TranslateFunc, devel bool) (*httpServer, error) {
+func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string, HTTPSPort string, translate i18n.TranslateFunc, devel bool, store store) (*httpServer, error) {
 
 	templateHome := GetHTMLTemplate("bloomsky", []string{"tmpl/index.html", "tmpl/bloomsky/script.html", "tmpl/bloomsky/body.html", "tmpl/bloomsky/menu.html", "tmpl/header.html", "tmpl/endScript.html"}, map[string]interface{}{"T": translate}, devel)
 	templateHistory := GetHTMLTemplate("bloomsky", []string{"tmpl/index.html", "tmpl/history/script.html", "tmpl/history/body.html", "tmpl/history/menu.html", "tmpl/header.html", "tmpl/endScript.html"}, map[string]interface{}{"T": translate}, devel)
@@ -137,7 +165,8 @@ func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string, HTTPSPort strin
 	server := &httpServer{bloomskyMessageToHTTP: in,
 		templateHome:    templateHome,
 		templateHistory: templateHistory,
-		templateLog:     templateLog}
+		templateLog:     templateLog,
+		store:           store}
 
 	fs := http.FileServer(getFileServer(devel))
 

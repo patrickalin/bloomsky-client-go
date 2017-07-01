@@ -49,22 +49,15 @@
 
                 var json = JSON.parse(evt.data);
 
-                humidity = json.Data.Humidity
+                humidity = json.Data.Humidity;
 
-                drawHumidityPercentage()
+                drawHumidityPercentage();
 
                 //console.log(json.arrayTemp)
 
-                arrayTemp = [
-                    [new Date(1416013200000), 22],
-                    [new Date(2014, 10, 15, 0, 30), 23],
-                    [new Date(2014, 10, 15, 0, 00), 22],
-                    [new Date(2014, 10, 14, 23, 30), 21],
-                    [new Date(2014, 10, 14, 23, 00), 22],
-                    [new Date(2014, 10, 14, 22, 30), 18],
-                ]
+                arrayTemp = {{.Store}}
 
-                drawTemperature()
+                drawTemperature();
 
             } //end on message
 

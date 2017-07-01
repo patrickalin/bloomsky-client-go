@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"strconv"
+	"time"
 
 	"github.com/patrickalin/bloomsky-client-go/pkg/ring"
 
@@ -15,7 +17,8 @@ type store struct {
 }
 
 type measure struct {
-	value float64
+	Timestamp time.Time
+	value     float64
 }
 
 /**
@@ -47,8 +50,8 @@ func (c *store) listen(context context.Context) {
 			log.WithFields(logrus.Fields{
 				"fct": "exportStore.listen",
 			}).Debug("Receive message")
-			c.stores["temp"].Enqueue(measure{msg.GetTemperatureCelsius()})
-			c.stores["wind"].Enqueue(measure{msg.GetWindGustkmh()})
+			c.stores["temp"].Enqueue(measure{time.Now(), msg.GetTemperatureCelsius()})
+			c.stores["wind"].Enqueue(measure{time.Now(), msg.GetWindGustkmh()})
 		}
 	}()
 
@@ -56,5 +59,21 @@ func (c *store) listen(context context.Context) {
 
 func (c *store) GetValues(name string) []ring.Measure {
 	return c.stores[name].Values()
+}
 
+func (c *store) String(name string) string {
+	/*[
+	    [new Date(1416013200000), 22],
+	    [new Date(2014, 10, 15, 0, 30), 23],
+	    [new Date(2014, 10, 15, 0, 00), 22],
+	    [new Date(2014, 10, 14, 23, 30), 21],
+	    [new Date(2014, 10, 14, 23, 00), 22],
+	    [new Date(2014, 10, 14, 22, 30), 18],
+	]*/
+	var ret = "["
+	for k, v := range c.stores[name].Values() {
+		ret = ret + "[" + strconv.FormatFloat(v.Value(), 'f', 6, 64) + "," + strconv.Itoa(k) + "],"
+	}
+	ret += "]"
+	return ret
 }
