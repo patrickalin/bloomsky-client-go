@@ -6,12 +6,12 @@ Used Threads:			1
 Total number of calls:		5
 
 ===========================TIMINGS===========================
-Total time passed:		2.13s
-Avg time per request:		35.45ms
-Requests per second:		2.35
-Median time per request:	38.95ms
-99th percentile time:		22.08ms
-Slowest time for request:	41.00ms
+Total time passed:		0.39s
+Avg time per request:		71.75ms
+Requests per second:		12.78
+Median time per request:	71.73ms
+99th percentile time:		69.20ms
+Slowest time for request:	74.00ms
 
 =============================DATA=============================
 Total response body sizes:		0
