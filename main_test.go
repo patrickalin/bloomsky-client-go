@@ -25,11 +25,11 @@ func TestMain(m *testing.M) {
 	checkErr(err, funcName(), "Problem with loading translate file", "")
 
 	channels := make(map[string]chan bloomsky.Bloomsky)
-	serv, err = createWebServer(channels["web"], ":1111", ":2222", translateFunc, true)
+	serv, err = createWebServer(channels["web"], ":1110", ":2220", translateFunc, true)
 	os.Exit(m.Run())
 }
 
-func TestSomething(t *testing.T) {
+func TestConfig(t *testing.T) {
 	viper.SetConfigName("config")
 	viper.AddConfigPath(".")
 	if err := viper.ReadInConfig(); err != nil {
@@ -37,55 +37,65 @@ func TestSomething(t *testing.T) {
 	}
 }
 
-/*
-func TestMain(m *testing.M) {
-	i18n.MustLoadTranslationFile("lang/en-US.all.json")
-	i18n.MustLoadTranslationFile("lang/fr.all.json")
-	mylog.Init(mylog.ERROR)
-
-	os.Exit(m.Run())
-}
-
-func TestReadConfigFound(t *testing.T) {
-	if err := readConfig("configForTest"); err != nil {
-		fmt.Printf("%v", err)
-	}
-}*/
-
-/*func TestReadConfigNotFound(t *testing.T) {
-	if err := readConfig("configError"); err != nil {
-		fmt.Printf("%v", err)
-	}
-}*/
-
-func TestHanlder(t *testing.T) {
+func TestHanlderHome(t *testing.T) {
 	req, err := http.NewRequest(
 		http.MethodGet,
-		"http://localhost:1111",
+		"http://localhost:1110/",
 		nil,
 	)
 	if err != nil {
-		t.Fatalf("Could not request: %v", err)
+		logFatal(err, funcName(), "Could not request: %v", "")
 	}
-
-	if err := i18n.ParseTranslationFileBytes("lang/en-us.all.json", readFile("lang/en-us.all.json", true)); err != nil {
-		logFatal(err, funcName(), "Error read language file check in config.yaml if dev=false", "")
-	}
-
-	translateFunc, err := i18n.Tfunc("en-us")
-	checkErr(err, funcName(), "Problem with loading translate file", "")
-
-	channels := make(map[string]chan bloomsky.Bloomsky)
 
 	rec := httptest.NewRecorder()
-
-	httpServ, err := createWebServer(channels["web"], ":1112", ":2223", translateFunc, true)
-	httpServ.home(rec, req)
+	serv.home(rec, req)
 
 	if rec.Code != http.StatusOK {
 		t.Errorf("expected 200; got %d", rec.Code)
 	}
-	if !strings.Contains(rec.Body.String(), "Est") {
+	if !strings.Contains(rec.Body.String(), "est") {
+		t.Errorf("unexpected body; %q", rec.Body.String())
+	}
+}
+
+func TestHanlderLog(t *testing.T) {
+	req, err := http.NewRequest(
+		http.MethodGet,
+		"http://localhost:1110/log",
+		nil,
+	)
+	if err != nil {
+		logFatal(err, funcName(), "Could not request: %v", "")
+	}
+
+	rec := httptest.NewRecorder()
+	serv.log(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected 200; got %d", rec.Code)
+	}
+	if !strings.Contains(rec.Body.String(), "Server HTTPS listen on port") {
+		t.Errorf("unexpected body; %q", rec.Body.String())
+	}
+}
+
+func TestHanlderHistory(t *testing.T) {
+	req, err := http.NewRequest(
+		http.MethodGet,
+		"http://localhost:1110/history",
+		nil,
+	)
+	if err != nil {
+		logFatal(err, funcName(), "Could not request: %v", "")
+	}
+
+	rec := httptest.NewRecorder()
+	serv.history(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected 200; got %d", rec.Code)
+	}
+	if !strings.Contains(rec.Body.String(), "corechart") {
 		t.Errorf("unexpected body; %q", rec.Body.String())
 	}
 }
@@ -95,7 +105,7 @@ func BenchmarkHanlder(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://localhost:1111",
+			"http://localhost:1110",
 			nil,
 		)
 		if err != nil {
