@@ -1,8 +1,11 @@
 package ring
 
 // "fmt"
-import "testing"
-import "fmt"
+import (
+	"fmt"
+	"testing"
+	"time"
+)
 
 type measure struct {
 	f float64
@@ -10,6 +13,10 @@ type measure struct {
 
 func (m measure) Value() float64 {
 	return m.f
+}
+
+func (m measure) TimeStamp() time.Time {
+	return time.Now()
 }
 func TestSetsSize(t *testing.T) {
 	r := &Ring{}
