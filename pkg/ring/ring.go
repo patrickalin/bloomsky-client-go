@@ -1,15 +1,28 @@
 package ring
 
+import (
+	"time"
+)
+
 var DefaultCapacity = 256
 
 type Measure interface {
 	Value() float64
 }
 
+type Time interface {
+	TimeStamp() time.Time
+}
+
+type TimeMeasure interface {
+	Time
+	Measure
+}
+
 type Ring struct {
 	head int
 	tail int
-	buff []Measure
+	buff []TimeMeasure
 }
 
 /**
@@ -27,7 +40,7 @@ func (r *Ring) Capacity() int {
 	return len(r.buff)
 }
 
-func (r *Ring) Enqueue(c Measure) {
+func (r *Ring) Enqueue(c TimeMeasure) {
 	r.init()
 	r.set(r.head+1, c)
 	old := r.head
@@ -81,7 +94,7 @@ func (r *Ring) mod(p int) int {
 
 func (r *Ring) init() {
 	if r.buff == nil {
-		r.buff = make([]Measure, DefaultCapacity)
+		r.buff = make([]TimeMeasure, DefaultCapacity)
 		for i := 0; i < len(r.buff); i++ {
 			r.buff[i] = nil
 		}
@@ -99,14 +112,14 @@ func (r *Ring) extends(size int) {
 		r.buff = r.buff[0:size]
 		return
 	}
-	newbuffer := make([]Measure, size-len(r.buff))
+	newbuffer := make([]TimeMeasure, size-len(r.buff))
 	for i := 0; i < len(newbuffer); i++ {
 		newbuffer[i] = nil
 	}
 	r.buff = append(r.buff, newbuffer...)
 }
 
-func (r *Ring) set(i int, b Measure) {
+func (r *Ring) set(i int, b TimeMeasure) {
 	r.buff[r.mod(i)] = b
 }
 
