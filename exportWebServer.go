@@ -22,9 +22,7 @@ type httpServer struct {
 	httpServ              *http.Server
 	conn                  *websocket.Conn
 	msgJSON               []byte
-	templateHome          *template.Template
-	templateHistory       *template.Template
-	templateLog           *template.Template
+	templates             map[string]*template.Template
 	store                 store
 }
 
@@ -107,7 +105,7 @@ func (httpServ *httpServer) home(w http.ResponseWriter, r *http.Request) {
 	logDebug(funcName(), "Home Http handle", "")
 
 	p := pageHome{Websockerurl: getWs(r) + r.Host + "/refreshdata"}
-	if err := httpServ.templateHome.Execute(w, p); err != nil {
+	if err := httpServ.templates["home"].Execute(w, p); err != nil {
 		logFatal(err, funcName(), "Execute template home", "")
 	}
 }
@@ -133,7 +131,7 @@ func (httpServ *httpServer) history(w http.ResponseWriter, r *http.Request) {
 	prim = "[[new Date(1416013200000), 22],[new Date(2014, 10, 15, 0, 30), 23],[new Date(2014, 10, 15, 0, 00), 22],[new Date(2014, 10, 14, 23, 30), 21],[new Date(2014, 10, 14, 23, 00), 22],[new Date(2014, 10, 14, 22, 30), 18],]"
 
 	p := pageHistory{Websockerurl: getWs(r) + r.Host + "/refreshdata", Store: prim}
-	if err := httpServ.templateHistory.Execute(w, p); err != nil {
+	if err := httpServ.templates["history"].Execute(w, p); err != nil {
 		logFatal(err, funcName(), "Execute template history", "")
 	}
 }
@@ -144,7 +142,7 @@ func (httpServ *httpServer) log(w http.ResponseWriter, r *http.Request) {
 
 	p := map[string]interface{}{"logRange": createArrayLog()}
 
-	err := httpServ.templateLog.Execute(w, p)
+	err := httpServ.templates["log"].Execute(w, p)
 	checkErr(err, funcName(), "Compile template log", "")
 }
 
@@ -158,15 +156,14 @@ func getFileServer(dev bool) http.FileSystem {
 //createWebServer create web server
 func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string, HTTPSPort string, translate i18n.TranslateFunc, devel bool, store store) (*httpServer, error) {
 
-	templateHome := GetHTMLTemplate("bloomsky", []string{"tmpl/index.html", "tmpl/bloomsky/script.html", "tmpl/bloomsky/body.html", "tmpl/bloomsky/menu.html", "tmpl/header.html", "tmpl/endScript.html"}, map[string]interface{}{"T": translate}, devel)
-	templateHistory := GetHTMLTemplate("bloomsky", []string{"tmpl/index.html", "tmpl/history/script.html", "tmpl/history/body.html", "tmpl/history/menu.html", "tmpl/header.html", "tmpl/endScript.html"}, map[string]interface{}{"T": translate}, devel)
-	templateLog := GetHTMLTemplate("bloomsky", []string{"tmpl/index.html", "tmpl/log/script.html", "tmpl/log/body.html", "tmpl/log/menu.html", "tmpl/header.html", "tmpl/endScript.html"}, map[string]interface{}{"T": translate}, devel)
+	t := make(map[string]*template.Template)
+	t["home"] = GetHTMLTemplate("bloomsky", []string{"tmpl/index.html", "tmpl/bloomsky/script.html", "tmpl/bloomsky/body.html", "tmpl/bloomsky/menu.html", "tmpl/header.html", "tmpl/endScript.html"}, map[string]interface{}{"T": translate}, devel)
+	t["history"] = GetHTMLTemplate("bloomsky", []string{"tmpl/index.html", "tmpl/history/script.html", "tmpl/history/body.html", "tmpl/history/menu.html", "tmpl/header.html", "tmpl/endScript.html"}, map[string]interface{}{"T": translate}, devel)
+	t["log"] = GetHTMLTemplate("bloomsky", []string{"tmpl/index.html", "tmpl/log/script.html", "tmpl/log/body.html", "tmpl/log/menu.html", "tmpl/header.html", "tmpl/endScript.html"}, map[string]interface{}{"T": translate}, devel)
 
 	server := &httpServer{bloomskyMessageToHTTP: in,
-		templateHome:    templateHome,
-		templateHistory: templateHistory,
-		templateLog:     templateLog,
-		store:           store}
+		templates: t,
+		store:     store}
 
 	fs := http.FileServer(getFileServer(devel))
 
