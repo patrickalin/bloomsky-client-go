@@ -25,7 +25,8 @@ func TestMain(m *testing.M) {
 	checkErr(err, funcName(), "Problem with loading translate file", "")
 
 	channels := make(map[string]chan bloomsky.Bloomsky)
-	serv, err = createWebServer(channels["web"], ":1110", ":2220", translateFunc, true)
+
+	serv, err = createWebServer(channels["web"], ":1110", ":2220", translateFunc, true, store{})
 	os.Exit(m.Run())
 }
 
