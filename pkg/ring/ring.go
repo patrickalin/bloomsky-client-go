@@ -1,10 +1,22 @@
 package ring
 
 import (
+	"bytes"
+	"text/template"
 	"time"
 )
 
-var DefaultCapacity = 256
+const ts = `[{{range $i, $a := .}} {{if $i}},{{end}}[{{printf "%.2f" $a.Value}},{{$a.TimeStamp.Format "Mon Jan _2 15:04:05 2006"}}]{{end}}]`
+
+var (
+	t               *template.Template
+	DefaultCapacity = 256
+)
+
+func init() {
+	t = template.Must(template.New("ring").Parse(ts))
+
+}
 
 type Measure interface {
 	Value() float64
@@ -85,6 +97,15 @@ func (r *Ring) Values() []TimeMeasure {
 		}
 	}
 	return arr
+}
+
+func (r *Ring) DumpLine() (string, error) {
+	var result bytes.Buffer
+	if err := t.Execute(&result, r.Values()); err != nil {
+		return "", err
+	}
+	return result.String(), nil
+
 }
 
 /*------------------------------------ */

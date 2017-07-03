@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"strconv"
 	"time"
 
 	"github.com/patrickalin/bloomsky-client-go/pkg/ring"
@@ -76,10 +75,14 @@ func (c *store) String(name string) string {
 	    [new Date(2014, 10, 14, 22, 30), 18],
 	]*/
 
-	var ret = "["
-	for k, v := range c.stores[name].Values() {
-		ret = ret + "[" + strconv.FormatFloat(v.Value(), 'f', 6, 64) + "," + strconv.Itoa(k) + "],"
-	}
-	ret += "]"
-	return ret
+	/*
+
+		var ret = "["
+		for k, v :	= range c.stores[name].Values() {
+			ret = ret + "[" + strconv.FormatFloat(v.Value(), 'f', 6, 64) + "," + strconv.Itoa(k) + "],"
+		}
+		ret += "]"
+		return ret*/
+	s, _ := c.stores[name].DumpLine()
+	return s
 }

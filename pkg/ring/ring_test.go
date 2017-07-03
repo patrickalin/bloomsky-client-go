@@ -40,3 +40,17 @@ func TestSavesSomeData(t *testing.T) {
 
 	}
 }
+
+func TestDumpLine(t *testing.T) {
+	r := Ring{}
+	r.SetCapacity(7)
+	for i := 0; i <= 14; i++ {
+		r.Enqueue(measure{float64(i)})
+	}
+	s, err := r.DumpLine()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(s)
+
+}
