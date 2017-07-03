@@ -70,12 +70,12 @@ func (r *Ring) Dequeue() Measure {
 	return v
 }
 
-func (r *Ring) Values() []Measure {
+func (r *Ring) Values() []TimeMeasure {
 	if r.head == -1 {
 		return nil
 	}
 
-	arr := make([]Measure, 0, r.Capacity())
+	arr := make([]TimeMeasure, 0, r.Capacity())
 
 	for i := 0; i < r.Capacity(); i++ {
 		idx := r.mod(i + r.tail)
@@ -123,6 +123,6 @@ func (r *Ring) set(i int, b TimeMeasure) {
 	r.buff[r.mod(i)] = b
 }
 
-func (r *Ring) get(i int) Measure {
+func (r *Ring) get(i int) TimeMeasure {
 	return r.buff[r.mod(i)]
 }

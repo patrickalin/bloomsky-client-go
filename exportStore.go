@@ -62,7 +62,7 @@ func (c *store) listen(context context.Context) {
 
 }
 
-func (c *store) GetValues(name string) []ring.Measure {
+func (c *store) GetValues(name string) []ring.TimeMeasure {
 	return c.stores[name].Values()
 }
 
