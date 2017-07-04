@@ -114,12 +114,7 @@ func (httpServ *httpServer) home(w http.ResponseWriter, r *http.Request) {
 func (httpServ *httpServer) history(w http.ResponseWriter, r *http.Request) {
 	logDebug(funcName(), "Home History handle", "")
 
-	//fmt.Println(httpServ.store.String("temp"))
-
-	var prim template.JS
-	prim = "[[new Date(1416013200000), 22],[new Date(2014, 10, 15, 0, 30), 23],[new Date(2014, 10, 15, 0, 00), 22],[new Date(2014, 10, 14, 23, 30), 21],[new Date(2014, 10, 14, 23, 00), 22],[new Date(2014, 10, 14, 22, 30), 18],]"
-
-	p := pageHistory{Websockerurl: getWs(r) + r.Host + "/refreshdata", Store: prim}
+	p := pageHistory{Websockerurl: getWs(r) + r.Host + "/refreshdata", Store: template.JS(httpServ.store.String("temp"))}
 	if err := httpServ.templates["history"].Execute(w, p); err != nil {
 		logFatal(err, funcName(), "Execute template history", "")
 	}
