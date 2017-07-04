@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-const ts = `[{{range $i, $a := .}} {{if $i}},{{end}}[{{printf "%.2f" $a.Value}},{{$a.TimeStamp.Format "Mon Jan _2 15:04:05 2006"}}]{{end}}]`
+const ts = `[{{range $i, $a := .}} {{if $i}},{{end}}[new Date("{{$a.TimeStamp.Format "Mon Jan _2 15:04:05 2006"}}"),{{printf "%.2f" $a.Value}}]{{end}}]`
 
 var (
 	t               *template.Template
