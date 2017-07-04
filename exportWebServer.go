@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"context"
 	"encoding/json"
-	"fmt"
 	"html/template"
 	"net/http"
 	"net/http/pprof"
@@ -115,7 +114,7 @@ func (httpServ *httpServer) home(w http.ResponseWriter, r *http.Request) {
 func (httpServ *httpServer) history(w http.ResponseWriter, r *http.Request) {
 	logDebug(funcName(), "Home History handle", "")
 
-	fmt.Println(httpServ.store.String("temp"))
+	//fmt.Println(httpServ.store.String("temp"))
 
 	var prim template.JS
 	prim = "[[new Date(1416013200000), 22],[new Date(2014, 10, 15, 0, 30), 23],[new Date(2014, 10, 15, 0, 00), 22],[new Date(2014, 10, 14, 23, 30), 21],[new Date(2014, 10, 14, 23, 00), 22],[new Date(2014, 10, 14, 22, 30), 18],]"
