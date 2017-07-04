@@ -66,23 +66,6 @@ func (c *store) GetValues(name string) []ring.TimeMeasure {
 }
 
 func (c *store) String(name string) string {
-	/*[
-	    [new Date(1416013200000), 22],
-	    [new Date(2014, 10, 15, 0, 30), 23],
-	    [new Date(2014, 10, 15, 0, 00), 22],
-	    [new Date(2014, 10, 14, 23, 30), 21],
-	    [new Date(2014, 10, 14, 23, 00), 22],
-	    [new Date(2014, 10, 14, 22, 30), 18],
-	]*/
-
-	/*
-
-		var ret = "["
-		for k, v :	= range c.stores[name].Values() {
-			ret = ret + "[" + strconv.FormatFloat(v.Value(), 'f', 6, 64) + "," + strconv.Itoa(k) + "],"
-		}
-		ret += "]"
-		return ret*/
 	s, _ := c.stores[name].DumpLine()
 	return s
 }
