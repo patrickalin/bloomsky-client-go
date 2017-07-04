@@ -124,3 +124,26 @@ func BenchmarkHanlder(b *testing.B) {
 		}
 	}
 }
+
+/*
+func TestRing(t *testing.T) {
+
+	channels := make(map[string]chan bloomsky.Bloomsky)
+	channels["store"] = make(chan bloomsky.Bloomsky)
+
+	store, err := createStore(channels["store"])
+	checkErr(err, funcName(), "Error with history create store", "")
+
+	store.listen(context.Background())
+
+	mybloomsky := bloomsky.New("", "", true, nil)
+	collect(mybloomsky, channels)
+	mybloomsky = bloomsky.New("", "", true, nil)
+	collect(mybloomsky, channels)
+	mybloomsky = bloomsky.New("", "", true, nil)
+	collect(mybloomsky, channels)
+
+	if store.String("temp") == "[ [new Date(\"Tue Jul  4 22:16:25 2017\"),21.55] ,[new Date(\"Tue Jul  4 22:16:25 2017\"),21.55] ,[new Date(\"Tue Jul  4 22:16:25 2017\"),21.55]]" {
+		t.Errorf("unexpected string : |%s|", store.String("temp"))
+	}
+}*/
