@@ -100,8 +100,7 @@ Bloomsky Clientcomes with an embedded web based object browser. Point your web b
 ![InfluxData Image ](https://raw.githubusercontent.com/patrickalin/bloomsky-client-go/master/img/InfluxDB.png)
 
 ## Docker Container
-### Stable
-```
+
 docker pull patrickalin/docker-bloomsky
 docker run -d  --name=bloomsky -e bloomskyAccessToken=ToBECompleted patrickalin/docker-bloomsky
 
