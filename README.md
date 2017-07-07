@@ -33,19 +33,21 @@ A simple Go client for the BloomSky API.
 * This application supports en-us and fr
 * Cette application supporte l'anglais et le français
 
-### Usage with config.yaml
+### Binary donwload with config.yaml
+
+
+
+| Platform| Architecture | URL|
+| ----------| -------- | ------|
+|Apple macOS|64-bit Intel| ./goBloomsky-darwin-amd64.bin |
+|Linux|64-bit Intel| ./goBloomsky-linux-amd64.bin |
+|Windows|64-bit Intel| goBloomsky-windows-amd64.exe |
+
+### Usage with config.yaml or with flag
 
 Execute the binary with the config file "config.yaml" in the same folder.
 
-* Windows : goBloomsky-windows-amd64.exe
-* Linux : ./goBloomsky-linux-amd64.bin
-* Mac : ./goBloomsky-darwin-amd64.bin
-
-### Usage with flag
-
-* Windows : goBloomsky-windows-amd64.exe -token xxxxxxx
-* Linux : ./goBloomsky-linux-amd64.bin -token xxxxxxx
-* Mac : ./goBloomsky-darwin-amd64.bin -token xxxxxxx
+* Ex : goBloomsky-windows-amd64.exe -token xxxxxxx
 
 There are some others flags : --help for doc
 
@@ -59,9 +61,9 @@ There are some others flags : --help for doc
      -token string
        	yourtoken
 
-### Example : result in the webserver
+### Test using Bloomsky Browser
 
-By default : `http://localhost:1111/`
+Bloomsky Clientcomes with an embedded web based object browser. Point your web browser by default to `http://localhost:1111/` ensure your server has started successfully.
 
 ![Web server](https://raw.githubusercontent.com/patrickalin/bloomsky-client-go/master/img/webserver.png)
 
@@ -96,6 +98,14 @@ By default : `http://localhost:1111/`
 ### Example : result in a influxData
 
 ![InfluxData Image ](https://raw.githubusercontent.com/patrickalin/bloomsky-client-go/master/img/InfluxDB.png)
+
+## Docker Container
+### Stable
+```
+docker pull patrickalin/docker-bloomsky
+docker run -d  --name=bloomsky -e bloomskyAccessToken=ToBECompleted patrickalin/docker-bloomsky
+
+https://hub.docker.com/r/patrickalin/docker-bloomsky/
 
 ## 2] Modification code / Compilation
 
