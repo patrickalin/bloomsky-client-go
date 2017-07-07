@@ -159,8 +159,6 @@ func main() {
 	translateFunc, err := i18n.Tfunc(config.language)
 	checkErr(err, funcName(), "Problem with loading translate file", "")
 
-	var store store
-
 	// Console initialisation
 	if config.consoleActivated {
 		channels["console"] = make(chan bloomsky.Bloomsky)
@@ -183,7 +181,7 @@ func main() {
 
 		channels["store"] = make(chan bloomsky.Bloomsky)
 
-		store, err = createStore(channels["store"])
+		store, err := createStore(channels["store"])
 		checkErr(err, funcName(), "Error with history create store", "")
 		store.listen(context.Background())
 
@@ -192,7 +190,6 @@ func main() {
 		httpServ, err = createWebServer(channels["web"], config.hTTPPort, config.hTTPSPort, translateFunc, config.dev, store)
 		checkErr(err, funcName(), "Error with initWebServer", "")
 		httpServ.listen(context.Background())
-
 	}
 
 	// get bloomsky JSON and parse information in bloomsky Go Structure
