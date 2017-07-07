@@ -178,7 +178,6 @@ func main() {
 	// WebServer initialisation
 	var httpServ *httpServer
 	if config.hTTPActivated {
-
 		channels["store"] = make(chan bloomsky.Bloomsky)
 
 		store, err := createStore(channels["store"])
