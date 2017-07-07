@@ -10,7 +10,8 @@ import (
 const ts = `[{{range $i, $a := .}} {{if $i}},{{end}}[new Date("{{$a.TimeStamp.Format "Mon Jan _2 15:04:05 2006"}}"),{{printf "%.2f" $a.Value}}]{{end}}]`
 
 var (
-	t               *template.Template
+	t *template.Template
+	// DefaultCapacity is max size of ring
 	DefaultCapacity = 256
 )
 
@@ -19,40 +20,43 @@ func init() {
 
 }
 
-type Measure interface {
-	Value() float64
-}
-
-type Time interface {
-	TimeStamp() time.Time
-}
-
+// TimeMeasure compose Time and Measure
 type TimeMeasure interface {
 	Time
 	Measure
 }
 
+// Measure value of the measure
+type Measure interface {
+	//Value from the measure
+	Value() float64
+}
+
+//Time is the timestamp of enqueue
+type Time interface {
+	//Timestamp from the measure
+	TimeStamp() time.Time
+}
+
+//Ring structure
 type Ring struct {
 	head int
 	tail int
 	buff []TimeMeasure
 }
 
-/**
-Set the maximum capacity of the ring
-*/
+/*SetCapacity fix the maximum capacity of the ring*/
 func (r *Ring) SetCapacity(size int) {
 	r.init()
 	r.extends(size)
 }
 
-/**
-Capacity returns the capacity of ringbuffer
-*/
+/*Capacity returns the capacity of ringbuffer*/
 func (r *Ring) Capacity() int {
 	return len(r.buff)
 }
 
+//Enqueue enqueues measure of the ring
 func (r *Ring) Enqueue(c TimeMeasure) {
 	if r == nil {
 		log.Fatal("Ring is nil, not initialised stores[ \"xx\"] = &ring.Ring{}")
@@ -68,6 +72,7 @@ func (r *Ring) Enqueue(c TimeMeasure) {
 
 }
 
+//Dequeue dequeues measure of the ring
 func (r *Ring) Dequeue() Measure {
 	r.init()
 	if r.head == -1 {
@@ -86,6 +91,7 @@ func (r *Ring) Dequeue() Measure {
 	return v
 }
 
+//Values return array of timeMeasure
 func (r *Ring) Values() []TimeMeasure {
 	if r.head == -1 {
 		return nil
@@ -103,13 +109,13 @@ func (r *Ring) Values() []TimeMeasure {
 	return arr
 }
 
+//DumpLine return String of ring
 func (r *Ring) DumpLine() (string, error) {
 	var result bytes.Buffer
 	if err := t.Execute(&result, r.Values()); err != nil {
 		return "", err
 	}
 	return result.String(), nil
-
 }
 
 /*------------------------------------ */

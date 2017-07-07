@@ -35,8 +35,6 @@ A simple Go client for the BloomSky API.
 
 ### Binary donwload with config.yaml
 
-
-
 | Platform| Architecture | URL|
 | ----------| -------- | ------|
 |Apple macOS|64-bit Intel| ./goBloomsky-darwin-amd64.bin |
@@ -53,13 +51,13 @@ There are some others flags : --help for doc
 
       Usage of ./bloomsky-client-go:
      -debug string
-       	panic,fatal,error,warning,info,debug
+        panic,fatal,error,warning,info,debug
      -devel string
-       	true,false
+        true,false
      -mock string
-       	true,false
+        true,false
      -token string
-       	yourtoken
+        yourtoken
 
 ### Test using Bloomsky Browser
 
@@ -104,7 +102,7 @@ Bloomsky Clientcomes with an embedded web based object browser. Point your web b
 docker pull patrickalin/docker-bloomsky
 docker run -d  --name=bloomsky -e bloomskyAccessToken=ToBECompleted patrickalin/docker-bloomsky
 
-https://hub.docker.com/r/patrickalin/docker-bloomsky/
+`https://hub.docker.com/r/patrickalin/docker-bloomsky/`
 
 ## 2] Modification code / Compilation
 
@@ -154,4 +152,3 @@ In the config file, you can change the log level (panic,fatal,error,warn,info,de
 ## 4] License
 
 The code is licensed under the permissive Apache v2.0 licence. This means you can do what you like with the software, as long as you include the required notices. [Read this](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)) for a summary.
-
