@@ -2,6 +2,7 @@ package ring
 
 import (
 	"bytes"
+	"log"
 	"text/template"
 	"time"
 )
@@ -53,6 +54,9 @@ func (r *Ring) Capacity() int {
 }
 
 func (r *Ring) Enqueue(c TimeMeasure) {
+	if r == nil {
+		log.Fatal("Ring is nil, not initialised stores[ \"xx\"] = &ring.Ring{}")
+	}
 	r.init()
 	r.set(r.head+1, c)
 	old := r.head
