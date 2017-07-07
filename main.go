@@ -26,9 +26,11 @@ import (
 	"github.com/spf13/viper"
 )
 
-//configName name of the config file
-const configNameFile = "config"
-const logFile = "bloomsky.log"
+//configName name of the config file and log file
+const (
+	configNameFile = "config"
+	logFile        = "bloomsky.log"
+)
 
 // Configuration is the structure of the config YAML file
 //use http://mervine.net/json2struct
