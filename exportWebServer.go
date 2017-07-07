@@ -31,17 +31,12 @@ type meas struct {
 	Value     float64
 }
 
-type pageHome struct {
-	Websockerurl string
-}
-
 type pageLog struct {
 	LogTxt string
 }
 
-type pageHistory struct {
+type pageHome struct {
 	Websockerurl string
-	Store        template.JS
 }
 
 type logStru struct {
@@ -51,6 +46,8 @@ type logStru struct {
 	Param string `json:"param"`
 	Fct   string `json:"fct"`
 }
+
+const logfile = "bloomsky.log"
 
 //listen
 func (httpServ *httpServer) listen(context context.Context) {
@@ -67,13 +64,19 @@ func (httpServ *httpServer) listen(context context.Context) {
 			}
 
 			if httpServ.conn != nil {
-				err = httpServ.conn.WriteMessage(websocket.TextMessage, httpServ.msgJSON)
-				checkErr(err, funcName(), "Impossible to write to websocket", "")
+				httpServ.refreshWebsocket()
 			}
 
 			logDebug(funcName(), "Listen", string(httpServ.msgJSON))
 		}
 	}()
+}
+
+func (httpServ *httpServer) refreshWebsocket() {
+	t := append(httpServ.msgJSON, []byte("SEPARATOR"+httpServ.store.String("temperatureCelsius"))...)
+	t = append(t, []byte("SEPARATOR"+httpServ.store.String("windGustkmh"))...)
+	err := httpServ.conn.WriteMessage(websocket.TextMessage, t)
+	checkErr(err, funcName(), "Impossible to write to websocket", "")
 }
 
 // Websocket handler to send data
@@ -92,6 +95,20 @@ func (httpServ *httpServer) refreshdata(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
+// Websocket handler to send data
+func (httpServ *httpServer) refreshHistory(w http.ResponseWriter, r *http.Request) {
+	logDebug(funcName(), "Refresh history Websocket handle", "")
+
+	upgrader := websocket.Upgrader{}
+
+	var err error
+
+	httpServ.conn, err = upgrader.Upgrade(w, r, nil)
+	checkErr(err, funcName(), "Upgrade upgrader", "")
+
+	httpServ.refreshWebsocket()
+}
+
 func getWs(r *http.Request) string {
 	if r.TLS == nil {
 		return "ws://"
@@ -101,7 +118,6 @@ func getWs(r *http.Request) string {
 
 // Home bloomsky handler
 func (httpServ *httpServer) home(w http.ResponseWriter, r *http.Request) {
-
 	logDebug(funcName(), "Home Http handle", "")
 
 	p := pageHome{Websockerurl: getWs(r) + r.Host + "/refreshdata"}
@@ -114,7 +130,7 @@ func (httpServ *httpServer) home(w http.ResponseWriter, r *http.Request) {
 func (httpServ *httpServer) history(w http.ResponseWriter, r *http.Request) {
 	logDebug(funcName(), "Home History handle", "")
 
-	p := pageHistory{Websockerurl: getWs(r) + r.Host + "/refreshdata", Store: template.JS(httpServ.store.String("temp"))}
+	p := pageHome{Websockerurl: getWs(r) + r.Host + "/refreshhistory"}
 	if err := httpServ.templates["history"].Execute(w, p); err != nil {
 		logFatal(err, funcName(), "Execute template history", "")
 	}
@@ -124,7 +140,7 @@ func (httpServ *httpServer) history(w http.ResponseWriter, r *http.Request) {
 func (httpServ *httpServer) log(w http.ResponseWriter, r *http.Request) {
 	logDebug(funcName(), "Log Http handle", "")
 
-	p := map[string]interface{}{"logRange": createArrayLog()}
+	p := map[string]interface{}{"logRange": createArrayLog(logfile)}
 
 	err := httpServ.templates["log"].Execute(w, p)
 	checkErr(err, funcName(), "Compile template log", "")
@@ -157,6 +173,7 @@ func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string, HTTPSPort strin
 	s.Handle("/favicon.ico", fs)
 	s.HandleFunc("/", server.home)
 	s.HandleFunc("/refreshdata", server.refreshdata)
+	s.HandleFunc("/refreshhistory", server.refreshHistory)
 	s.HandleFunc("/log", server.log)
 	s.HandleFunc("/history", server.history)
 	s.HandleFunc("/debug/pprof/", pprof.Index)
@@ -184,8 +201,8 @@ func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string, HTTPSPort strin
 	return server, nil
 }
 
-func createArrayLog() (logRange []logStru) {
-	file, err := os.Open("bloomsky.log")
+func createArrayLog(logFile string) (logRange []logStru) {
+	file, err := os.Open(logFile)
 	checkErr(err, funcName(), "Imposible to open file", "bloomsky.log")
 
 	defer file.Close()
