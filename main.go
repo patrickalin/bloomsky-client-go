@@ -151,12 +151,10 @@ func main() {
 
 	channels := make(map[string]chan bloomsky.Bloomsky)
 
-	if err := i18n.ParseTranslationFileBytes("lang/en-us.all.json", readFile("lang/en-us.all.json", config.dev)); err != nil {
-		logFatal(err, funcName(), "Error read language file check in config.yaml if dev=false", "")
-	}
-	if err := i18n.ParseTranslationFileBytes("lang/fr.all.json", readFile("lang/fr.all.json", config.dev)); err != nil {
-		logFatal(err, funcName(), "Error read language file check in config.yaml if dev=false", "")
-	}
+	i18n.ParseTranslationFileBytes("lang/en-us.all.json", readFile("lang/en-us.all.json", config.dev))
+	checkErr(err, funcName(), "Error read language file check in config.yaml if dev=false", "")
+	i18n.ParseTranslationFileBytes("lang/fr.all.json", readFile("lang/fr.all.json", config.dev))
+	checkErr(err, funcName(), "Error read language file check in config.yaml if dev=false", "")
 
 	translateFunc, err := i18n.Tfunc(config.language)
 	checkErr(err, funcName(), "Problem with loading translate file", "")
