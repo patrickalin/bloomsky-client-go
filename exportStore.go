@@ -35,8 +35,8 @@ func (m measure) Value() float64 {
 //InitConsole listen on the chanel
 func createStore(messages chan bloomsky.Bloomsky) (store, error) {
 	stores := make(map[string]*ring.Ring)
-	stores["temp"] = &ring.Ring{}
-	stores["wind"] = &ring.Ring{}
+	stores["temperatureCelsius"] = &ring.Ring{}
+	stores["windGustkmh"] = &ring.Ring{}
 	return store{in: messages, stores: stores}, nil
 
 }
@@ -54,8 +54,8 @@ func (c *store) listen(context context.Context) {
 			log.WithFields(logrus.Fields{
 				"fct": "exportStore.listen",
 			}).Debug("Receive message")
-			c.stores["temp"].Enqueue(measure{time.Now(), msg.GetTemperatureCelsius()})
-			c.stores["wind"].Enqueue(measure{time.Now(), msg.GetWindGustkmh()})
+			c.stores["temperatureCelsius"].Enqueue(measure{time.Now(), msg.GetTemperatureCelsius()})
+			c.stores["windGustkmh"].Enqueue(measure{time.Now(), msg.GetWindGustkmh()})
 		}
 	}()
 
