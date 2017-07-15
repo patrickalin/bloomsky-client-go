@@ -28,7 +28,7 @@ func GetHTMLTemplate(templateName string, templatesLocation []string, funcs map[
 	t.Funcs(funcs)
 	if dev {
 		t, err := t.ParseFiles(templatesLocation...)
-		checkErr(err, funcName(), "ParseFiles", "")
+		checkErr(err, funcName(), "ParseFiles")
 		return t
 	}
 
@@ -37,7 +37,7 @@ func GetHTMLTemplate(templateName string, templatesLocation []string, funcs map[
 		checkErr(err, funcName(), "Assembly template", l)
 
 		t, err = t.Parse(string(asset[:]))
-		checkErr(err, funcName(), "Parse file", "")
+		checkErr(err, funcName(), "Parse file")
 	}
 
 	return t

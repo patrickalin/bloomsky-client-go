@@ -28,6 +28,7 @@ func TestMain(m *testing.M) {
 
 	serv, err = createWebServer(channels["web"], ":1110", ":2220", translateFunc, true, store{})
 	checkErr(err, funcName(), "Impossible to create server", "")
+
 	os.Exit(m.Run())
 }
 
@@ -46,7 +47,7 @@ func TestHanlderHome(t *testing.T) {
 		nil,
 	)
 	if err != nil {
-		logFatal(err, funcName(), "Could not request: %v", "")
+		logFatal(err, funcName(), "Could not request: %v")
 	}
 
 	rec := httptest.NewRecorder()
@@ -67,7 +68,7 @@ func TestHanlderLog(t *testing.T) {
 		nil,
 	)
 	if err != nil {
-		logFatal(err, funcName(), "Could not request: %v", "")
+		logFatal(err, funcName(), "Could not request: %v")
 	}
 
 	rec := httptest.NewRecorder()
@@ -88,7 +89,7 @@ func TestHanlderHistory(t *testing.T) {
 		nil,
 	)
 	if err != nil {
-		logFatal(err, funcName(), "Could not request: %v", "")
+		logFatal(err, funcName(), "Could not request: %v")
 	}
 
 	rec := httptest.NewRecorder()
@@ -111,7 +112,7 @@ func BenchmarkHanlder(b *testing.B) {
 			nil,
 		)
 		if err != nil {
-			logFatal(err, funcName(), "Could not request: %v", "")
+			logFatal(err, funcName(), "Could not request: %v")
 		}
 
 		rec := httptest.NewRecorder()
@@ -133,7 +134,7 @@ func TestRing(t *testing.T) {
 	channels["store"] = make(chan bloomsky.Bloomsky)
 
 	store, err := createStore(channels["store"])
-	checkErr(err, funcName(), "Error with history create store", "")
+	checkErr(err, funcName(), "Error with history create store")
 
 	store.listen(context.Background())
 

@@ -21,7 +21,7 @@ func createConsole(messages chan bloomsky.Bloomsky, translateFunc i18n.Translate
 	f := map[string]interface{}{"T": translateFunc}
 	//Get template
 	c := console{in: messages, textTemplate: GetTemplate("bloomsky.txt", "tmpl/bloomsky.txt", f, dev)}
-	logInfo(funcName(), "Console listen", "")
+	logInfo(funcName(), "Console listen")
 	return c, nil
 }
 
@@ -47,7 +47,7 @@ func (c *console) listen(context context.Context) {
 				log.Panicln(err)
 			}*/
 
-		logDebug(funcName(), "Init the queue console to display message", "")
+		logDebug(funcName(), "Init the queue console to display message")
 
 		for {
 			select {

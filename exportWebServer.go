@@ -57,10 +57,10 @@ func (httpServ *httpServer) listen(context context.Context) {
 			var err error
 
 			httpServ.msgJSON, err = json.Marshal(mybloomsky.GetBloomskyStruct())
-			checkErr(err, funcName(), "Marshal json Error", "")
+			checkErr(err, funcName(), "Marshal json Error")
 
 			if httpServ.msgJSON == nil {
-				logFatal(err, funcName(), "JSON Empty", "")
+				logFatal(err, funcName(), "JSON Empty")
 			}
 
 			if httpServ.conn != nil {
@@ -76,35 +76,35 @@ func (httpServ *httpServer) refreshWebsocket() {
 	t := append(httpServ.msgJSON, []byte("SEPARATOR"+httpServ.store.String("temperatureCelsius"))...)
 	t = append(t, []byte("SEPARATOR"+httpServ.store.String("windGustkmh"))...)
 	err := httpServ.conn.WriteMessage(websocket.TextMessage, t)
-	checkErr(err, funcName(), "Impossible to write to websocket", "")
+	checkErr(err, funcName(), "Impossible to write to websocket")
 }
 
 // Websocket handler to send data
 func (httpServ *httpServer) refreshdata(w http.ResponseWriter, r *http.Request) {
-	logDebug(funcName(), "Refresh data Websocket handle", "")
+	logDebug(funcName(), "Refresh data Websocket handle")
 
 	upgrader := websocket.Upgrader{}
 
 	var err error
 
 	httpServ.conn, err = upgrader.Upgrade(w, r, nil)
-	checkErr(err, funcName(), "Upgrade upgrader", "")
+	checkErr(err, funcName(), "Upgrade upgrader")
 
 	if err = httpServ.conn.WriteMessage(websocket.TextMessage, httpServ.msgJSON); err != nil {
-		logFatal(err, funcName(), "Impossible to write to websocket", "")
+		logFatal(err, funcName(), "Impossible to write to websocket")
 	}
 }
 
 // Websocket handler to send data
 func (httpServ *httpServer) refreshHistory(w http.ResponseWriter, r *http.Request) {
-	logDebug(funcName(), "Refresh history Websocket handle", "")
+	logDebug(funcName(), "Refresh history Websocket handle")
 
 	upgrader := websocket.Upgrader{}
 
 	var err error
 
 	httpServ.conn, err = upgrader.Upgrade(w, r, nil)
-	checkErr(err, funcName(), "Upgrade upgrader", "")
+	checkErr(err, funcName(), "Upgrade upgrader")
 
 	httpServ.refreshWebsocket()
 }
@@ -118,32 +118,32 @@ func getWs(r *http.Request) string {
 
 // Home bloomsky handler
 func (httpServ *httpServer) home(w http.ResponseWriter, r *http.Request) {
-	logDebug(funcName(), "Home Http handle", "")
+	logDebug(funcName(), "Home Http handle")
 
 	p := pageHome{Websockerurl: getWs(r) + r.Host + "/refreshdata"}
 	if err := httpServ.templates["home"].Execute(w, p); err != nil {
-		logFatal(err, funcName(), "Execute template home", "")
+		logFatal(err, funcName(), "Execute template home")
 	}
 }
 
 // Home bloomsky handler
 func (httpServ *httpServer) history(w http.ResponseWriter, r *http.Request) {
-	logDebug(funcName(), "Home History handle", "")
+	logDebug(funcName(), "Home History handle")
 
 	p := pageHome{Websockerurl: getWs(r) + r.Host + "/refreshhistory"}
 	if err := httpServ.templates["history"].Execute(w, p); err != nil {
-		logFatal(err, funcName(), "Execute template history", "")
+		logFatal(err, funcName(), "Execute template history")
 	}
 }
 
 // Log handler
 func (httpServ *httpServer) log(w http.ResponseWriter, r *http.Request) {
-	logDebug(funcName(), "Log Http handle", "")
+	logDebug(funcName(), "Log Http handle")
 
 	p := map[string]interface{}{"logRange": createArrayLog(logfile)}
 
 	err := httpServ.templates["log"].Execute(w, p)
-	checkErr(err, funcName(), "Compile template log", "")
+	checkErr(err, funcName(), "Compile template log")
 }
 
 func getFileServer(dev bool) http.FileSystem {
@@ -185,13 +185,13 @@ func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string, HTTPSPort strin
 	h := &http.Server{Addr: HTTPPort, Handler: s}
 	go func() {
 		err := h.ListenAndServe()
-		checkErr(err, funcName(), "Error when I create the server HTTP (don't forget ':')", "")
+		checkErr(err, funcName(), "Error when I create the server HTTP (don't forget ':')")
 	}()
 
 	hs := &http.Server{Addr: HTTPSPort, Handler: s}
 	go func() {
 		err := hs.ListenAndServeTLS("server.crt", "server.key")
-		checkErr(err, funcName(), "Error when I create the server HTTPS (don't forget ':')", "")
+		checkErr(err, funcName(), "Error when I create the server HTTPS (don't forget ':')")
 	}()
 
 	logInfo(funcName(), "Server HTTP listen on port", HTTPPort)
@@ -217,7 +217,7 @@ func createArrayLog(logFile string) (logRange []logStru) {
 	}
 
 	scanner.Err()
-	checkErr(err, funcName(), "Scanner Err", "")
+	checkErr(err, funcName(), "Scanner Err")
 
 	return logRange
 }

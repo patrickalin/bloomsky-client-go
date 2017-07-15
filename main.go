@@ -79,7 +79,7 @@ func init() {
 func main() {
 
 	//Create context
-	logDebug(funcName(), "Create context", "")
+	logDebug(funcName(), "Create context")
 	myContext, cancel := context.WithCancel(context.Background())
 
 	signalCh := make(chan os.Signal, 1)
@@ -118,7 +118,7 @@ func main() {
 	}
 
 	//Read flags
-	logDebug(funcName(), "Get flag from command line", "")
+	logDebug(funcName(), "Get flag from command line")
 	levelF := flag.String("debug", "", "panic,fatal,error,warning,info,debug")
 	tokenF := flag.String("token", "", "yourtoken")
 	develF := flag.String("devel", "", "true,false")
@@ -133,16 +133,16 @@ func main() {
 	}
 	if *develF != "" {
 		config.dev, err = strconv.ParseBool(*develF)
-		checkErr(err, funcName(), "error convert string to bol", "")
+		checkErr(err, funcName(), "error convert string to bol")
 	}
 	if *mockF != "" {
 		config.mock, err = strconv.ParseBool(*mockF)
-		checkErr(err, funcName(), "error convert string to bol", "")
+		checkErr(err, funcName(), "error convert string to bol")
 	}
 
 	// Set Level log
 	level, err := logrus.ParseLevel(config.logLevel)
-	checkErr(err, funcName(), "Error parse level", "")
+	checkErr(err, funcName(), "Error parse level")
 	log.Level = level
 	logInfo(funcName(), "Level log", config.logLevel)
 
@@ -153,17 +153,17 @@ func main() {
 
 	// Traduction
 	i18n.ParseTranslationFileBytes("lang/en-us.all.json", readFile("lang/en-us.all.json", config.dev))
-	checkErr(err, funcName(), "Error read language file check in config.yaml if dev=false", "")
+	checkErr(err, funcName(), "Error read language file check in config.yaml if dev=false")
 	i18n.ParseTranslationFileBytes("lang/fr.all.json", readFile("lang/fr.all.json", config.dev))
-	checkErr(err, funcName(), "Error read language file check in config.yaml if dev=false", "")
+	checkErr(err, funcName(), "Error read language file check in config.yaml if dev=false")
 	translateFunc, err := i18n.Tfunc(config.language)
-	checkErr(err, funcName(), "Problem with loading translate file", "")
+	checkErr(err, funcName(), "Problem with loading translate file")
 
 	// Console initialisation
 	if config.consoleActivated {
 		channels["console"] = make(chan bloomsky.Bloomsky)
 		c, err := createConsole(channels["console"], translateFunc, config.dev)
-		checkErr(err, funcName(), "Error with initConsol", "")
+		checkErr(err, funcName(), "Error with initConsol")
 		c.listen(context.Background())
 	}
 
@@ -171,7 +171,7 @@ func main() {
 	if config.influxDBActivated {
 		channels["influxdb"] = make(chan bloomsky.Bloomsky)
 		c, err := initClient(channels["influxdb"], config.influxDBServer, config.influxDBServerPort, config.influxDBUsername, config.influxDBPassword, config.influxDBDatabase)
-		checkErr(err, funcName(), "Error with initClientInfluxDB", "")
+		checkErr(err, funcName(), "Error with initClientInfluxDB")
 		c.listen(context.Background())
 	}
 
@@ -181,13 +181,13 @@ func main() {
 		channels["store"] = make(chan bloomsky.Bloomsky)
 
 		store, err := createStore(channels["store"])
-		checkErr(err, funcName(), "Error with history create store", "")
+		checkErr(err, funcName(), "Error with history create store")
 		store.listen(context.Background())
 
 		channels["web"] = make(chan bloomsky.Bloomsky)
 
 		httpServ, err = createWebServer(channels["web"], config.hTTPPort, config.hTTPSPort, translateFunc, config.dev, store)
-		checkErr(err, funcName(), "Error with initWebServer", "")
+		checkErr(err, funcName(), "Error with initWebServer")
 		httpServ.listen(context.Background())
 	}
 
@@ -199,9 +199,9 @@ func main() {
 	//If signal to close the program
 	<-myContext.Done()
 	if httpServ.httpServ != nil {
-		logDebug(funcName(), "Shutting down webserver", "")
+		logDebug(funcName(), "Shutting down webserver")
 		err := httpServ.httpServ.Shutdown(myContext)
-		checkErr(err, funcName(), "Impossible to shutdown context", "")
+		checkErr(err, funcName(), "Impossible to shutdown context")
 	}
 
 	logrus.WithFields(logrus.Fields{
@@ -220,7 +220,7 @@ func schedule(myContext context.Context, mybloomsky bloomsky.Bloomsky, channels 
 		case <-ticker.C:
 			collect(mybloomsky, channels)
 		case <-myContext.Done():
-			logDebug(funcName(), "Stoping ticker", "")
+			logDebug(funcName(), "Stoping ticker")
 			ticker.Stop()
 			for _, v := range channels {
 				close(v)
@@ -232,7 +232,7 @@ func schedule(myContext context.Context, mybloomsky bloomsky.Bloomsky, channels 
 
 //Principal function which one loops each Time Variable
 func collect(mybloomsky bloomsky.Bloomsky, channels map[string]chan bloomsky.Bloomsky) {
-	logDebug(funcName(), "Parse informations from API bloomsky", "")
+	logDebug(funcName(), "Parse informations from API bloomsky")
 
 	mybloomsky.Refresh()
 
@@ -250,7 +250,7 @@ func readConfig(configName string) (configuration, error) {
 	viper.AddConfigPath(".")
 
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	checkErr(err, funcName(), "Fielpaths", "")
+	checkErr(err, funcName(), "Fielpaths")
 	dir = dir + "/" + configName
 
 	if err := viper.ReadInConfig(); err != nil {
