@@ -26,10 +26,11 @@ func GetTemplate(templateName string, templateLocation string, funcs map[string]
 func GetHTMLTemplate(templateName string, templatesLocation []string, funcs map[string]interface{}, dev bool) *template.Template {
 	t := template.New(templateName)
 	t.Funcs(funcs)
+
 	if dev {
-		t, err := t.ParseFiles(templatesLocation...)
+		tp, err := t.ParseFiles(templatesLocation...)
 		checkErr(err, funcName(), "ParseFiles")
-		return t
+		return tp
 	}
 
 	for _, l := range templatesLocation {
