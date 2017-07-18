@@ -24,11 +24,6 @@ type httpServer struct {
 	templates             map[string]*template.Template
 	store                 store
 }
-
-type pageLog struct {
-	LogTxt string
-}
-
 type pageHome struct {
 	Websockerurl string
 }
