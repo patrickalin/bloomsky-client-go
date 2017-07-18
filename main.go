@@ -67,6 +67,10 @@ func init() {
 	log.Formatter = new(logrus.JSONFormatter)
 
 	err := os.Remove(logFile)
+	if err != nil {
+		log.Error("Failed to remove log file")
+		return
+	}
 
 	file, err := os.OpenFile(logFile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
 	if err != nil {

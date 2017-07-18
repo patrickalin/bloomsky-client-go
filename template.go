@@ -17,8 +17,9 @@ func GetTemplate(templateName string, templateLocation string, funcs map[string]
 	}
 
 	assetBloomsky, err := assembly.Asset(templateLocation)
-	t, err := text.New(templateName).Funcs(funcs).Parse(string(assetBloomsky[:]))
 	checkErr(err, funcName(), "Load template console", templateLocation)
+	t, err := text.New(templateName).Funcs(funcs).Parse(string(assetBloomsky[:]))
+	checkErr(err, funcName(), "Load template parse")
 	return t
 }
 

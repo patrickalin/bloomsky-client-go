@@ -52,22 +52,18 @@ func (c *client) sendbloomskyToInfluxDB(onebloomsky bloomsky.Bloomsky) {
 		Database:  c.database,
 		Precision: "s",
 	})
-
-	if err != nil {
-		log.Errorf("Error sent Data to Influx DB : %v", err)
-	}
+	checkErr(err, funcName(), "Error sent Data to Influx DB")
 
 	pt, err := clientinfluxdb.NewPoint("bloomskyData", tags, fields, time.Now())
+	checkErr(err, funcName(), "New point")
 	bp.AddPoint(pt)
 
 	// Write the batch
 	err = c.c.Write(bp)
 
 	if err != nil {
-		err2 := c.createDB(c.database)
-		if err2 != nil {
-			log.Errorf("Check if InfluxData is running or if the database bloomsky exists : %v", err)
-		}
+		err := c.createDB(c.database)
+		checkErr(err, funcName(), "Check if InfluxData is running or if the database bloomsky exists")
 	}
 }
 
@@ -80,9 +76,7 @@ func (c *client) createDB(InfluxDBDatabase string) error {
 	fmt.Println("Query: ", query)
 
 	_, err := c.c.Query(q)
-	if err != nil {
-		return fmt.Errorf("Error with : Create database bloomsky, check if InfluxDB is running : %v", err)
-	}
+	checkErr(err, funcName(), "Error with : Create database bloomsky, check if InfluxDB is running")
 	fmt.Println("Database bloomsky created in InfluxDB")
 	return nil
 }
