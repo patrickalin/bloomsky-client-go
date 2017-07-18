@@ -53,7 +53,7 @@ func logInfo(fct string, msg string, params ...string) {
 	}).Info(msg)
 }
 
-func checkErr(err error, fct string, msg string, params ...string) {
+func checkErr(err error, fct string, msg string, param string) {
 	if err != nil {
 		logFatal(err, msg, fct, param)
 	}
