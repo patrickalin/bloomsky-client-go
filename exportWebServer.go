@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"net/http/pprof"
 	"os"
-	"time"
 
 	"github.com/elazarl/go-bindata-assetfs"
 	"github.com/gorilla/websocket"
@@ -24,11 +23,6 @@ type httpServer struct {
 	msgJSON               []byte
 	templates             map[string]*template.Template
 	store                 store
-}
-
-type meas struct {
-	Timestamp time.Time
-	Value     float64
 }
 
 type pageLog struct {
