@@ -192,20 +192,23 @@ func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string, HTTPSPort strin
 
 func createArrayLog(logFile string) (logRange []logStru) {
 	file, err := os.Open(logFile)
-	checkErr(err, funcName(), "Imposible to open file", "bloomsky.log")
+	checkErr(err, funcName(), "Imposible to open file", logFile)
 
-	defer file.Close()
+	defer func() {
+		err = file.Close()
+		checkErr(err, funcName(), "Imposible to close file", logFile)
+	}()
 	scanner := bufio.NewScanner(file)
 
 	var tt logStru
 	for scanner.Scan() {
-		json.Unmarshal([]byte(scanner.Text()), &tt)
+		err = json.Unmarshal([]byte(scanner.Text()), &tt)
 		checkErr(err, funcName(), "Impossible to unmarshall log", scanner.Text())
 
 		logRange = append(logRange, tt)
 	}
 
-	scanner.Err()
+	err = scanner.Err()
 	checkErr(err, funcName(), "Scanner Err")
 
 	return logRange
