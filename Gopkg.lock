@@ -8,6 +8,12 @@
   revision = "30f82fa23fd844bd5bb1e5f216db87fd77b5eb43"
 
 [[projects]]
+  name = "github.com/fatih/color"
+  packages = ["."]
+  revision = "570b54cabe6b8eb0bc2dfce68d964677d63b5260"
+  version = "v1.5.0"
+
+[[projects]]
   name = "github.com/fsnotify/fsnotify"
   packages = ["."]
   revision = "629574ca2a5df945712d3079857300b5e4da0236"
@@ -36,6 +42,18 @@
   packages = ["."]
   revision = "f917359f079a3759162704eaa8caeec3d01d9f91"
   version = "v1.7.2"
+
+[[projects]]
+  name = "github.com/mattn/go-colorable"
+  packages = ["."]
+  revision = "941b50ebc6efddf4c41c8e4537a5f68a4e686b24"
+  version = "v0.0.8"
+
+[[projects]]
+  name = "github.com/mattn/go-isatty"
+  packages = ["."]
+  revision = "fc9e8d8ef48496124e79ae0df75490096eccf6fe"
+  version = "v0.0.2"
 
 [[projects]]
   branch = "master"
@@ -113,13 +131,13 @@
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "90796e5a05ce440b41c768bd9af257005e470461"
+  revision = "739734461d1c916b6c72a63d7efda2b27edb369f"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/text"
   packages = ["internal/gen","internal/triegen","internal/ucd","transform","unicode/cldr","unicode/norm"]
-  revision = "6353ef0f924300eea566d3438817aa4d3374817e"
+  revision = "cfdf022e86b4ecfb646e1efbd7db175dd623a8fa"
 
 [[projects]]
   branch = "v2"
@@ -130,6 +148,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "13e6626ac788ea1a97c5bcc8b2c448ec16538eac56df6b09e447e8b990bfa48c"
+  inputs-digest = "5e90c6740cd89fc0a0cfde8870b3fd4ffd6d8f796453c1537374c67f23990c7b"
   solver-name = "gps-cdcl"
   solver-version = 1
