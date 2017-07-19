@@ -11,3 +11,4 @@ bloomsky-client-go.test
 prof.cpu
 torch.svg
 perf.0
+bloomsky-client
