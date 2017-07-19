@@ -8,9 +8,9 @@ all: build
 
 checks:
 	@echo "checks --- Check deps"
-	@(env bash $(PWD)/scripts/checkdeps.sh)
+	@(env bash $(PWD)/scripts/build/checkdeps.sh)
 	@echo "Checking project is in GOPATH"
-	@(env bash $(PWD)/scripts/checkgopath.sh)
+	@(env bash $(PWD)/scripts/build/checkgopath.sh)
 	@echo "checks ended"
 
 getdeps: checks
@@ -20,6 +20,8 @@ getdeps: checks
 	@echo "Installing misspell" && go get -u github.com/client9/misspell/cmd/misspell
 	@echo "Installing ineffassign" && go get -u github.com/gordonklaus/ineffassign
 	@echo "Installing errcheck" && go get -u github.com/kisielk/errcheck
+
+getFlame: 
 	@echo "Installing FlameGraph" && git clone git@github.com:brendangregg/FlameGraph.git ${GOPATH}/src/github/FlameGraph
 
 verifiers: getdeps vet fmt lint cyclo spelling deadcode errcheck
