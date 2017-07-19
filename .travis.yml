@@ -19,7 +19,7 @@ script:
 - "$HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken
   $COVERALLS_TOKEN"
 before_deploy:
-- "./command/compile.sh"
+- "./scripts/travis/compile.sh"
 - ls bin/goBloomsky-darwin-amd64.bin
 deploy:
   provider: releases
