@@ -87,3 +87,7 @@ clean:
 	@rm -rf build
 	@rm -rf release
 	@rm -rf coverage.txt
+
+doc:
+	@echo "listen on http://localhost:8081 ctrl+c stop"
+	@(env bash $(PWD)/buildscripts/doc.sh)
