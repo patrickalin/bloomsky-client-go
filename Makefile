@@ -1,6 +1,6 @@
 PWD := $(shell pwd)
 GOPATH := $(shell go env GOPATH)
-LDFLAGS := $(shell go run buildscripts/gen-ldflags.go)
+LDFLAGS := $(shell go run scripts/gen-ldflags.go)
 
 BUILD_LDFLAGS := '$(LDFLAGS)'
 
@@ -8,9 +8,9 @@ all: build
 
 checks:
 	@echo "checks --- Check deps"
-	@(env bash $(PWD)/buildscripts/checkdeps.sh)
+	@(env bash $(PWD)/scripts/checkdeps.sh)
 	@echo "Checking project is in GOPATH"
-	@(env bash $(PWD)/buildscripts/checkgopath.sh)
+	@(env bash $(PWD)/scripts/checkgopath.sh)
 	@echo "checks ended"
 
 getdeps: checks
@@ -68,7 +68,7 @@ test: verifiers build
 
 coverage: build
 	@echo "Running all coverage"
-	@./buildscripts/go-coverage.sh
+	@./scripts/go-coverage.sh
 
 # Builds locally.
 build:
@@ -82,10 +82,10 @@ install: build
 	@cp $(PWD)/minio $(GOPATH)/bin/bloomsky-client
 
 release: verifiers
-	@MINIO_RELEASE=RELEASE ./buildscripts/build.sh
+	@MINIO_RELEASE=RELEASE ./scripts/build.sh
 
 experimental: verifiers
-	@MINIO_RELEASE=EXPERIMENTAL ./buildscripts/build.sh
+	@MINIO_RELEASE=EXPERIMENTAL ./scripts/build.sh
 
 clean:
 	@echo "Cleaning up all the generated files"
@@ -96,7 +96,7 @@ clean:
 
 doc:
 	@echo "listen on http://localhost:8081 ctrl+c stop"
-	@(env bash $(PWD)/buildscripts/doc.sh)
+	@(env bash $(PWD)/scripts/doc.sh)
 
 travisGihtub:
     @travis encrypt GITHUB_SECRET_TOKEN=$(GITHUB_SECRET_TOKEN) -a
