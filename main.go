@@ -78,8 +78,7 @@ func init() {
 
 	err := os.Remove(logFile)
 	if err != nil {
-		log.Error("Failed to remove log file")
-		return
+		log.Info("Failed to remove log file")
 	}
 
 	file, err := os.OpenFile(logFile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
