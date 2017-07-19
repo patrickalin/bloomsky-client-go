@@ -32,7 +32,6 @@ func genLDFlags(version string) string {
 	ldflagsStr += " -X main.ReleaseTag=" + releaseTag(version)
 	ldflagsStr += " -X main.CommitID=" + commitID()
 	ldflagsStr += " -X main.ShortCommitID=" + commitID()[:12]
-	ldflagsStr += " -X main.GOPATH=" + os.Getenv("GOPATH")
 	return ldflagsStr
 }
 
