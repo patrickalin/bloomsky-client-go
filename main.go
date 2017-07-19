@@ -2,8 +2,8 @@
 package main
 
 //go:generate echo Go Generate!
-//go:generate ./command/bindata.sh
-//go:generate ./command/bindata-assetfs.sh
+//go:generate ./scripts/build/bindata.sh
+//go:generate ./scripts/build/bindata-assetfs.sh
 
 import (
 	"context"
