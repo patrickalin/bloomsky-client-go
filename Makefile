@@ -91,3 +91,6 @@ clean:
 doc:
 	@echo "listen on http://localhost:8081 ctrl+c stop"
 	@(env bash $(PWD)/buildscripts/doc.sh)
+
+travisGihtub:
+    @travis encrypt GITHUB_SECRET_TOKEN=$(GITHUB_SECRET_TOKEN) -a
