@@ -108,12 +108,13 @@ func main() {
 	}()
 
 	logrus.WithFields(logrus.Fields{
-		"time":        time.Now().Format(time.RFC850),
-		"version":     Version,
-		"release-tag": ReleaseTag,
-		"Commit-ID":   CommitID,
-		"config":      configNameFile,
-		"fct":         funcName(),
+		"time":          time.Now().Format(time.RFC850),
+		"version":       Version,
+		"release-tag":   ReleaseTag,
+		"Commit-ID":     CommitID,
+		"ShortCommitID": ShortCommitID,
+		"config":        configNameFile,
+		"fct":           funcName(),
 	}).Info("Bloomsky API")
 
 	//Read configuration from config file
