@@ -20,6 +20,7 @@ getdeps: checks
 	@echo "Installing misspell" && go get -u github.com/client9/misspell/cmd/misspell
 	@echo "Installing ineffassign" && go get -u github.com/gordonklaus/ineffassign
 	@echo "Installing errcheck" && go get -u github.com/kisielk/errcheck
+	@echo "Installing FlameGraph" && git clone git@github.com:brendangregg/FlameGraph.git ${GOPATH}/src/github/FlameGraph
 
 verifiers: getdeps vet fmt lint cyclo spelling deadcode errcheck
 
@@ -96,13 +97,26 @@ clean:
 
 doc:
 	@echo "listen on http://localhost:8081 ctrl+c stop"
-	@(env bash $(PWD)/scripts/doc.sh)
+	@(env bash $(PWD)/scripts/doc/doc.sh)
 
 bench:
-	@echo "Running $@ generate prof.cpu"
+	@echo "Running $@"
+	@go list -f '{{ .Name }}: {{ .Doc }}'
 	@go test -bench . -cpuprofile prof.cpu
 
 travisGihtub:
     @travis encrypt GITHUB_SECRET_TOKEN=$(GITHUB_SECRET_TOKEN) -a
 
+torch: bench
+	@echo "Running $@"
+	@go get github.com/uber/go-torch 
+	@export PATH=${PATH}:${GOPATH}/src/github/FlameGraph
+	@go-torch --binaryname bloomsky-client-go.test -b prof.cpu
+	@open torch.svg
 
+torchURL: 
+	@echo "Running $@ : the site must be started"
+	@go get github.com/uber/go-torch 
+	@export PATH=${PATH}:${GOPATH}/src/github/FlameGraph
+	@go-torch -t 5 -u http://localhost:1111
+	@open torch.svg
