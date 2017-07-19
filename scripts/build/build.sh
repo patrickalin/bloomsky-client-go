@@ -84,6 +84,9 @@ main() {
         echo ${osarch}
     done
 
+    #dependency vendor
+    dep ensure -update
+
     read -p "If you want to build for all, Just press Enter: " chosen_osarch
     if [ "$chosen_osarch" = "" ] || [ "$chosen_osarch" = "all" ]; then
         for each_osarch in ${SUPPORTED_OSARCH}; do

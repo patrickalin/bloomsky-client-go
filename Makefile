@@ -75,6 +75,9 @@ coverage: build
 build:
 	@echo "Building to $(PWD)/ ..."
 	@go list -f '{{ .Name }}: {{ .Doc }}'
+	@echo "Dep vendor"
+	@dep ensure -update
+	@go generate
 	@CGO_ENABLED=0 go build --ldflags $(BUILD_LDFLAGS) -o $(PWD)/bloomsky-client
 
 # Builds and installs it to $GOPATH/bin.
