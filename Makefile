@@ -19,8 +19,9 @@ getdeps: checks
 	@echo "Installing deadcode" && go get -u github.com/remyoudompheng/go-misc/deadcode
 	@echo "Installing misspell" && go get -u github.com/client9/misspell/cmd/misspell
 	@echo "Installing ineffassign" && go get -u github.com/gordonklaus/ineffassign
+	@echo "Installing errcheck" && go get -u github.com/kisielk/errcheck
 
-verifiers: getdeps vet fmt lint cyclo spelling deadcode
+verifiers: getdeps vet fmt lint cyclo spelling deadcode errcheck
 
 vet:
 	@echo "Running $@ suspicious constructs"
@@ -29,7 +30,7 @@ vet:
 
 fmt:
 	@echo "Running $@ indentation and blanks for alignment"
-	@gofmt -d main.go template.go utils.go
+	@gofmt -d *.go
 	@gofmt -d pkg
 
 lint:
@@ -54,6 +55,10 @@ spelling:
 	@${GOPATH}/bin/misspell -error main.go
 	@${GOPATH}/bin/misspell -error `find pkg/`
 
+errcheck:
+	@echo "Running $@"
+	@${GOPATH}/bin/errcheck github.com/patrickalin/bloomsky-client-go
+
 # Builds, runs the verifiers then runs the tests.
 check: test
 test: verifiers build
@@ -68,6 +73,7 @@ coverage: build
 # Builds locally.
 build:
 	@echo "Building to $(PWD)/ ..."
+	@go list -f '{{ .Name }}: {{ .Doc }}'
 	@CGO_ENABLED=0 go build --ldflags $(BUILD_LDFLAGS) -o $(PWD)/bloomsky-client
 
 # Builds and installs it to $GOPATH/bin.
