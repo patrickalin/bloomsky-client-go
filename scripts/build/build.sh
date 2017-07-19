@@ -2,7 +2,7 @@
 
 _init() {
     # Save release LDFLAGS
-    LDFLAGS=$(go run scripts/gen-ldflags.go)
+    LDFLAGS=$(go run scripts/build/gen-ldflags.go)
 
     # Extract release tag
     release_tag=$(echo $LDFLAGS | awk {'print $6'} | cut -f2 -d=)
@@ -14,11 +14,11 @@ _init() {
     fi
 
     # Extract release string.
-    release_str=$(echo $MINIO_RELEASE | tr '[:upper:]' '[:lower:]')
+    release_str=$(echo $BLOOMSKY_RELEASE | tr '[:upper:]' '[:lower:]')
 
     # Verify release string.
     if [ -z "$release_str" ]; then
-        echo "Release string cannot be empty. Please set \`MINIO_RELEASE\` env variable."
+        echo "Release string cannot be empty. Please set \BLOOMSKY_RELEASE\` env variable."
         exit 1;
     fi
 
