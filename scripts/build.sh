@@ -9,7 +9,7 @@ _init() {
 
     # Verify release tag.
     if [ -z "$release_tag" ]; then
-        echo "Release tag cannot be empty. Please check return value of \`go run buildscripts/gen-ldflags.go\`"
+        echo "Release tag cannot be empty. Please check return value of \`go run scripts/gen-ldflags.go\`"
         exit 1;
     fi
 
