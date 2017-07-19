@@ -1,6 +1,6 @@
 PWD := $(shell pwd)
 GOPATH := $(shell go env GOPATH)
-LDFLAGS := $(shell go run scripts/gen-ldflags.go)
+LDFLAGS := $(shell go run scripts/build/gen-ldflags.go)
 
 BUILD_LDFLAGS := '$(LDFLAGS)'
 
@@ -85,7 +85,7 @@ release: verifiers
 	@MINIO_RELEASE=RELEASE ./scripts/build.sh
 
 experimental: verifiers
-	@MINIO_RELEASE=EXPERIMENTAL ./scripts/build.sh
+	@BLOOMSKY_RELEASE=EXPERIMENTAL ./scripts/build.sh
 
 clean:
 	@echo "Cleaning up all the generated files"
@@ -98,5 +98,11 @@ doc:
 	@echo "listen on http://localhost:8081 ctrl+c stop"
 	@(env bash $(PWD)/scripts/doc.sh)
 
+bench:
+	@echo "Running $@ generate prof.cpu"
+	@go test -bench . -cpuprofile prof.cpu
+
 travisGihtub:
     @travis encrypt GITHUB_SECRET_TOKEN=$(GITHUB_SECRET_TOKEN) -a
+
+
