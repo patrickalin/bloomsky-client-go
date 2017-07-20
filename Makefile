@@ -99,6 +99,8 @@ clean:
 	@rm -rf build
 	@rm -rf release
 	@rm -rf coverage.txt
+	@rm -rf bloomsky-client
+	@rm -rf bloomsky-client-go
 
 doc:
 	@echo "listen on http://localhost:8081 ctrl+c stop"
