@@ -103,6 +103,8 @@ clean:
 	@rm -rf bloomsky-client-go
 	@rm -rf *.log
 	@rm -rf .DS_Store
+	@rm -rf prof.*
+	@rm -rf torch.*
 
 doc:
 	@echo "listen on http://localhost:8081 ctrl+c stop"
