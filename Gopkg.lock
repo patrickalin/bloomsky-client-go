@@ -34,8 +34,8 @@
 [[projects]]
   name = "github.com/influxdata/influxdb"
   packages = ["client/v2","models","pkg/escape"]
-  revision = "76124df5c121e411e99807b9473a03eb785cd43b"
-  version = "v1.3.0"
+  revision = "5887e92e8950435ac7e496ff8dada784051284b7"
+  version = "v1.3.1"
 
 [[projects]]
   name = "github.com/magiconair/properties"
@@ -76,8 +76,8 @@
 [[projects]]
   name = "github.com/patrickalin/http-go"
   packages = ["."]
-  revision = "835847fd2e9e8928d74b44e8edf1fc0aacbc5148"
-  version = "v0.1"
+  revision = "778b6008ca6b778bf1dcb0cdbf968afdebb2b9cd"
+  version = "v1.0"
 
 [[projects]]
   name = "github.com/pelletier/go-buffruneio"
@@ -131,7 +131,7 @@
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "cd2c276457edda6df7fb04895d3fd6a6add42926"
+  revision = "7a4fde3fda8ef580a89dbae8138c26041be14299"
 
 [[projects]]
   branch = "master"

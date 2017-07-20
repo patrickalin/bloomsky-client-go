@@ -1,6 +1,8 @@
 PWD := $(shell pwd)
 GOPATH := $(shell go env GOPATH)
 LDFLAGS := $(shell go run scripts/build/gen-ldflags.go)
+PROJECT := patrickalin/bloomsky-client-go
+ARTEFACT := bloomsky-client-go
 
 BUILD_LDFLAGS := '$(LDFLAGS)'
 
@@ -20,6 +22,9 @@ getdeps: checks
 	@echo "Installing misspell" && go get -u github.com/client9/misspell/cmd/misspell
 	@echo "Installing ineffassign" && go get -u github.com/gordonklaus/ineffassign
 	@echo "Installing errcheck" && go get -u github.com/kisielk/errcheck
+	@echo "Installing go-torch" && go get -u github.com/uber/go-torch 
+	@echo "Installing bindata" && go get -u github.com/jteeuwen/go-bindata/
+	@echo "Installing go-wrk" && go get -u github.com/adjust/go-wrk
 
 getFlame: 
 	@echo "Installing FlameGraph" && git clone git@github.com:brendangregg/FlameGraph.git ${GOPATH}/src/github/FlameGraph
@@ -80,7 +85,7 @@ build:
 	@echo "Dep vendor"
 	@dep ensure -update
 	@go generate
-	@CGO_ENABLED=0 go build --ldflags $(BUILD_LDFLAGS) -o $(PWD)/bloomsky-client
+	@CGO_ENABLED=0 go build --ldflags $(BUILD_LDFLAGS) -o $(PWD)/bloomsky-client-go
 
 # Builds and installs it to $GOPATH/bin.
 install: build
@@ -120,14 +125,24 @@ travisGihtub:
 
 torch: bench
 	@echo "Running $@"
-	@go get github.com/uber/go-torch 
-	@export PATH=${PATH}:${GOPATH}/src/github/FlameGraph
-	@go-torch --binaryname bloomsky-client-go.test -b prof.cpu
+	@PATH=${PATH}:${GOPATH}/src/github/FlameGraph go-torch --binaryname ${ARTEFACT}.test -b prof.cpu
 	@open torch.svg
+
+pprofInteractif: bench
+	@go tool pprof ${ARTEFACT}.test prof.cpu
+
+pprofRaw: bench
+	@go tool pprof -raw ${ARTEFACT}.test prof.cpu
 
 torchURL: 
 	@echo "Running $@ : the site must be started"
-	@go get github.com/uber/go-torch 
 	@export PATH=${PATH}:${GOPATH}/src/github/FlameGraph
 	@go-torch -t 5 -u http://localhost:1111
 	@open torch.svg
+
+tag: test
+	@(env bash $(PWD)/scripts/git/tag.sh)
+
+go-wrk: 
+	@echo "charge -> perf : the site must be started"
+	@go-wrk -n 10 http://localhost:1111 > scripts/perf/reference/perf.0
