@@ -98,9 +98,10 @@ clean:
 	@find . -name '*.test' | xargs rm -fv
 	@rm -rf build
 	@rm -rf release
-	@rm -rf coverage.txt
+	@rm -rf coverage.*
 	@rm -rf bloomsky-client
 	@rm -rf bloomsky-client-go
+	@rm -rf *.log
 
 doc:
 	@echo "listen on http://localhost:8081 ctrl+c stop"
