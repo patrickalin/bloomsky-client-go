@@ -143,6 +143,7 @@ torchURL:
 
 tag: test
 	@(env bash $(PWD)/scripts/git/tag.sh)
+	@git push
 
 go-wrk: 
 	@echo "charge -> perf : the site must be started"
