@@ -100,10 +100,10 @@ func (httpServ *httpServer) refreshHistory(w http.ResponseWriter, r *http.Reques
 }
 
 func getWs(r *http.Request, wss bool) string {
-	if r.TLS == nil || !wss {
-		return "ws://"
+	if r.TLS != nil || wss {
+		return "wss://"
 	}
-	return "wss://"
+	return "ws://"
 }
 
 // Home bloomsky handler
