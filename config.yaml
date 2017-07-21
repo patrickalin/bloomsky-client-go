@@ -28,4 +28,6 @@
   mock: false
 # use template, static file in folder not in bundled
   dev: false
+# use web socket secure by defaut use web socket non secure (necessary to put traefik front the webserver)
+  wss: false
 ##########

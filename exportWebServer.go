@@ -23,6 +23,7 @@ type httpServer struct {
 	msgJSON               []byte
 	templates             map[string]*template.Template
 	store                 store
+	wss                   bool
 }
 type pageHome struct {
 	Websockerurl string
@@ -98,8 +99,8 @@ func (httpServ *httpServer) refreshHistory(w http.ResponseWriter, r *http.Reques
 	httpServ.refreshWebsocket()
 }
 
-func getWs(r *http.Request) string {
-	if r.TLS == nil {
+func getWs(r *http.Request, wss bool) string {
+	if r.TLS == nil || !wss {
 		return "ws://"
 	}
 	return "wss://"
@@ -109,7 +110,7 @@ func getWs(r *http.Request) string {
 func (httpServ *httpServer) home(w http.ResponseWriter, r *http.Request) {
 	logDebug(funcName(), "Home Http handle")
 
-	p := pageHome{Websockerurl: getWs(r) + r.Host + "/refreshdata"}
+	p := pageHome{Websockerurl: getWs(r, httpServ.wss) + r.Host + "/refreshdata"}
 	if err := httpServ.templates["home"].Execute(w, p); err != nil {
 		logFatal(err, funcName(), "Execute template home")
 	}
@@ -119,7 +120,7 @@ func (httpServ *httpServer) home(w http.ResponseWriter, r *http.Request) {
 func (httpServ *httpServer) history(w http.ResponseWriter, r *http.Request) {
 	logDebug(funcName(), "Home History handle")
 
-	p := pageHome{Websockerurl: getWs(r) + r.Host + "/refreshhistory"}
+	p := pageHome{Websockerurl: getWs(r, httpServ.wss) + r.Host + "/refreshhistory"}
 	if err := httpServ.templates["history"].Execute(w, p); err != nil {
 		logFatal(err, funcName(), "Execute template history")
 	}
@@ -143,7 +144,7 @@ func getFileServer(dev bool) http.FileSystem {
 }
 
 //createWebServer create web server
-func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string, HTTPSPort string, translate i18n.TranslateFunc, devel bool, store store) (*httpServer, error) {
+func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string, HTTPSPort string, translate i18n.TranslateFunc, devel bool, store store, wss bool) (*httpServer, error) {
 
 	t := make(map[string]*template.Template)
 	t["home"] = GetHTMLTemplate("bloomsky", []string{"tmpl/index.html", "tmpl/bloomsky/script.html", "tmpl/bloomsky/body.html", "tmpl/bloomsky/menu.html", "tmpl/header.html", "tmpl/endScript.html"}, map[string]interface{}{"T": translate}, devel)
@@ -187,6 +188,7 @@ func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string, HTTPSPort strin
 	logInfo(funcName(), "Server HTTPS listen on port", HTTPSPort)
 
 	server.httpServ = h
+	server.wss = wss
 	return server, nil
 }
 
