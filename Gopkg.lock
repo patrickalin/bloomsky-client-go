@@ -125,7 +125,7 @@
   branch = "master"
   name = "github.com/spf13/viper"
   packages = ["."]
-  revision = "c1de95864d73a5465492829d7cb2dd422b19ac96"
+  revision = "df7314a14e26fea5443bb6e696b207d14d9a266d"
 
 [[projects]]
   branch = "master"
@@ -143,7 +143,7 @@
   branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
-  revision = "3b4ad1db5b2a649883ff3782f5f9f6fb52be71af"
+  revision = "25c4ec802a7d637f88d584ab26798e94ad14c13b"
 
 [solve-meta]
   analyzer-name = "dep"

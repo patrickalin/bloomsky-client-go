@@ -179,7 +179,7 @@ func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string, HTTPSPort strin
 
 	hs := &http.Server{Addr: HTTPSPort, Handler: s}
 	go func() {
-		err := hs.ListenAndServeTLS("certificat/server.crt", "certificat/server.key")
+		err := hs.ListenAndServeTLS("server.crt", "server.key")
 		checkErr(err, funcName(), "Error when I create the server HTTPS (don't forget ':')")
 	}()
 
