@@ -24,6 +24,7 @@ import (
 	"os/exec"
 	"strings"
 	"time"
+	"io/ioutil"
 )
 
 func genLDFlags(version string) string {
@@ -37,10 +38,15 @@ func genLDFlags(version string) string {
 
 // genReleaseTag prints release tag to the console for easy git tagging.
 func releaseTag(version string) string {
-	relPrefix := "DEVELOPMENT"
-	if prefix := os.Getenv("BLOOMSKY_RELEASE"); prefix != "" {
+	//relPrefix := "DEVELOPMENT"
+	dat, err := ioutil.ReadFile("VERSION")
+	if err != nil {
+        panic(err)
+    }
+	relPrefix := string(dat)
+	/*if prefix := os.Getenv("BLOOMSKY_RELEASE"); prefix != "" {
 		relPrefix = prefix
-	}
+	}*/
 
 	relTag := strings.Replace(version, " ", "-", -1)
 	relTag = strings.Replace(relTag, ":", "-", -1)

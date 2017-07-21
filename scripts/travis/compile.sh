@@ -1,4 +1,6 @@
 #!/bin/bash
+LDFLAGS="$(go run scripts/build/gen-ldflags.go)"
+
 go generate
 
 echo "compile each binary"
@@ -16,7 +18,7 @@ for GOOS in darwin linux windows; do
     export GOOS=$GOOS
     export GOARCH=$GOARCH
     export CGO_ENABLED=0
-    go build -o $TRAVIS_BUILD_DIR/bin/goBloomsky-$GOOS-$GOARCH -ldflags "-X main.Version=`cat VERSION`"
+    go build -o $TRAVIS_BUILD_DIR/bin/goBloomsky-$GOOS-$GOARCH --ldflags "${LDFLAGS}"
   done
 done
 mv bin/goBloomsky-darwin-386 bin/goBloomsky-darwin-386.bin
