@@ -26,7 +26,7 @@ func TestMain(m *testing.M) {
 
 	channels := make(map[string]chan bloomsky.Bloomsky)
 
-	serv, err = createWebServer(channels["web"], ":1110", ":2220", translateFunc, true, store{})
+	serv, err = createWebServer(channels["web"], ":1110", ":2220", translateFunc, true, store{}, false)
 	checkErr(err, funcName(), "Impossible to create server", "")
 
 	os.Exit(m.Run())
