@@ -25,6 +25,7 @@ getdeps: checks
 	@echo "Installing go-torch" && go get -u github.com/uber/go-torch 
 	@echo "Installing bindata" && go get -u github.com/jteeuwen/go-bindata/
 	@echo "Installing go-wrk" && go get -u github.com/adjust/go-wrk
+	@echo "Installing goreporter" && go get -u github.com/360EntSecGroup-Skylar/goreporter
 
 getFlame: 
 	@echo "Installing FlameGraph" && git clone git@github.com:brendangregg/FlameGraph.git ${GOPATH}/src/github/FlameGraph
@@ -148,3 +149,6 @@ tag: test
 go-wrk: 
 	@echo "charge -> perf : the site must be started"
 	@go-wrk -n 10 http://localhost:1111 > scripts/perf/reference/perf.0
+
+goreporter:
+	goreporter -p ../bloomsky-client-go
