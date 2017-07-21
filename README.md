@@ -1,4 +1,4 @@
-# BloomSky Client in Go
+# BloomSky Client in Go [![Version Status](https://img.shields.io/badge/v1.7-stable-orange.svg)](https://github.com/patrickalin/bloomsky-client-go/releases/tag/v1.7)
 
 [![Build Status](https://travis-ci.org/patrickalin/bloomsky-client-go.svg?branch=master)](https://travis-ci.org/patrickalin/bloomsky-client-go)
 ![Build size](https://reposs.herokuapp.com/?path=patrickalin/bloomsky-client-go)
