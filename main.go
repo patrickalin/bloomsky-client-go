@@ -90,73 +90,9 @@ func init() {
 	log.Out = file
 }
 
-func main() {
+type stopServer func()
 
-	//Create context
-	logDebug(funcName(), "Create context")
-	myContext, cancel := context.WithCancel(context.Background())
-
-	signalCh := make(chan os.Signal, 1)
-	signal.Notify(signalCh)
-	go func() {
-		select {
-		case i := <-signalCh:
-			logDebug(funcName(), "Receive interrupt", i.String())
-			cancel()
-			return
-		}
-	}()
-
-	logrus.WithFields(logrus.Fields{
-		"time":          time.Now().Format(time.RFC850),
-		"version":       Version,
-		"release-tag":   ReleaseTag,
-		"Commit-ID":     CommitID,
-		"ShortCommitID": ShortCommitID,
-		"config":        configNameFile,
-		"fct":           funcName(),
-	}).Info("Bloomsky API")
-
-	//Read configuration from config file
-	config, err := readConfig(configNameFile)
-	if err != nil {
-		logWarn(funcName(), "Config file not loaded error we use flag and default value", os.Args[0])
-		config.language = "en-us"
-		config.influxDBActivated = false
-		config.hTTPActivated = true
-		config.hTTPPort = ":1111"
-		config.hTTPSPort = ":1112"
-		config.consoleActivated = true
-		config.refreshTimer = time.Duration(60) * time.Second
-		config.bloomskyURL = "https://api.bloomsky.com/api/skydata/"
-		config.logLevel = "debug"
-		config.mock = true
-		config.dev = false
-	}
-
-	//Read flags
-	logDebug(funcName(), "Get flag from command line")
-	levelF := flag.String("debug", "", "panic,fatal,error,warning,info,debug")
-	tokenF := flag.String("token", "", "yourtoken")
-	develF := flag.String("devel", "", "true,false")
-	mockF := flag.String("mock", "", "true,false")
-	flag.Parse()
-
-	if *levelF != "" {
-		config.logLevel = *levelF
-	}
-	if *tokenF != "" {
-		config.bloomskyAccessToken = *tokenF
-	}
-	if *develF != "" {
-		config.dev, err = strconv.ParseBool(*develF)
-		checkErr(err, funcName(), "error convert string to bol")
-	}
-	if *mockF != "" {
-		config.mock, err = strconv.ParseBool(*mockF)
-		checkErr(err, funcName(), "error convert string to bol")
-	}
-
+func startServer(mycontext context.Context, config configuration) stopServer {
 	// Set Level log
 	level, err := logrus.ParseLevel(config.logLevel)
 	checkErr(err, funcName(), "Error parse level")
@@ -164,7 +100,7 @@ func main() {
 	logInfo(funcName(), "Level log", config.logLevel)
 
 	// Context
-	ctxsch := context.Context(myContext)
+	ctxsch := context.Context(mycontext)
 
 	channels := make(map[string]chan bloomsky.Bloomsky)
 
@@ -213,17 +149,94 @@ func main() {
 	//Call scheduler
 	schedule(ctxsch, mybloomsky, channels, config.refreshTimer)
 
-	//If signal to close the program
-	<-myContext.Done()
-	if httpServ.httpServ != nil {
-		logDebug(funcName(), "Shutting down webserver")
-		err := httpServ.httpServ.Shutdown(myContext)
-		checkErr(err, funcName(), "Impossible to shutdown context")
+	return func() {
+		if httpServ.httpServ != nil {
+			logDebug(funcName(), "Shutting down webserver")
+			err := httpServ.httpServ.Shutdown(mycontext)
+			checkErr(err, funcName(), "Impossible to shutdown context")
+		}
+
+		logrus.WithFields(logrus.Fields{
+			"fct": "main.main",
+		}).Debug("Terminated see bloomsky.log")
 	}
 
+}
+func main() {
+
+	//Create context
+	logDebug(funcName(), "Create context")
+	myContext, cancel := context.WithCancel(context.Background())
+
+	signalCh := make(chan os.Signal, 1)
+	signal.Notify(signalCh)
+	go func() {
+		select {
+		case i := <-signalCh:
+			logDebug(funcName(), "Receive interrupt", i.String())
+			cancel()
+			return
+		}
+	}()
+
 	logrus.WithFields(logrus.Fields{
-		"fct": "main.main",
-	}).Debug("Terminated see bloomsky.log")
+		"time":          time.Now().Format(time.RFC850),
+		"version":       Version,
+		"release-tag":   ReleaseTag,
+		"Commit-ID":     CommitID,
+		"ShortCommitID": ShortCommitID,
+		"config":        configNameFile,
+		"fct":           funcName(),
+	}).Info("Bloomsky API")
+	config := initServerConfiguration(configNameFile)
+	stop := startServer(myContext, config)
+	//If signal to close the program
+	<-myContext.Done()
+	stop()
+
+}
+
+func initServerConfiguration(configNameFile string) configuration {
+	//Read configuration from config file
+	config, err := readConfig(configNameFile)
+	if err != nil {
+		logWarn(funcName(), "Config file not loaded error we use flag and default value", os.Args[0])
+		config.language = "en-us"
+		config.influxDBActivated = false
+		config.hTTPActivated = true
+		config.hTTPPort = ":1111"
+		config.hTTPSPort = ":1112"
+		config.consoleActivated = true
+		config.refreshTimer = time.Duration(60) * time.Second
+		config.bloomskyURL = "https://api.bloomsky.com/api/skydata/"
+		config.logLevel = "debug"
+		config.mock = true
+		config.dev = false
+	}
+
+	//Read flags
+	logDebug(funcName(), "Get flag from command line")
+	levelF := flag.String("debug", "", "panic,fatal,error,warning,info,debug")
+	tokenF := flag.String("token", "", "yourtoken")
+	develF := flag.String("devel", "", "true,false")
+	mockF := flag.String("mock", "", "true,false")
+	flag.Parse()
+
+	if *levelF != "" {
+		config.logLevel = *levelF
+	}
+	if *tokenF != "" {
+		config.bloomskyAccessToken = *tokenF
+	}
+	if *develF != "" {
+		config.dev, err = strconv.ParseBool(*develF)
+		checkErr(err, funcName(), "error convert string to bol")
+	}
+	if *mockF != "" {
+		config.mock, err = strconv.ParseBool(*mockF)
+		checkErr(err, funcName(), "error convert string to bol")
+	}
+	return config
 }
 
 // The scheduler executes each time "collect"
