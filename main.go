@@ -128,6 +128,7 @@ func startServer(mycontext context.Context, config configuration) stopServer {
 
 	// WebServer initialisation
 	var httpServ *httpServer
+
 	if config.hTTPActivated {
 		channels["store"] = make(chan bloomsky.Bloomsky)
 
@@ -154,15 +155,12 @@ func startServer(mycontext context.Context, config configuration) stopServer {
 
 	return func() {
 		log.Debug(funcName(), "shutting down")
-		if httpServ.httpServ != nil {
-			logDebug(funcName(), "Shutting down webserver")
-			err := httpServ.httpServ.Shutdown(mycontext)
-			checkErr(err, funcName(), "Impossible to shutdown context")
-		}
-
+		checkErr(httpServ.shutdown(context.Context(mycontext)), funcName(), "http server issue")
 		logrus.WithFields(logrus.Fields{
 			"fct": "main.main",
 		}).Debug("Terminated see bloomsky.log")
+		os.Exit(0)
+
 	}
 
 }

@@ -37,6 +37,17 @@ type logStru struct {
 	Fct   string `json:"fct"`
 }
 
+func (h *httpServer) shutdown(mycontext context.Context) error {
+	log.Debug("shutting down web server")
+	if h.httpServ == nil {
+		return nil
+	}
+	if err := h.httpServ.Shutdown(mycontext); err != nil {
+		return err
+	}
+	return nil
+}
+
 const logfile = "bloomsky.log"
 
 //listen
