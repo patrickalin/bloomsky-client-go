@@ -8,13 +8,10 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"os/signal"
 	"path/filepath"
-	"reflect"
-	"strconv"
 	"time"
 
 	_ "net/http/pprof"
@@ -117,7 +114,9 @@ func startServer(mycontext context.Context, config configuration) stopServer {
 		channels["console"] = make(chan bloomsky.Bloomsky)
 		c, err := createConsole(channels["console"], translateFunc, config.dev)
 		checkErr(err, funcName(), "Error with initConsol")
-		c.listen(context.Background())
+		ctxcsl, cancelcsl := context.WithCancel(mycontext)
+		defer cancelcsl()
+		c.listen(ctxcsl)
 	}
 
 	// InfluxDB initialisation
@@ -135,13 +134,18 @@ func startServer(mycontext context.Context, config configuration) stopServer {
 
 		store, err := createStore(channels["store"])
 		checkErr(err, funcName(), "Error with history create store")
-		store.listen(context.Background())
+		ctxtstroe, cancelstore := context.WithCancel(mycontext)
+		defer cancelstore()
+
+		store.listen(ctxtstroe)
 
 		channels["web"] = make(chan bloomsky.Bloomsky)
 
 		httpServ, err = createWebServer(channels["web"], config.hTTPPort, config.hTTPSPort, translateFunc, config.dev, store, config.wss)
 		checkErr(err, funcName(), "Error with initWebServer")
-		httpServ.listen(context.Background())
+		ctxthttp, cancelhttp := context.WithCancel(mycontext)
+		defer cancelhttp()
+		httpServ.listen(ctxthttp)
 	}
 
 	// get bloomsky JSON and parse information in bloomsky Go Structure
@@ -150,6 +154,7 @@ func startServer(mycontext context.Context, config configuration) stopServer {
 	schedule(ctxsch, mybloomsky, channels, config.refreshTimer)
 
 	return func() {
+		log.Debug(funcName(), "shutting down")
 		if httpServ.httpServ != nil {
 			logDebug(funcName(), "Shutting down webserver")
 			err := httpServ.httpServ.Shutdown(mycontext)
@@ -168,7 +173,7 @@ func main() {
 	logDebug(funcName(), "Create context")
 	myContext, cancel := context.WithCancel(context.Background())
 
-	signalCh := make(chan os.Signal, 1)
+	signalCh := make(chan os.Signal)
 	signal.Notify(signalCh)
 	go func() {
 		select {
@@ -190,52 +195,30 @@ func main() {
 	}).Info("Bloomsky API")
 	config := initServerConfiguration(configNameFile)
 	stop := startServer(myContext, config)
+	defer stop()
 	//If signal to close the program
+
 	<-myContext.Done()
-	stop()
+	log.Debug("going to stop")
 
 }
 
 func initServerConfiguration(configNameFile string) configuration {
 	//Read configuration from config file
-	config, err := readConfig(configNameFile)
-	if err != nil {
-		logWarn(funcName(), "Config file not loaded error we use flag and default value", os.Args[0])
-		config.language = "en-us"
-		config.influxDBActivated = false
-		config.hTTPActivated = true
-		config.hTTPPort = ":1111"
-		config.hTTPSPort = ":1112"
-		config.consoleActivated = true
-		config.refreshTimer = time.Duration(60) * time.Second
-		config.bloomskyURL = "https://api.bloomsky.com/api/skydata/"
-		config.logLevel = "debug"
-		config.mock = true
-		config.dev = false
-	}
+	config := readConfig(configNameFile)
 
 	//Read flags
 	logDebug(funcName(), "Get flag from command line")
-	levelF := flag.String("debug", "", "panic,fatal,error,warning,info,debug")
+	levelF := flag.String("debug", "debug", "panic,fatal,error,warning,info,debug")
 	tokenF := flag.String("token", "", "yourtoken")
-	develF := flag.String("devel", "", "true,false")
-	mockF := flag.String("mock", "", "true,false")
+	develF := flag.Bool("devel", false, "true,false")
+	mockF := flag.Bool("mock", false, "true,false")
 	flag.Parse()
+	config.dev = *develF
+	config.mock = *mockF
+	config.logLevel = *levelF
+	config.bloomskyAccessToken = *tokenF
 
-	if *levelF != "" {
-		config.logLevel = *levelF
-	}
-	if *tokenF != "" {
-		config.bloomskyAccessToken = *tokenF
-	}
-	if *develF != "" {
-		config.dev, err = strconv.ParseBool(*develF)
-		checkErr(err, funcName(), "error convert string to bol")
-	}
-	if *mockF != "" {
-		config.mock, err = strconv.ParseBool(*mockF)
-		checkErr(err, funcName(), "error convert string to bol")
-	}
 	return config
 }
 
@@ -273,7 +256,7 @@ func collect(mybloomsky bloomsky.Bloomsky, channels map[string]chan bloomsky.Blo
 }
 
 // ReadConfig read config from config.json with the package viper
-func readConfig(configName string) (configuration, error) {
+func readConfig(configName string) configuration {
 
 	var conf configuration
 	viper.SetConfigName(configName)
@@ -284,8 +267,20 @@ func readConfig(configName string) (configuration, error) {
 	dir = dir + "/" + configName
 
 	if err := viper.ReadInConfig(); err != nil {
-		logWarn(funcName(), "Error loading the config file", dir)
-		return conf, err
+
+		logWarn(funcName(), "Config file not loaded error we use flag and default value", os.Args[0])
+		conf.language = "en-us"
+		conf.influxDBActivated = false
+		conf.hTTPActivated = true
+		conf.hTTPPort = ":1111"
+		conf.hTTPSPort = ":1112"
+		conf.consoleActivated = true
+		conf.refreshTimer = time.Duration(60) * time.Second
+		conf.bloomskyURL = "https://api.bloomsky.com/api/skydata/"
+		conf.logLevel = "debug"
+		conf.mock = true
+		conf.dev = false
+		return conf
 	}
 	logInfo(funcName(), "The config file loaded", dir)
 
@@ -311,20 +306,20 @@ func readConfig(configName string) (configuration, error) {
 	conf.wss = viper.GetBool("wss")
 
 	// Check if one value of the structure is empty
-	v := reflect.ValueOf(conf)
+	/* v := reflect.ValueOf(conf)
 	values := make([]interface{}, v.NumField())
 	for i := 0; i < v.NumField(); i++ {
 		values[i] = v.Field(i)
 		//TODO#16
 		//v.Field(i).SetString(viper.GetString(v.Type().Field(i).Name))
-		if values[i] == "" {
+		//if values[i] == "" {
 			return conf, fmt.Errorf("Check if the key " + v.Type().Field(i).Name + " is present in the file " + dir)
 		}
 	}
 	if token := os.Getenv("bloomskyAccessToken"); token != "" {
 		conf.bloomskyAccessToken = token
-	}
-	return conf, nil
+	} */
+	return conf
 }
 
 //Read file and return []byte

@@ -63,7 +63,7 @@ func (c *console) listen(context context.Context) {
 				color.Unset()
 
 			case <-context.Done():
-				fmt.Println("console done")
+				logDebug(funcName(), "console done")
 			}
 		}
 	}()

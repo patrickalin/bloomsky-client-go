@@ -43,21 +43,26 @@ const logfile = "bloomsky.log"
 func (httpServ *httpServer) listen(context context.Context) {
 	go func() {
 		for {
-			mybloomsky := <-httpServ.bloomskyMessageToHTTP
-			var err error
+			select {
+			case mybloomsky := <-httpServ.bloomskyMessageToHTTP:
+				var err error
 
-			httpServ.msgJSON, err = json.Marshal(mybloomsky.GetBloomskyStruct())
-			checkErr(err, funcName(), "Marshal json Error")
+				httpServ.msgJSON, err = json.Marshal(mybloomsky.GetBloomskyStruct())
+				checkErr(err, funcName(), "Marshal json Error")
 
-			if httpServ.msgJSON == nil {
-				logFatal(err, funcName(), "JSON Empty")
+				if httpServ.msgJSON == nil {
+					logFatal(err, funcName(), "JSON Empty")
+				}
+
+				if httpServ.conn != nil {
+					httpServ.refreshWebsocket()
+				}
+
+				logDebug(funcName(), "Listen", string(httpServ.msgJSON))
+			case <-context.Done():
+				return
 			}
 
-			if httpServ.conn != nil {
-				httpServ.refreshWebsocket()
-			}
-
-			logDebug(funcName(), "Listen", string(httpServ.msgJSON))
 		}
 	}()
 }

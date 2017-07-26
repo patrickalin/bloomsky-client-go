@@ -50,12 +50,16 @@ func (c *store) listen(context context.Context) {
 		}).Info("init")
 
 		for {
-			msg := <-c.in
-			log.WithFields(logrus.Fields{
-				"fct": "exportStore.listen",
-			}).Debug("Receive message")
-			c.stores["temperatureCelsius"].Enqueue(measure{time.Now(), msg.GetTemperatureCelsius()})
-			c.stores["windGustkmh"].Enqueue(measure{time.Now(), msg.GetWindGustkmh()})
+			select {
+			case msg := <-c.in:
+				log.WithFields(logrus.Fields{
+					"fct": "exportStore.listen",
+				}).Debug("Receive message")
+				c.stores["temperatureCelsius"].Enqueue(measure{time.Now(), msg.GetTemperatureCelsius()})
+				c.stores["windGustkmh"].Enqueue(measure{time.Now(), msg.GetWindGustkmh()})
+			case <-context.Done():
+				return
+			}
 		}
 	}()
 
