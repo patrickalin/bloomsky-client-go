@@ -209,15 +209,11 @@ func initServerConfiguration(configNameFile string) configuration {
 
 	//Read flags
 	logDebug(funcName(), "Get flag from command line")
-	levelF := flag.String("debug", "debug", "panic,fatal,error,warning,info,debug")
-	tokenF := flag.String("token", "", "yourtoken")
-	develF := flag.Bool("devel", false, "true,false")
-	mockF := flag.Bool("mock", false, "true,false")
+	flag.StringVar(&config.bloomskyAccessToken, "token", "", "yourtoken")
+	flag.StringVar(&config.logLevel, "debug", "debug", "panic,fatal,error,warning,info,debug")
+	flag.BoolVar(&config.dev, "devel", false, "true,false")
+	flag.BoolVar(&config.mock, "mock", false, "true,false")
 	flag.Parse()
-	config.dev = *develF
-	config.mock = *mockF
-	config.logLevel = *levelF
-	config.bloomskyAccessToken = *tokenF
 
 	return config
 }
@@ -305,20 +301,6 @@ func readConfig(configName string) configuration {
 	conf.dev = viper.GetBool("dev")
 	conf.wss = viper.GetBool("wss")
 
-	// Check if one value of the structure is empty
-	/* v := reflect.ValueOf(conf)
-	values := make([]interface{}, v.NumField())
-	for i := 0; i < v.NumField(); i++ {
-		values[i] = v.Field(i)
-		//TODO#16
-		//v.Field(i).SetString(viper.GetString(v.Type().Field(i).Name))
-		//if values[i] == "" {
-			return conf, fmt.Errorf("Check if the key " + v.Type().Field(i).Name + " is present in the file " + dir)
-		}
-	}
-	if token := os.Getenv("bloomskyAccessToken"); token != "" {
-		conf.bloomskyAccessToken = token
-	} */
 	return conf
 }
 
