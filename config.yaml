@@ -25,7 +25,7 @@
 # panic,fatal,error,warning,info,debug:
   logLevel: "debug"
 # to use the code in offline mode put mock: true
-  mock: false
+  mock: true
 # use template, static file in folder not in bundled
   dev: false
 # use web socket secure by defaut use web socket non secure (necessary to put traefik front the webserver)

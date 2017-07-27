@@ -8,6 +8,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"os/signal"
@@ -206,12 +207,13 @@ func initServerConfiguration(configNameFile string) configuration {
 
 	//Read flags
 	logDebug(funcName(), "Get flag from command line")
-	flag.StringVar(&config.bloomskyAccessToken, "token", "", "yourtoken")
-	flag.StringVar(&config.logLevel, "debug", "debug", "panic,fatal,error,warning,info,debug")
-	flag.BoolVar(&config.dev, "devel", false, "true,false")
-	flag.BoolVar(&config.mock, "mock", false, "true,false")
+	flag.StringVar(&config.bloomskyAccessToken, "token", config.bloomskyAccessToken, "yourtoken")
+	flag.StringVar(&config.logLevel, "debug", config.logLevel, "panic,fatal,error,warning,info,debug")
+	flag.BoolVar(&config.dev, "devel", config.dev, "true,false")
+	flag.BoolVar(&config.mock, "mock", config.mock, "true,false")
 	flag.Parse()
 
+	logDebug(funcName(), fmt.Sprintf("Configuration : %+v", config))
 	return config
 }
 
@@ -254,6 +256,7 @@ func readConfig(configName string) configuration {
 	var conf configuration
 	viper.SetConfigName(configName)
 	viper.AddConfigPath(".")
+	viper.AddConfigPath("test")
 
 	//setting default value
 	viper.SetDefault("language", "en-us")
@@ -269,7 +272,7 @@ func readConfig(configName string) configuration {
 	viper.SetDefault("dev", false)
 	// trying to read config file
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	checkErr(err, funcName(), "Fielpaths")
+	checkErr(err, funcName(), "Fielpaths", dir)
 	dir = dir + "/" + configName
 	if err := viper.ReadInConfig(); err != nil {
 		logWarn(funcName(), "Config file not loaded error we use flag and default value", os.Args[0])
