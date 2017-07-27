@@ -25,7 +25,7 @@
 # 1 info  -> 4 trace
   logLevel: 4
 # to use the code in offline mode put mock: true
-  mock: false
+  mock: true
 # use template, static file in folder not in bundled
-  dev: false
+  dev: true
 #########
