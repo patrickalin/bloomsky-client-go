@@ -18,7 +18,7 @@ import (
 
 	"github.com/nicksnyder/go-i18n/i18n"
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
-	"github.com/patrickalin/bloomsky-client-go/assembly"
+	"github.com/patrickalin/bloomsky-api-go/assembly"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
@@ -28,6 +28,25 @@ const (
 	configNameFile = "config"
 	logFile        = "bloomsky.log"
 )
+
+type bsstruc struct {
+	Url   string
+	Token string
+}
+
+type logstruct struct {
+	Level string
+	File  string
+}
+type Mainconf struct {
+	Bs           bsstruc
+	Language     string
+	RefreshTimer time.Duration
+	Log          logstruct
+	Mock         bool
+	Dev          bool
+	Wss          bool
+}
 
 // Configuration is the structure of the config YAML file
 //use http://mervine.net/json2struct
@@ -207,9 +226,7 @@ func initServerConfiguration(configNameFile string) configuration {
 	//Read flags
 	logDebug(funcName(), "Get flag from command line")
 	flag.StringVar(&config.bloomskyAccessToken, "token", "", "yourtoken")
-	flag.StringVar(&config.logLevel, "debug", "debug", "panic,fatal,error,warning,info,debug")
-	flag.BoolVar(&config.dev, "devel", false, "true,false")
-	flag.BoolVar(&config.mock, "mock", false, "true,false")
+
 	flag.Parse()
 
 	return config
@@ -252,49 +269,59 @@ func collect(mybloomsky bloomsky.Bloomsky, channels map[string]chan bloomsky.Blo
 func readConfig(configName string) configuration {
 
 	var conf configuration
+	viper.SetConfigType("yaml")
 	viper.SetConfigName(configName)
 	viper.AddConfigPath(".")
 
 	//setting default value
-	viper.SetDefault("language", "en-us")
-	viper.SetDefault("InfluxDBActivated", false)
-	viper.SetDefault("HTTPActivated", true)
-	viper.SetDefault("HTTPPort", ":1111")
-	viper.SetDefault("hTTPSPort", ":1112")
-	viper.SetDefault("ConsoleActivated", true)
-	viper.SetDefault("RefreshTimer", 60)
-	viper.SetDefault("BloomskyURL", "https://api.bloomsky.com/api/skydata/")
-	viper.SetDefault("LogLevel", "debug")
-	viper.SetDefault("mock", true)
-	viper.SetDefault("dev", false)
+	viper.SetDefault("main.language", "en-us")
+	viper.SetDefault("main.RefreshTimer", 60)
+	viper.SetDefault("main.bloomsky.url", "https://api.bloomsky.com/api/skydata/")
+	viper.SetDefault("main.log.level", "panic")
+	viper.SetDefault("main.mock", true)
+	viper.SetDefault("main.dev", true)
+
+	viper.SetDefault("outputs.influxdb.activated", false)
+	viper.SetDefault("outputs.web.activated", true)
+	viper.SetDefault("outputs.web.port", ":1111")
+	viper.SetDefault("outputs.web.secureport", ":1112")
+	viper.SetDefault("outputs.console.activated", true)
 	// trying to read config file
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	checkErr(err, funcName(), "Fielpaths")
 	dir = dir + "/" + configName
+
 	if err := viper.ReadInConfig(); err != nil {
 		logWarn(funcName(), "Config file not loaded error we use flag and default value", os.Args[0])
 	}
 
 	//TODO#16 find to simplify this section
-	conf.bloomskyURL = viper.GetString("BloomskyURL")
-	conf.bloomskyAccessToken = viper.GetString("BloomskyAccessToken")
-	conf.influxDBDatabase = viper.GetString("InfluxDBDatabase")
-	conf.influxDBPassword = viper.GetString("InfluxDBPassword")
-	conf.influxDBServer = viper.GetString("InfluxDBServer")
-	conf.influxDBServerPort = viper.GetString("InfluxDBServerPort")
-	conf.influxDBUsername = viper.GetString("InfluxDBUsername")
-	conf.consoleActivated = viper.GetBool("ConsoleActivated")
-	conf.influxDBActivated = viper.GetBool("InfluxDBActivated")
+	main := viper.Sub("main")
+	conf.bloomskyURL = main.GetString("bloomsky.url")
+	conf.bloomskyAccessToken = main.GetString("bloomsky.token")
+	conf.language = main.GetString("language")
+	conf.logLevel = main.GetString("log.level")
+	conf.mock = main.GetBool("mock")
+	conf.dev = viper.GetBool("main.dev")
+	conf.wss = main.GetBool("wss")
 	conf.historyActivated = viper.GetBool("historyActivated")
-	conf.refreshTimer = time.Duration(viper.GetInt("RefreshTimer")) * time.Second
-	conf.hTTPActivated = viper.GetBool("HTTPActivated")
-	conf.hTTPPort = viper.GetString("HTTPPort")
-	conf.hTTPSPort = viper.GetString("hTTPSPort")
-	conf.logLevel = viper.GetString("LogLevel")
-	conf.mock = viper.GetBool("mock")
-	conf.language = viper.GetString("language")
-	conf.dev = viper.GetBool("dev")
-	conf.wss = viper.GetBool("wss")
+	conf.refreshTimer = time.Duration(main.GetInt("refreshTimer")) * time.Second
+
+	web := viper.Sub("outputs.web")
+	conf.hTTPActivated = web.GetBool("activated")
+	conf.hTTPPort = web.GetString("port")
+	conf.hTTPSPort = web.GetString("secureport")
+
+	console := viper.Sub("outputs.console")
+	conf.consoleActivated = console.GetBool("activated")
+
+	influxdb := viper.Sub("outputs.influxdb")
+	conf.influxDBDatabase = influxdb.GetString("database")
+	conf.influxDBPassword = influxdb.GetString("password")
+	conf.influxDBServer = influxdb.GetString("server")
+	conf.influxDBServerPort = influxdb.GetString("port")
+	conf.influxDBUsername = influxdb.GetString("username")
+	conf.influxDBActivated = viper.GetBool("activated")
 
 	return conf
 }
@@ -308,6 +335,6 @@ func readFile(fileName string, dev bool) []byte {
 	}
 
 	fileByte, err := assembly.Asset(fileName)
-	checkErr(err, funcName(), "Error reading the file", fileName)
+	checkErr(err, funcName(), "Error reading the file as an asset", fileName)
 	return fileByte
 }
