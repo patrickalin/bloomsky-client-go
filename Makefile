@@ -8,6 +8,16 @@ BUILD_LDFLAGS := '$(LDFLAGS)'
 
 all: build
 
+# Execute one time
+#      make getdeps : execute all get necessary
+#      make getFlame : to git clone getFlame
+# Test
+#      make verifiers : to test everething
+
+
+
+#########################
+
 checks:
 	@echo "checks --- Check deps"
 	@(env bash $(PWD)/scripts/build/checkdeps.sh)
@@ -30,7 +40,9 @@ getdeps: checks
 getFlame: 
 	@echo "Installing FlameGraph" && git clone git@github.com:brendangregg/FlameGraph.git ${GOPATH}/src/github/FlameGraph
 
-verifiers: getdeps vet fmt lint cyclo spelling deadcode errcheck
+##########################
+
+verifiers: getdeps vet fmt lint cyclo spelling deadcode errcheck ineffassign test
 
 vet:
 	@echo "Running $@ suspicious constructs"
@@ -69,15 +81,16 @@ errcheck:
 	@${GOPATH}/bin/errcheck github.com/patrickalin/bloomsky-client-go
 
 # Builds, runs the verifiers then runs the tests.
-check: test
-test: verifiers build
+test:
 	@echo "Running all testing"
 	@go test $(GOFLAGS) .
 	@go test $(GOFLAGS) github.com/patrickalin/bloomsky-client-go/pkg...
 
-coverage: build
+coverage:
 	@echo "Running all coverage"
-	@./scripts/go-coverage.sh
+	@./scripts/test/go-coverage.sh
+
+###################################
 
 # Builds locally.
 build:
@@ -91,7 +104,7 @@ build:
 # Builds and installs it to $GOPATH/bin.
 install: build
 	@echo "Installing at $(GOPATH)/bin/ ..."
-	@cp $(PWD)/minio $(GOPATH)/bin/bloomsky-client
+	@cp $(PWD)/bloomsky-client-go $(GOPATH)/bin/bloomsky-client-go
 
 release: verifiers
 	@MINIO_RELEASE=RELEASE ./scripts/build.sh
