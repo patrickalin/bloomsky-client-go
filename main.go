@@ -226,15 +226,8 @@ func initServerConfiguration(configNameFile string) configuration {
 
 	//Read flags
 	logDebug(funcName(), "Get flag from command line")
-<<<<<<< HEAD
 	flag.StringVar(&config.bloomskyAccessToken, "token", "", "yourtoken")
 
-=======
-	flag.StringVar(&config.bloomskyAccessToken, "token", config.bloomskyAccessToken, "yourtoken")
-	flag.StringVar(&config.logLevel, "debug", config.logLevel, "panic,fatal,error,warning,info,debug")
-	flag.BoolVar(&config.dev, "devel", config.dev, "true,false")
-	flag.BoolVar(&config.mock, "mock", config.mock, "true,false")
->>>>>>> ce61b6bf03294aac7ec8bfc7e30a90056b0241e1
 	flag.Parse()
 
 	logDebug(funcName(), fmt.Sprintf("Configuration : %+v", config))
@@ -299,11 +292,7 @@ func readConfig(configName string) configuration {
 	// trying to read config file
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	dir = dir + "/" + configName
-<<<<<<< HEAD
-
-=======
 	checkErr(err, funcName(), "Fielpaths", dir)
->>>>>>> ce61b6bf03294aac7ec8bfc7e30a90056b0241e1
 	if err := viper.ReadInConfig(); err != nil {
 		logWarn(funcName(), "Config file not loaded error we use flag and default value", os.Args[0])
 	}
