@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -10,7 +9,6 @@ import (
 
 	"github.com/nicksnyder/go-i18n/i18n"
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
-	"github.com/spf13/viper"
 )
 
 var serv *httpServer
@@ -32,12 +30,27 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func TestConfig(t *testing.T) {
-	viper.SetConfigName("config")
-	viper.AddConfigPath(".")
-	if err := viper.ReadInConfig(); err != nil {
-		fmt.Printf("%v", err)
+func TestLoadCorrectConfig(t *testing.T) {
+	conf := initServerConfiguration("configForTest")
+	//conf2 := initServerConfiguration("wrongConfigForTest")
+	tests := []struct {
+		name   string
+		fields bool
+		want   bool
+	}{
+		{"Test Mock good conf", conf.mock, true},
+		{"Test Devel good conf", conf.dev, true},
+		//{"Test Mock wrong conf", conf2.mock, true},
+		//{"Test Devel wrong conf", conf2.dev, true},
 	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.fields; got != tt.want {
+				t.Errorf("mock = %v, want %v", got, tt.want)
+			}
+		})
+	}
+
 }
 
 func TestHanlderHome(t *testing.T) {
@@ -47,7 +60,7 @@ func TestHanlderHome(t *testing.T) {
 		nil,
 	)
 	if err != nil {
-		logFatal(err, funcName(), "Could not request: %v")
+		logFatal(err, funcName(), "Could not create request: %v")
 	}
 
 	rec := httptest.NewRecorder()
@@ -126,26 +139,3 @@ func BenchmarkHanlder(b *testing.B) {
 		}
 	}
 }
-
-/*
-func TestRing(t *testing.T) {
-
-	channels := make(map[string]chan bloomsky.Bloomsky)
-	channels["store"] = make(chan bloomsky.Bloomsky)
-
-	store, err := createStore(channels["store"])
-	checkErr(err, funcName(), "Error with history create store")
-
-	store.listen(context.Background())
-
-	mybloomsky := bloomsky.New("", "", true, nil)
-	collect(mybloomsky, channels)
-	mybloomsky = bloomsky.New("", "", true, nil)
-	collect(mybloomsky, channels)
-	mybloomsky = bloomsky.New("", "", true, nil)
-	collect(mybloomsky, channels)
-
-	if store.String("temp") == "[ [new Date(\"Tue Jul  4 22:16:25 2017\"),21.55] ,[new Date(\"Tue Jul  4 22:16:25 2017\"),21.55] ,[new Date(\"Tue Jul  4 22:16:25 2017\"),21.55]]" {
-		t.Errorf("unexpected string : |%s|", store.String("temp"))
-	}
-}*/
