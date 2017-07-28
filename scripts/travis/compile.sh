@@ -1,5 +1,7 @@
 #!/bin/bash
 LDFLAGS="$(go run scripts/build/gen-ldflags.go)"
+echo "LDFLAGS"
+echo $LDFLAGS
 
 go generate
 

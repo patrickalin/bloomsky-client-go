@@ -43,7 +43,7 @@ func releaseTag(version string) string {
 	if err != nil {
         panic(err)
     }
-	relPrefix := string(dat)
+	relPrefix := strings.Replace(strings.Replace(string(dat), " ", "", -1), "\n", "", -1)
 	/*if prefix := os.Getenv("BLOOMSKY_RELEASE"); prefix != "" {
 		relPrefix = prefix
 	}*/
