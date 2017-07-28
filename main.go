@@ -272,8 +272,8 @@ func readConfig(configName string) configuration {
 	viper.SetDefault("dev", false)
 	// trying to read config file
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	checkErr(err, funcName(), "Fielpaths", dir)
 	dir = dir + "/" + configName
+	checkErr(err, funcName(), "Fielpaths", dir)
 	if err := viper.ReadInConfig(); err != nil {
 		logWarn(funcName(), "Config file not loaded error we use flag and default value", os.Args[0])
 	}
