@@ -211,6 +211,11 @@ func initServerConfiguration(configNameFile string) configuration {
 	flag.StringVar(&config.logLevel, "debug", config.logLevel, "panic,fatal,error,warning,info,debug")
 	flag.BoolVar(&config.dev, "devel", config.dev, "true,false")
 	flag.BoolVar(&config.mock, "mock", config.mock, "true,false")
+
+	if Version == "DEVELOPMENT.GOGET" {
+		config.dev = true
+	}
+
 	flag.Parse()
 
 	logDebug(funcName(), fmt.Sprintf("Configuration : %+v", config))
