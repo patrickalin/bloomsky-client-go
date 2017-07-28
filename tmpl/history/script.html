@@ -2,9 +2,38 @@
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
 <script type="text/javascript">
-    var humidity
-    var arrayTemp = [
+    var humidity = 0
+    var temperatureC = 0
+    var WindGustkmh = 0
+    var pressure = 0
+    var uv = 0
+
+    var arrayTemperature = [
         [new Date(1416013200000), 22],
+    ]
+    var arrayPressure = [
+        [new Date(1416013200000), 1013],
+    ]
+    var arrayWindGust = [
+        [new Date(1416013200000), 22],
+    ]
+    var arrayWindSubstained = [
+        [new Date(1416013200000), 22],
+    ]
+    var arrayHumidity = [
+        [new Date(1416013200000), 50],
+    ]
+    var arrayRainDaily = [
+        [new Date(1416013200000), 2],
+    ]
+    var arrayRain = [
+        [new Date(1416013200000), 2],
+    ]
+    var arrayRainRate = [
+        [new Date(1416013200000), 2],
+    ]
+    var arrayUV = [
+        [new Date(1416013200000), 1],
     ]
 
     window.addEventListener("load", function(evt) {
@@ -45,19 +74,49 @@
 
                 //To show the data 
 
+                
+
                 str = evt.data.split("SEPARATOR");
 
+                console.log(str[0])
+
                 humidity = JSON.parse(str[0]).Data.Humidity;
+                temperatureC = JSON.parse(str[0]).Data.TemperatureC;
+                WindGustkmh = JSON.parse(str[0]).Storm.WindGustkmh;
+                pressure = JSON.parse(str[0]).Data.Pressurehpa;
+                uv = JSON.parse(str[0]).Storm.UVIndex;
 
                 drawHumidityPercentage();
 
-                arrayTemp = eval(str[1])
-
+                arrayTemperature = eval(str[1])
                 drawTemperature();
 
-                arrayWind = eval(str[2])
+                arrayPressure = eval(str[2])
+                drawPressure();
 
-                drawWind();
+                arrayWindGust = eval(str[3])
+                drawWindGust();
+
+                arrayWindSubstained = eval(str[4])
+                drawWindSubstained();
+
+                arrayHumidity = eval(str[5])
+                drawHumidity();
+
+                arrayRainDaily = eval(str[6])
+                drawRainDaily();
+
+                arrayRain = eval(str[7])
+                drawRain();
+
+                arrayRainRate = eval(str[8])
+                drawRainRate();
+
+                arrayUV = eval(str[9])
+                drawUV();
+
+                drawGauge()
+
             } //end on message
 
     });
@@ -66,11 +125,21 @@
     //CHARTS
 
     google.charts.load('current', {
-        packages: ['corechart', 'line']
+        packages: ['corechart', 'line','gauge']
     });
-    google.charts.setOnLoadCallback(drawTemperature);
-    google.charts.setOnLoadCallback(drawHumidityPercentage);
 
+    google.charts.setOnLoadCallback(drawTemperature);
+    google.charts.setOnLoadCallback(drawPressure);
+    google.charts.setOnLoadCallback(drawWindGust);
+    google.charts.setOnLoadCallback(drawWindSubstained);
+    google.charts.setOnLoadCallback(drawHumidity);
+    google.charts.setOnLoadCallback(drawRainDaily);
+    google.charts.setOnLoadCallback(drawRain);
+    google.charts.setOnLoadCallback(drawRainRate);
+    google.charts.setOnLoadCallback(drawUV);
+
+    google.charts.setOnLoadCallback(drawHumidityPercentage);
+    google.charts.setOnLoadCallback(drawGauge);
 
     function drawHumidityPercentage() {
 
@@ -83,9 +152,72 @@
             ['_', 100 - humidity],
         ]);
 
+        var options = {
+            'legend':'left',
+            'title':'Humidity',
+            'is3D':true,
+            'width':200,
+            'height':300
+        }
+
         // Instantiate and draw the chart.
-        var chartHumidy = new google.visualization.PieChart(document.getElementById('humidityChart'));
-        chartHumidy.draw(data, null);
+        var chartHumidy = new google.visualization.PieChart(document.getElementById('humidityPieChart'));
+        chartHumidy.draw(data, options);
+    }
+
+    function drawPressure() {
+
+        var data = new google.visualization.DataTable();
+        data.addColumn('date', 'X');
+        data.addColumn('number', 'Pressure');
+
+        data.addRows(arrayPressure);
+
+        var options = {
+            'legend':'left',
+            'title':'Pressure',
+            'height':100,
+            hAxis: {
+                title: 'Time',
+                format: 'H:m',
+                minValue: new Date(2014, 10, 14, 21, 30),
+                maxValue: new Date(2014, 10, 15, 1, 30),
+                gridlines: {
+                    count: -1,
+                    units: {
+                        days: {
+                            format: ['MMM dd']
+                        },
+                        hours: {
+                            format: ['HH:mm', 'ha']
+                        },
+                    }
+                },
+                minorGridlines: {
+                    units: {
+                        hours: {
+                            format: ['hh:mm:ss a', 'ha']
+                        },
+                        minutes: {
+                            format: ['HH:mm a Z', ':mm']
+                        }
+                    }
+                }
+            },
+            vAxis: {
+                title: 'Pressure',
+                format: '#HPa',
+                maxValue: 1500,
+                minValue: 1000   
+            },
+            dateFormat: 'MM.dd hh:mm',
+            pointSize: 10,
+            pointShape: 'triangle'
+        };
+
+        var chartTemp = new google.visualization.LineChart(document.getElementById('pressureChart'));
+
+        chartTemp.draw(data, options);
     }
 
     function drawTemperature() {
@@ -94,9 +226,12 @@
         data.addColumn('date', 'X');
         data.addColumn('number', 'Temperature');
 
-        data.addRows(arrayTemp);
+        data.addRows(arrayTemperature);
 
         var options = {
+            'legend':'left',
+            'title':'Temperature',
+            'height':100,
             hAxis: {
                 title: 'Time',
                 format: 'H:m',
@@ -127,28 +262,32 @@
             vAxis: {
                 title: 'Temperature',
                 format: '#,##°C',
-                maxValue: 27,
-                minValue: -5   
+                maxValue: 1500,
+                minValue: 1000   
             },
             dateFormat: 'MM.dd hh:mm',
             pointSize: 10,
             pointShape: 'triangle'
         };
 
+
         var chartTemp = new google.visualization.LineChart(document.getElementById('temperatureChart'));
 
         chartTemp.draw(data, options);
     }
 
-    function drawWind() {
+    function drawWindGust() {
 
         var data = new google.visualization.DataTable();
         data.addColumn('date', 'X');
-        data.addColumn('number', 'Wind');
+        data.addColumn('number', 'Wind Gust');
 
-        data.addRows(arrayWind);
+        data.addRows(arrayWindGust);
 
         var options = {
+            'legend':'left',
+            'title':'Wind Gust',
+            'height':100,
             hAxis: {
                 title: 'Time',
                 format: 'H:m',
@@ -177,8 +316,8 @@
                 }
             },
             vAxis: {
-                title: 'Wind',
-                format: '#,##km/h',
+                title: 'Wind Gust',
+                format: '#km/h',
                 maxValue: 100,
                 minValue: 0   
             },
@@ -187,9 +326,339 @@
             pointShape: 'triangle'
         };
 
-        var chartTemp = new google.visualization.LineChart(document.getElementById('windChart'));
+        var chartTemp = new google.visualization.LineChart(document.getElementById('windGustChart'));
 
         chartTemp.draw(data, options);
+    }
+
+    function drawWindSubstained() {
+
+        var data = new google.visualization.DataTable();
+        data.addColumn('date', 'X');
+        data.addColumn('number', 'Wind Substained');
+
+        data.addRows(arrayWindSubstained);
+
+        var options = {
+            'legend':'left',
+            'title':'Wind Substained',
+            'height':100,
+            hAxis: {
+                title: 'Time',
+                format: 'H:m',
+                minValue: new Date(2014, 10, 14, 21, 30),
+                maxValue: new Date(2014, 10, 15, 1, 30),
+                gridlines: {
+                    count: -1,
+                    units: {
+                        days: {
+                            format: ['MMM dd']
+                        },
+                        hours: {
+                            format: ['HH:mm', 'ha']
+                        },
+                    }
+                },
+                minorGridlines: {
+                    units: {
+                        hours: {
+                            format: ['hh:mm:ss a', 'ha']
+                        },
+                        minutes: {
+                            format: ['HH:mm a Z', ':mm']
+                        }
+                    }
+                }
+            },
+            vAxis: {
+                title: 'Wind Substained',
+                format: '#km/h',
+                maxValue: 100,
+                minValue: 0   
+            },
+            dateFormat: 'MM.dd hh:mm',
+            pointSize: 10,
+            pointShape: 'triangle'
+        };
+
+        var chartTemp = new google.visualization.LineChart(document.getElementById('windSubstainedChart'));
+
+        chartTemp.draw(data, options);
+    }
+
+    function drawHumidity() {
+
+        var data = new google.visualization.DataTable();
+        data.addColumn('date', 'X');
+        data.addColumn('number', 'Humidity');
+
+        data.addRows(arrayHumidity);
+
+        var options = {
+            'legend':'left',
+            'title':'Humidity',
+            'height':100,
+            hAxis: {
+                title: 'Time',
+                format: 'H:m',
+                minValue: 0,
+                maxValue: 100,
+                gridlines: {
+                    count: -1,
+                },
+            },
+            vAxis: {
+                title: 'Humidity',
+                format: '#,##%',
+                maxValue: 100,
+                minValue: 0   
+            },
+            dateFormat: 'MM.dd hh:mm',
+            pointSize: 10,
+            pointShape: 'triangle'
+        };
+
+        var chartTemp = new google.visualization.LineChart(document.getElementById('humidityChart'));
+
+        chartTemp.draw(data, options);
+    }
+
+    function drawRainDaily() {
+
+        var data = new google.visualization.DataTable();
+        data.addColumn('date', 'X');
+        data.addColumn('number', 'Rain Daily');
+
+        data.addRows(arrayRainDaily);
+
+        var options = {
+            'legend':'left',
+            'title':'Rain daily',
+            'height':100,
+            hAxis: {
+                title: 'Time',
+                format: 'H:m',
+                minValue: 0,
+                maxValue: 100,
+                gridlines: {
+                    count: -1,
+                },
+            },
+            vAxis: {
+                title: 'Rain Daily',
+                format: '#mm',
+                maxValue: 100,
+                minValue: 0   
+            },
+            dateFormat: 'MM.dd hh:mm',
+            pointSize: 10,
+            pointShape: 'triangle'
+        };
+
+        var chartTemp = new google.visualization.LineChart(document.getElementById('rainDailyMmChart'));
+
+        chartTemp.draw(data, options);
+    }
+
+    function drawRain() {
+
+        var data = new google.visualization.DataTable();
+        data.addColumn('date', 'X');
+        data.addColumn('number', 'Rain');
+
+        data.addRows(arrayRain);
+
+        var options = {
+            'legend':'left',
+            'title':'Rain',
+            'height':100,
+            hAxis: {
+                title: 'Time',
+                format: 'H:m',
+                minValue: 0,
+                maxValue: 100,
+                gridlines: {
+                    count: -1,
+                },
+            },
+            vAxis: {
+                title: 'Rain',
+                format: '#mm',
+                maxValue: 100,
+                minValue: 0   
+            },
+            dateFormat: 'MM.dd hh:mm',
+            pointSize: 10,
+            pointShape: 'triangle'
+        };
+
+        var chartTemp = new google.visualization.LineChart(document.getElementById('rainMmChart'));
+
+        chartTemp.draw(data, options);
+    }
+
+    function drawRainRate() {
+
+        var data = new google.visualization.DataTable();
+        data.addColumn('date', 'X');
+        data.addColumn('number', 'Rain Rate');
+
+        data.addRows(arrayRainRate);
+
+        var options = {
+            'legend':'left',
+            'title':'Rain rate',
+            'height':100,
+            hAxis: {
+                title: 'Time',
+                format: 'H:m',
+                minValue: 0,
+                maxValue: 100,
+                gridlines: {
+                    count: -1,
+                },
+            },
+            vAxis: {
+                title: 'Rain Rate',
+                format: '#mm/h',
+                maxValue: 100,
+                minValue: 0   
+            },
+            dateFormat: 'MM.dd hh:mm',
+            pointSize: 10,
+            pointShape: 'triangle'
+        };
+
+        var chartTemp = new google.visualization.LineChart(document.getElementById('rainRateMm'));
+
+        chartTemp.draw(data, options);
+    }
+
+    function drawUV() {
+
+        var data = new google.visualization.DataTable();
+        data.addColumn('date', 'X');
+        data.addColumn('number', 'UV');
+
+        data.addRows(arrayUV);
+
+        var options = {
+            'legend':'left',
+            'title':'UV',
+            'height':100,
+            hAxis: {
+                title: 'Time',
+                format: 'H:m',
+                minValue: 0,
+                maxValue: 100,
+                gridlines: {
+                    count: -1,
+                },
+            },
+            vAxis: {
+                title: 'UV',
+                format: '#',
+                maxValue: 11,
+                minValue: 0   
+            },
+            dateFormat: 'MM.dd hh:mm',
+            pointSize: 10,
+            pointShape: 'triangle'
+        };
+
+        var chartTemp = new google.visualization.LineChart(document.getElementById('indexUVChart'));
+
+        chartTemp.draw(data, options);
+    }
+
+    function drawGauge() {
+
+        var data = google.visualization.arrayToDataTable([
+          ['Label', 'Value'],
+          ['Humidity', humidity],
+        ]);
+
+        var options = {
+          width: 200, height: 80,
+          redFrom: 70, redTo: 100,
+          greenFrom: 40, greenTo: 70,
+          yellowFrom:0, yellowTo: 40,
+          minorTicks: 5, min:0
+        };
+
+        var chart = new google.visualization.Gauge(document.getElementById('humidityGaugeChart'));
+
+        chart.draw(data, options);
+        
+        var data = google.visualization.arrayToDataTable([
+          ['Label', 'Value'],
+          ['Temperature', temperatureC],
+        ]);
+
+        var options = {
+          width: 200, height: 80,
+          redFrom: 25, redTo: 45,
+          blueFrom:-30, blueTo: 15,
+          greenFrom:15, greenTo: 25,
+          minorTicks: 5, min:-20, max: 45
+        };
+
+        var chart = new google.visualization.Gauge(document.getElementById('temperatureCGaugeChart'));
+
+        chart.draw(data, options);
+
+        var data = google.visualization.arrayToDataTable([
+          ['Label', 'Value'],
+          ['Wind', WindGustkmh]
+        ]);
+
+        var options = {
+          width: 200, height: 80,
+       redFrom: 39, redTo: 100,
+          yellowFrom:15, yellowTo: 39,
+          greenFrom:0, greenTo: 15,
+          minorTicks: 5, min:0
+        };
+
+        var chart = new google.visualization.Gauge(document.getElementById('windGustkmhGaugeChart'));
+
+        chart.draw(data, options);
+
+                var data = google.visualization.arrayToDataTable([
+          ['Label', 'Value'],
+          ['Pressure', pressure]
+        ]);
+
+        var options = {
+          width: 200, height: 80,
+          redFrom: 1030, redTo: 1100,
+          yellowFrom:900, yellowTo: 1000,
+          greenFrom:1000, greenTo: 1030,
+          minorTicks: 5, min:900, max: 1100
+        };
+
+        var chart = new google.visualization.Gauge(document.getElementById('pressureGaugeChart'));
+
+        chart.draw(data, options);
+
+        var data = google.visualization.arrayToDataTable([
+          ['Label', 'Value'],
+          ['UV', parseInt(uv)]
+        ]);
+
+       var options = {
+          width: 200, height: 80,
+          redFrom: 6, redTo: 11,
+          yellowFrom:3, yellowTo: 6,
+          greenFrom:0, greenTo: 3,
+          minorTicks: 5, min:0, max: 11
+        };
+
+        var chart = new google.visualization.Gauge(document.getElementById('uvGaugeChart'));
+
+        chart.draw(data, options);
+
+
     }
     
 </script>
