@@ -31,7 +31,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestLoadCorrectConfig(t *testing.T) {
-	conf := initServerConfiguration("configForTest")
+	conf := readConfig("configForTest")
 	//conf2 := initServerConfiguration("wrongConfigForTest")
 	tests := []struct {
 		name   string

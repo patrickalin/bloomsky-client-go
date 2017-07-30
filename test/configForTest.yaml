@@ -1,31 +1,39 @@
 ---
-# language (en-us, fr)
-  language : en-us
+  main:
 ######## Params for bloomsky
-# Normally don't change
-  bloomskyURL: "https://api.bloomsky.com/api/skydata/"
+    bloomsky:
+ # Normally don't change
+      url: "https://api.bloomsky.com/api/skydata/"
 # the key, it's free : https://dashboard.bloomsky.com/
-  bloomskyAccessToken: "yourtoken"
+      token: "yourtoken"
+# language (en-us, fr)
+    language : en-us
 ######## Refresh time, be not to small because you are blocked by openweather and bloomsky (in second)
-  refreshTimer: "60"
-######## If true display informations on console
-  consoleActivated: "true"
-  
-######## If true display informations on webpage
-  hTTPActivated: "true"
-  hTTPPort : ":1111"
-######## Params influxDB necessary if true
-  influxDBActivated: "true"
-  influxDBServer: "localhost"
-  influxDBServerPort: "8086"
-  influxDBUsername: "root"
-  influxDBPassword: "root"
-  influxDBDatabase: "bloomsky"
-######## Expert
-# 1 info  -> 4 trace
-  logLevel: 4
+    refreshTimer: "70"
+# panic,fatal,error,warning,info,debug:
+    log:
+      level: "debug"
+      file: "bloomskylog"
 # to use the code in offline mode put mock: true
-  mock: true
+    mock: true
 # use template, static file in folder not in bundled
-  dev: true
-#########
+    dev: true
+# use web socket secure by defaut use web socket non secure (necessary to put traefik front the webserver)
+    wss: false
+#what the hell 
+    historyActivated: false
+##########
+  outputs:
+    console:
+          activated: true
+    web:
+          activated: true
+          port : ":1111"
+          secureport : ":1112"
+    influxdb:
+          activated: false
+          server: "localhost"
+          port: "8086"
+          username: "root"
+          password: "root"
+          database: "bloomsky"
