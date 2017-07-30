@@ -51,25 +51,25 @@ func (h *httpServer) shutdown(mycontext context.Context) error {
 const logfile = "bloomsky.log"
 
 //listen
-func (httpServ *httpServer) listen(context context.Context) {
+func (h *httpServer) listen(context context.Context) {
 	go func() {
 		for {
 			select {
-			case mybloomsky := <-httpServ.bloomskyMessageToHTTP:
+			case mybloomsky := <-h.bloomskyMessageToHTTP:
 				var err error
 
-				httpServ.msgJSON, err = json.Marshal(mybloomsky.GetBloomskyStruct())
+				h.msgJSON, err = json.Marshal(mybloomsky.GetBloomskyStruct())
 				checkErr(err, funcName(), "Marshal json Error")
 
-				if httpServ.msgJSON == nil {
+				if h.msgJSON == nil {
 					logFatal(err, funcName(), "JSON Empty")
 				}
 
-				if httpServ.conn != nil {
-					httpServ.refreshWebsocket()
+				if h.conn != nil {
+					h.refreshWebsocket()
 				}
 
-				logDebug(funcName(), "Listen", string(httpServ.msgJSON))
+				logDebug(funcName(), "Listen", string(h.msgJSON))
 			case <-context.Done():
 				return
 			}
@@ -78,41 +78,48 @@ func (httpServ *httpServer) listen(context context.Context) {
 	}()
 }
 
-func (httpServ *httpServer) refreshWebsocket() {
-	t := append(httpServ.msgJSON, []byte("SEPARATOR"+httpServ.store.String("temperatureCelsius"))...)
-	t = append(t, []byte("SEPARATOR"+httpServ.store.String("windGustkmh"))...)
-	err := httpServ.conn.WriteMessage(websocket.TextMessage, t)
+func (h *httpServer) refreshWebsocket() {
+	t := append(h.msgJSON, []byte("SEPARATOR"+h.store.String("temperatureCelsius"))...)
+	t = append(t, []byte("SEPARATOR"+h.store.String("pressureHPa"))...)
+	t = append(t, []byte("SEPARATOR"+h.store.String("windGustkmh"))...)
+	t = append(t, []byte("SEPARATOR"+h.store.String("windSustainedSpeedkmh"))...)
+	t = append(t, []byte("SEPARATOR"+h.store.String("humidity"))...)
+	t = append(t, []byte("SEPARATOR"+h.store.String("rainDailyMm"))...)
+	t = append(t, []byte("SEPARATOR"+h.store.String("rainMm"))...)
+	t = append(t, []byte("SEPARATOR"+h.store.String("rainRate"))...)
+	t = append(t, []byte("SEPARATOR"+h.store.String("indexUV"))...)
+	err := h.conn.WriteMessage(websocket.TextMessage, t)
 	checkErr(err, funcName(), "Impossible to write to websocket")
 }
 
 // Websocket handler to send data
-func (httpServ *httpServer) refreshdata(w http.ResponseWriter, r *http.Request) {
+func (h *httpServer) refreshdata(w http.ResponseWriter, r *http.Request) {
 	logDebug(funcName(), "Refresh data Websocket handle")
 
 	upgrader := websocket.Upgrader{}
 
 	var err error
 
-	httpServ.conn, err = upgrader.Upgrade(w, r, nil)
+	h.conn, err = upgrader.Upgrade(w, r, nil)
 	checkErr(err, funcName(), "Upgrade upgrader")
 
-	if err = httpServ.conn.WriteMessage(websocket.TextMessage, httpServ.msgJSON); err != nil {
+	if err = h.conn.WriteMessage(websocket.TextMessage, h.msgJSON); err != nil {
 		logFatal(err, funcName(), "Impossible to write to websocket")
 	}
 }
 
 // Websocket handler to send data
-func (httpServ *httpServer) refreshHistory(w http.ResponseWriter, r *http.Request) {
+func (h *httpServer) refreshHistory(w http.ResponseWriter, r *http.Request) {
 	logDebug(funcName(), "Refresh history Websocket handle")
 
 	upgrader := websocket.Upgrader{}
 
 	var err error
 
-	httpServ.conn, err = upgrader.Upgrade(w, r, nil)
+	h.conn, err = upgrader.Upgrade(w, r, nil)
 	checkErr(err, funcName(), "Upgrade upgrader")
 
-	httpServ.refreshWebsocket()
+	h.refreshWebsocket()
 }
 
 func getWs(r *http.Request, wss bool) string {
@@ -123,32 +130,32 @@ func getWs(r *http.Request, wss bool) string {
 }
 
 // Home bloomsky handler
-func (httpServ *httpServer) home(w http.ResponseWriter, r *http.Request) {
+func (h *httpServer) home(w http.ResponseWriter, r *http.Request) {
 	logDebug(funcName(), "Home Http handle")
 
-	p := pageHome{Websockerurl: getWs(r, httpServ.wss) + r.Host + "/refreshdata"}
-	if err := httpServ.templates["home"].Execute(w, p); err != nil {
+	p := pageHome{Websockerurl: getWs(r, h.wss) + r.Host + "/refreshdata"}
+	if err := h.templates["home"].Execute(w, p); err != nil {
 		logFatal(err, funcName(), "Execute template home")
 	}
 }
 
 // Home bloomsky handler
-func (httpServ *httpServer) history(w http.ResponseWriter, r *http.Request) {
+func (h *httpServer) history(w http.ResponseWriter, r *http.Request) {
 	logDebug(funcName(), "Home History handle")
 
-	p := pageHome{Websockerurl: getWs(r, httpServ.wss) + r.Host + "/refreshhistory"}
-	if err := httpServ.templates["history"].Execute(w, p); err != nil {
+	p := pageHome{Websockerurl: getWs(r, h.wss) + r.Host + "/refreshhistory"}
+	if err := h.templates["history"].Execute(w, p); err != nil {
 		logFatal(err, funcName(), "Execute template history")
 	}
 }
 
 // Log handler
-func (httpServ *httpServer) log(w http.ResponseWriter, r *http.Request) {
+func (h *httpServer) log(w http.ResponseWriter, r *http.Request) {
 	logDebug(funcName(), "Log Http handle")
 
 	p := map[string]interface{}{"logRange": createArrayLog(logfile)}
 
-	err := httpServ.templates["log"].Execute(w, p)
+	err := h.templates["log"].Execute(w, p)
 	checkErr(err, funcName(), "Compile template log")
 }
 

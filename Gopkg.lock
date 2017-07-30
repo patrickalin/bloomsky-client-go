@@ -116,22 +116,22 @@
   revision = "0efa5202c04663c757d84f90f5219c1250baf94f"
 
 [[projects]]
-  branch = "master"
   name = "github.com/spf13/pflag"
   packages = ["."]
   revision = "e57e3eeb33f795204c1ca35f56c44f83227c6e66"
+  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
   name = "github.com/spf13/viper"
   packages = ["."]
-  revision = "df7314a14e26fea5443bb6e696b207d14d9a266d"
+  revision = "25b30aa063fc18e48662b86996252eabdcf2f0c7"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "c4489faa6e5ab84c0ef40d6ee878f7a030281f0f"
+  revision = "35ef4487ce0a1ea5d4b616ffe71e34febe723695"
 
 [[projects]]
   branch = "master"
