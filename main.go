@@ -31,25 +31,6 @@ const (
 	logFile        = "bloomsky.log"
 )
 
-type bsstruc struct {
-	Url   string
-	Token string
-}
-
-type logstruct struct {
-	Level string
-	File  string
-}
-type Mainconf struct {
-	Bs           bsstruc
-	Language     string
-	RefreshTimer time.Duration
-	Log          logstruct
-	Mock         bool
-	Dev          bool
-	Wss          bool
-}
-
 // Configuration is the structure of the config YAML file
 //use http://mervine.net/json2struct
 type configuration struct {
@@ -288,6 +269,11 @@ func readConfig(configName string) configuration {
 		logWarn(funcName(), "Config file not loaded error we use flag and default value", os.Args[0])
 	}
 
+	conf.mock = viper.GetBool("main.mock")
+	fmt.Printf("mock is %t", viper.GetBool("main.mock"))
+
+	conf.dev = viper.GetBool("main.dev")
+
 	//TODO#16 find to simplify this section
 	main := viper.Sub("main")
 	conf.bloomskyURL = main.GetString("bloomsky.url")
@@ -296,9 +282,6 @@ func readConfig(configName string) configuration {
 
 	conf.language = main.GetString("language")
 	conf.logLevel = main.GetString("log.level")
-	conf.mock = viper.GetBool("main.mock")
-	conf.dev = viper.GetBool("main.dev")
-	fmt.Printf("main.dev is %t \n", conf.dev)
 	conf.wss = main.GetBool("wss")
 	conf.historyActivated = viper.GetBool("historyActivated")
 	conf.refreshTimer = time.Duration(main.GetInt("refreshTimer")) * time.Second
