@@ -17,7 +17,7 @@
 # to use the code in offline mode put mock: true
     mock: false
 # use template, static file in folder not in bundled
-    dev: true
+    dev: false
 # use web socket secure by defaut use web socket non secure (necessary to put traefik front the webserver)
     wss: false
 #what the hell 

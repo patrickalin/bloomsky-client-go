@@ -7,8 +7,8 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
+
 	"io/ioutil"
 	"os"
 	"os/signal"
@@ -21,6 +21,7 @@ import (
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
 	"github.com/patrickalin/bloomsky-api-go/assembly"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
@@ -223,14 +224,6 @@ func main() {
 func initServerConfiguration(configNameFile string) configuration {
 	//Read configuration from config file
 	config := readConfig(configNameFile)
-
-	//Read flags
-	logDebug(funcName(), "Get flag from command line")
-	flag.StringVar(&config.bloomskyAccessToken, "token", "", "yourtoken")
-
-	flag.Parse()
-
-	logDebug(funcName(), fmt.Sprintf("Configuration : %+v", config))
 	return config
 }
 
@@ -271,19 +264,23 @@ func collect(mybloomsky bloomsky.Bloomsky, channels map[string]chan bloomsky.Blo
 func readConfig(configName string) configuration {
 
 	var conf configuration
+
+	pflag.String("main.bloomsky.token", "rrrrr", "yourtoken")
+	pflag.Bool("main.dev", false, "developpement mode")
+	pflag.Bool("main.mock", false, "use mock  mode")
+	pflag.Parse()
+
+	//viper.BindFlagValue("main.bloomsky.token")
 	viper.SetConfigType("yaml")
 	viper.SetConfigName(configName)
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("test")
+	viper.BindPFlags(pflag.CommandLine)
 
-	//setting default value
 	viper.SetDefault("main.language", "en-us")
 	viper.SetDefault("main.RefreshTimer", 60)
 	viper.SetDefault("main.bloomsky.url", "https://api.bloomsky.com/api/skydata/")
 	viper.SetDefault("main.log.level", "panic")
-	viper.SetDefault("main.mock", true)
-	viper.SetDefault("main.dev", true)
-
 	viper.SetDefault("outputs.influxdb.activated", false)
 	viper.SetDefault("outputs.web.activated", true)
 	viper.SetDefault("outputs.web.port", ":1111")
@@ -300,11 +297,14 @@ func readConfig(configName string) configuration {
 	//TODO#16 find to simplify this section
 	main := viper.Sub("main")
 	conf.bloomskyURL = main.GetString("bloomsky.url")
-	conf.bloomskyAccessToken = main.GetString("bloomsky.token")
+
+	conf.bloomskyAccessToken = viper.GetString("main.bloomsky.token")
+
 	conf.language = main.GetString("language")
 	conf.logLevel = main.GetString("log.level")
-	conf.mock = main.GetBool("mock")
+	conf.mock = viper.GetBool("main.mock")
 	conf.dev = viper.GetBool("main.dev")
+	fmt.Printf("main.dev is %t \n", conf.dev)
 	conf.wss = main.GetBool("wss")
 	conf.historyActivated = viper.GetBool("historyActivated")
 	conf.refreshTimer = time.Duration(main.GetInt("refreshTimer")) * time.Second
