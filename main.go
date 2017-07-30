@@ -211,7 +211,7 @@ func main() {
 		"config":        configNameFile,
 		"fct":           funcName(),
 	}).Info("Bloomsky API")
-	config := initServerConfiguration(configNameFile)
+	config := readConfig(configNameFile)
 	stop := startServer(myContext, config)
 	defer stop()
 	//If signal to close the program
@@ -219,12 +219,6 @@ func main() {
 	<-myContext.Done()
 	log.Debug("going to stop")
 
-}
-
-func initServerConfiguration(configNameFile string) configuration {
-	//Read configuration from config file
-	config := readConfig(configNameFile)
-	return config
 }
 
 // The scheduler executes each time "collect"
