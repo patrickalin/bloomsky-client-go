@@ -243,7 +243,12 @@ func readConfig(configName string) configuration {
 	pflag.String("main.bloomsky.token", "rrrrr", "yourtoken")
 	pflag.Bool("main.dev", false, "developpement mode")
 	pflag.Bool("main.mock", false, "use mock  mode")
+
+	fmt.Println("ici")
+
 	pflag.Parse()
+
+	fmt.Println("la")
 
 	//viper.BindFlagValue("main.bloomsky.token")
 	viper.SetConfigType("yaml")
@@ -251,7 +256,7 @@ func readConfig(configName string) configuration {
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("test")
 	err := viper.BindPFlags(pflag.CommandLine)
-	checkErr(err, funcName(), "Error withh bindPFlags")
+	checkErr(err, funcName(), "Error with bindPFlags")
 
 	viper.SetDefault("main.language", "en-us")
 	viper.SetDefault("main.RefreshTimer", 60)
