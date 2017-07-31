@@ -250,7 +250,8 @@ func readConfig(configName string) configuration {
 	viper.SetConfigName(configName)
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("test")
-	viper.BindPFlags(pflag.CommandLine)
+	err := viper.BindPFlags(pflag.CommandLine)
+	checkErr(err, funcName(), "Error withh bindPFlags")
 
 	viper.SetDefault("main.language", "en-us")
 	viper.SetDefault("main.RefreshTimer", 60)
