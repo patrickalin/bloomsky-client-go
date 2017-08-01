@@ -307,12 +307,17 @@ func readConfig(configName string, options ...validation) configuration {
 	conf.influxDBServerPort = influxdb.GetString("port")
 	conf.influxDBUsername = influxdb.GetString("username")
 	conf.influxDBActivated = viper.GetBool("activated")
-	fmt.Printf("%+v", conf)
+
+	// configuration validation
 	for _, option := range options {
 		err := option(&conf)
 		if err != nil {
+			if IsTemporary(err) {
+				logDebug("readconfig", "temporary error reading config file", err.Error())
+			}
 			panic(err)
 		}
+
 	}
 	return conf
 }
@@ -380,9 +385,9 @@ func validateHTTSPort(conf *configuration) error {
 }
 
 func validatePort(port string) error {
-	matched, err := regexp.MatchString(":(.*)", port)
+	matched, err := regexp.MatchString("^:[0-9]*$", port)
 	if err != nil {
-		return nil
+		return err
 	}
 	if !matched {
 		return fmt.Errorf("invalid string for a port %s", port)
