@@ -8,6 +8,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"regexp"
 
 	"io/ioutil"
 	"os"
@@ -192,7 +193,7 @@ func main() {
 		"config":        configNameFile,
 		"fct":           funcName(),
 	}).Info("Bloomsky API")
-	config := readConfig(configNameFile)
+	config := readConfig(configNameFile, validateHTTPPort, validateHTTSPort)
 	stop := startServer(myContext, config)
 	defer stop()
 	//If signal to close the program
@@ -236,7 +237,7 @@ func collect(mybloomsky bloomsky.Bloomsky, channels map[string]chan bloomsky.Blo
 }
 
 // ReadConfig read config from config.json with the package viper
-func readConfig(configName string) configuration {
+func readConfig(configName string, options ...validation) configuration {
 
 	var conf configuration
 
@@ -276,7 +277,6 @@ func readConfig(configName string) configuration {
 	}
 
 	conf.mock = viper.GetBool("main.mock")
-	fmt.Printf("mock is %t", viper.GetBool("main.mock"))
 
 	conf.dev = viper.GetBool("main.dev")
 
@@ -307,7 +307,13 @@ func readConfig(configName string) configuration {
 	conf.influxDBServerPort = influxdb.GetString("port")
 	conf.influxDBUsername = influxdb.GetString("username")
 	conf.influxDBActivated = viper.GetBool("activated")
-
+	fmt.Printf("%+v", conf)
+	for _, option := range options {
+		err := option(&conf)
+		if err != nil {
+			panic(err)
+		}
+	}
 	return conf
 }
 
@@ -322,4 +328,64 @@ func readFile(fileName string, dev bool) []byte {
 	fileByte, err := assembly.Asset(fileName)
 	checkErr(err, funcName(), "Error reading the file as an asset", fileName)
 	return fileByte
+}
+
+type validation func(conf *configuration) error
+
+type validationError struct {
+	fields    string
+	msg       string
+	cause     error
+	temporary bool
+}
+
+func (err validationError) Temporary() bool {
+	return err.temporary
+}
+
+func (err validationError) Error() string {
+	return fmt.Sprintf("fields %s  give msg %s with err %s", err.fields, err.msg, err.cause)
+}
+
+type temporary interface {
+	Temporary() bool
+}
+
+// IsTemporary returns true if err is temporary.
+func IsTemporary(err error) bool {
+	te, ok := err.(temporary)
+	return ok && te.Temporary()
+}
+
+/* Validation Funciton  */
+func validateHTTPPort(conf *configuration) error {
+	if err := validatePort(conf.hTTPPort); err != nil {
+		return validationError{
+			fields:    "HTTPport",
+			cause:     err,
+			temporary: !conf.hTTPActivated,
+		}
+	}
+	return nil
+}
+func validateHTTSPort(conf *configuration) error {
+	if err := validatePort(conf.hTTPSPort); err != nil {
+		return validationError{
+			fields:    "HTTPport",
+			cause:     err,
+			temporary: !conf.hTTPActivated,
+		}
+	}
+	return nil
+}
+
+func validatePort(port string) error {
+	matched, err := regexp.MatchString(":(.*)", port)
+	if err != nil {
+		return nil
+	}
+	if !matched {
+		return fmt.Errorf("invalid string for a port %s", port)
+	}
+	return nil
 }
