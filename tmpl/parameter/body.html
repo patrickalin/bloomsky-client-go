@@ -1,0 +1,90 @@
+{{define "body"}} {{ template "menu"}}
+<div class="container">
+    <div class="row">
+
+
+
+        <table>
+            <tr>
+                <td>Console Activated : </td>
+                <td>
+                    {{.ConsoleActivated}}
+                </td>
+            </tr>
+            <tr>
+                <td> HTTP Activated : </td>
+                <td> {{.HTTPActivated}}</td>
+            </tr>
+            <tr>
+                <td> HTTP port : </td>
+                <td>{{.HTTPPort}}</td>
+            </tr>
+            <tr>
+                <td>HTTPS port : </td>
+                <td>{{.HTTPSPort}}</td>
+            </tr>
+            <tr>
+                <td>Influx DB Activated : </td>
+                <td>{{.InfluxDBActivated}}</td>
+            </tr>
+            <tr>
+                <td> Influx DB Database : </td>
+                <td>{{.InfluxDBDatabase}}</td>
+            </tr>
+            <tr>
+                <td>Influx DB Password : </td>
+                <td>{{.InfluxDBPassword}}</td>
+            </tr>
+            <tr>
+                <td> Influx DB Server : </td>
+                <td>{{.InfluxDBServer}}</td>
+            </tr>
+            <tr>
+                <td> Influx DB Server Port : </td>
+                <td>{{.InfluxDBServerPort}}</td>
+            </tr>
+            <tr>
+                <td> Influx DB User Name : </td>
+                <td>{{.InfluxDBUsername}}</td>
+            </tr>
+            <tr>
+                <td> Log Level : </td>
+                <td>{{.LogLevel}}</td>
+            </tr>
+            <tr>
+                <td> Bloomsky Access Token : </td>
+                <td>{{.BloomskyAccessToken}}</td>
+            </tr>
+            <tr>
+                <td> Bloomsky URL : </td>
+                <td>{{.BloomskyURL}}</td>
+            </tr>
+            <tr>
+                <td>Refresh Time :</td>
+                <td> {{.RefreshTimer}}</td>
+            </tr>
+            <tr>
+                <td> Mock : </td>
+                <td>{{.Mock}}</td>
+            </tr>
+            <tr>
+                <td> Language : </td>
+                <td>{{.Language}} </td>
+            </tr>
+            <tr>
+                <td> Dev :</td>
+                <td>{{.Dev}}</td>
+
+            </tr>
+            <tr>
+                <td>Wss : </td>
+                <td>{{.Wss}}</td>
+            </tr>
+        </table>
+    </div>
+    <!-- /.div md3 -->
+</div>
+<!-- /.row -->
+</div>
+<!-- /.container -->
+{{ end }}
