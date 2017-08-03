@@ -244,13 +244,13 @@ func readConfig(configName string, options ...validation) configuration {
 	pflag.Bool("main.dev", false, "developpement mode")
 	pflag.Bool("main.mock", false, "use mock mode")
 
-	p.VisitAll(func(flag *pflag.Flag) {
+	pflag.VisitAll(func(flag *pflag.Flag) {
 		fmt.Printf("ICI %v : %v \n", flag.Name, flag.Value)
 	})
 
 	pflag.Parse()
 
-	p.VisitAll(func(flag *pflag.Flag) {
+	pflag.VisitAll(func(flag *pflag.Flag) {
 		fmt.Printf("LA %v : %v \n", flag.Name, flag.Value)
 	})
 
@@ -260,14 +260,8 @@ func readConfig(configName string, options ...validation) configuration {
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("test")
 
-	p := pflag.CommandLine
-
 	err := viper.BindPFlags(pflag.CommandLine)
 	checkErr(err, funcName(), "Error with bindPFlags")
-
-	conf.mock = viper.GetBool("main.mock")
-	fmt.Println(os.Args[2])
-	fmt.Println(viper.GetBool("main.mock"))
 
 	viper.SetDefault("main.language", "en-us")
 	viper.SetDefault("main.RefreshTimer", 60)
