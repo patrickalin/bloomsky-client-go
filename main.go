@@ -20,7 +20,7 @@ import (
 
 	"github.com/nicksnyder/go-i18n/i18n"
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
-	"github.com/patrickalin/bloomsky-api-go/assembly"
+	"github.com/patrickalin/bloomsky-client-go/assembly"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
