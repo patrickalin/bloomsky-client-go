@@ -55,6 +55,6 @@ func logInfo(fct string, msg string, params ...string) {
 
 func checkErr(err error, fct string, msg string, params ...string) {
 	if err != nil {
-		logFatal(err, msg, fct, fmt.Sprintf(strings.Join(params[:], ",")))
+		logFatal(err, fct, msg, fmt.Sprintf(strings.Join(params[:], ",")))
 	}
 }
