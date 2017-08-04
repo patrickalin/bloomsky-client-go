@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/pprof"
 	"os"
+	"strconv"
 
 	"github.com/elazarl/go-bindata-assetfs"
 	"github.com/gorilla/websocket"
@@ -24,9 +25,31 @@ type httpServer struct {
 	templates             map[string]*template.Template
 	store                 store
 	wss                   bool
+	config                configuration
 }
 type pageHome struct {
 	Websockerurl string
+}
+
+type pageParam struct {
+	ConsoleActivated    string
+	HTTPActivated       string
+	HTTPPort            string
+	HTTPSPort           string
+	InfluxDBActivated   string
+	InfluxDBDatabase    string
+	InfluxDBPassword    string
+	InfluxDBServer      string
+	InfluxDBServerPort  string
+	InfluxDBUsername    string
+	LogLevel            string
+	BloomskyAccessToken string
+	BloomskyURL         string
+	RefreshTimer        string
+	Mock                string
+	Language            string
+	Dev                 string
+	Wss                 string
 }
 
 type logStru struct {
@@ -139,13 +162,42 @@ func (h *httpServer) home(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Home bloomsky handler
+// History bloomsky handler
 func (h *httpServer) history(w http.ResponseWriter, r *http.Request) {
-	logDebug(funcName(), "Home History handle")
+	logDebug(funcName(), "History Http handle")
 
 	p := pageHome{Websockerurl: getWs(r, h.wss) + r.Host + "/refreshhistory"}
 	if err := h.templates["history"].Execute(w, p); err != nil {
 		logFatal(err, funcName(), "Execute template history")
+	}
+}
+
+// Parameter bloomsky handler
+func (h *httpServer) parameter(w http.ResponseWriter, r *http.Request) {
+	logDebug(funcName(), "Parameter Http handle")
+
+	p := pageParam{
+		ConsoleActivated:    strconv.FormatBool(h.config.consoleActivated),
+		HTTPActivated:       strconv.FormatBool(h.config.hTTPActivated),
+		HTTPPort:            h.config.hTTPPort,
+		HTTPSPort:           h.config.hTTPSPort,
+		InfluxDBActivated:   strconv.FormatBool(h.config.influxDBActivated),
+		InfluxDBDatabase:    h.config.influxDBDatabase,
+		InfluxDBPassword:    h.config.influxDBPassword,
+		InfluxDBServer:      h.config.influxDBServer,
+		InfluxDBServerPort:  h.config.influxDBServerPort,
+		InfluxDBUsername:    h.config.influxDBUsername,
+		LogLevel:            h.config.logLevel,
+		BloomskyAccessToken: h.config.bloomskyAccessToken,
+		BloomskyURL:         h.config.bloomskyURL,
+		RefreshTimer:        h.config.refreshTimer.String(),
+		Mock:                strconv.FormatBool(h.config.mock),
+		Language:            h.config.language,
+		Dev:                 strconv.FormatBool(h.config.dev),
+		Wss:                 strconv.FormatBool(h.config.wss)}
+
+	if err := h.templates["parameter"].Execute(w, p); err != nil {
+		logFatal(err, funcName(), "Execute template parameter")
 	}
 }
 
@@ -167,12 +219,13 @@ func getFileServer(dev bool) http.FileSystem {
 }
 
 //createWebServer create web server
-func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string, HTTPSPort string, translate i18n.TranslateFunc, devel bool, store store, wss bool) (*httpServer, error) {
+func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string, HTTPSPort string, translate i18n.TranslateFunc, devel bool, store store, wss bool, config configuration) (*httpServer, error) {
 
 	t := make(map[string]*template.Template)
 	t["home"] = GetHTMLTemplate("bloomsky", []string{"tmpl/index.html", "tmpl/bloomsky/script.html", "tmpl/bloomsky/body.html", "tmpl/bloomsky/menu.html", "tmpl/header.html", "tmpl/endScript.html"}, map[string]interface{}{"T": translate}, devel)
 	t["history"] = GetHTMLTemplate("bloomsky", []string{"tmpl/index.html", "tmpl/history/script.html", "tmpl/history/body.html", "tmpl/history/menu.html", "tmpl/header.html", "tmpl/endScript.html"}, map[string]interface{}{"T": translate}, devel)
 	t["log"] = GetHTMLTemplate("bloomsky", []string{"tmpl/index.html", "tmpl/log/script.html", "tmpl/log/body.html", "tmpl/log/menu.html", "tmpl/header.html", "tmpl/endScript.html"}, map[string]interface{}{"T": translate}, devel)
+	t["parameter"] = GetHTMLTemplate("bloomsky", []string{"tmpl/index.html", "tmpl/parameter/script.html", "tmpl/parameter/body.html", "tmpl/parameter/menu.html", "tmpl/header.html", "tmpl/endScript.html"}, map[string]interface{}{"T": translate}, devel)
 
 	server := &httpServer{bloomskyMessageToHTTP: in,
 		templates: t,
@@ -189,6 +242,7 @@ func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string, HTTPSPort strin
 	s.HandleFunc("/refreshhistory", server.refreshHistory)
 	s.HandleFunc("/log", server.log)
 	s.HandleFunc("/history", server.history)
+	s.HandleFunc("/parameter", server.parameter)
 	s.HandleFunc("/debug/pprof/", pprof.Index)
 	s.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
 	s.HandleFunc("/debug/pprof/profile", pprof.Profile)
@@ -212,6 +266,7 @@ func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string, HTTPSPort strin
 
 	server.httpServ = h
 	server.wss = wss
+	server.config = config
 	return server, nil
 }
 

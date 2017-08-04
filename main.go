@@ -37,7 +37,6 @@ const (
 type configuration struct {
 	consoleActivated    bool
 	hTTPActivated       bool
-	historyActivated    bool
 	hTTPPort            string
 	hTTPSPort           string
 	influxDBActivated   bool
@@ -144,7 +143,7 @@ func startServer(mycontext context.Context, config configuration) stopServer {
 
 		channels["web"] = make(chan bloomsky.Bloomsky)
 
-		httpServ, err = createWebServer(channels["web"], config.hTTPPort, config.hTTPSPort, translateFunc, config.dev, store, config.wss)
+		httpServ, err = createWebServer(channels["web"], config.hTTPPort, config.hTTPSPort, translateFunc, config.dev, store, config.wss, config)
 		checkErr(err, funcName(), "Error with initWebServer")
 		ctxthttp, cancelhttp := context.WithCancel(mycontext)
 		defer cancelhttp()
@@ -243,19 +242,24 @@ func readConfig(configName string, options ...validation) configuration {
 
 	pflag.String("main.bloomsky.token", "rrrrr", "yourtoken")
 	pflag.Bool("main.dev", false, "developpement mode")
-	pflag.Bool("main.mock", false, "use mock  mode")
+	pflag.Bool("main.mock", false, "use mock mode")
 
-	fmt.Println("ici")
+	pflag.VisitAll(func(flag *pflag.Flag) {
+		fmt.Printf("ICI %v : %v \n", flag.Name, flag.Value)
+	})
 
 	pflag.Parse()
 
-	fmt.Println("la")
+	pflag.VisitAll(func(flag *pflag.Flag) {
+		fmt.Printf("LA %v : %v \n", flag.Name, flag.Value)
+	})
 
 	//viper.BindFlagValue("main.bloomsky.token")
 	viper.SetConfigType("yaml")
 	viper.SetConfigName(configName)
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("test")
+
 	err := viper.BindPFlags(pflag.CommandLine)
 	checkErr(err, funcName(), "Error with bindPFlags")
 
@@ -277,7 +281,6 @@ func readConfig(configName string, options ...validation) configuration {
 	}
 
 	conf.mock = viper.GetBool("main.mock")
-
 	conf.dev = viper.GetBool("main.dev")
 
 	//TODO#16 find to simplify this section
@@ -289,7 +292,6 @@ func readConfig(configName string, options ...validation) configuration {
 	conf.language = main.GetString("language")
 	conf.logLevel = main.GetString("log.level")
 	conf.wss = main.GetBool("wss")
-	conf.historyActivated = viper.GetBool("historyActivated")
 	conf.refreshTimer = time.Duration(main.GetInt("refreshTimer")) * time.Second
 
 	web := viper.Sub("outputs.web")
