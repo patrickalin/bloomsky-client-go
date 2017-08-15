@@ -143,7 +143,7 @@ func startServer(mycontext context.Context, config configuration) stopServer {
 
 		channels["web"] = make(chan bloomsky.Bloomsky)
 
-		httpServ, err = createWebServer(channels["web"], config.hTTPPort, config.hTTPSPort, translateFunc, config.dev, store, config.wss, config)
+		httpServ, err = createWebServer(channels["web"], config.hTTPPort, config.hTTPSPort, translateFunc, config.dev, store, config.wss)
 		checkErr(err, funcName(), "Error with initWebServer")
 		ctxthttp, cancelhttp := context.WithCancel(mycontext)
 		defer cancelhttp()

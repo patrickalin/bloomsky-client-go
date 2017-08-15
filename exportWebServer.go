@@ -19,7 +19,7 @@ import (
 
 type httpServer struct {
 	bloomskyMessageToHTTP chan bloomsky.Bloomsky
-	httpServ              *http.Server
+	httpServs             [2]*http.Server
 	conn                  *websocket.Conn
 	msgJSON               []byte
 	templates             map[string]*template.Template
@@ -62,11 +62,14 @@ type logStru struct {
 
 func (h *httpServer) shutdown(mycontext context.Context) error {
 	log.Debug("shutting down web server")
-	if h.httpServ == nil {
-		return nil
-	}
-	if err := h.httpServ.Shutdown(mycontext); err != nil {
-		return err
+
+	for _, h := range h.httpServs {
+		if h == nil {
+			return nil
+		}
+		if err := h.Shutdown(mycontext); err != nil {
+			logWarn("shutdown", "error while shutting down an http server")
+		}
 	}
 	return nil
 }
@@ -219,7 +222,7 @@ func getFileServer(dev bool) http.FileSystem {
 }
 
 //createWebServer create web server
-func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string, HTTPSPort string, translate i18n.TranslateFunc, devel bool, store store, wss bool, config configuration) (*httpServer, error) {
+func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string, HTTPSPort string, translate i18n.TranslateFunc, devel bool, store store, wss bool) (*httpServer, error) {
 
 	t := make(map[string]*template.Template)
 	t["home"] = GetHTMLTemplate("bloomsky", []string{"tmpl/index.html", "tmpl/bloomsky/script.html", "tmpl/bloomsky/body.html", "tmpl/bloomsky/menu.html", "tmpl/header.html", "tmpl/endScript.html"}, map[string]interface{}{"T": translate}, devel)
@@ -264,9 +267,10 @@ func createWebServer(in chan bloomsky.Bloomsky, HTTPPort string, HTTPSPort strin
 	logInfo(funcName(), "Server HTTP listen on port", HTTPPort)
 	logInfo(funcName(), "Server HTTPS listen on port", HTTPSPort)
 
-	server.httpServ = h
+	server.httpServs[0] = h
+	server.httpServs[1] = hs
 	server.wss = wss
-	server.config = config
+
 	return server, nil
 }
 
