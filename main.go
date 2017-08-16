@@ -244,15 +244,7 @@ func readConfig(configName string, options ...validation) configuration {
 	pflag.Bool("main.dev", false, "developpement mode")
 	pflag.Bool("main.mock", false, "use mock mode")
 
-	pflag.VisitAll(func(flag *pflag.Flag) {
-		fmt.Printf("ICI %v : %v \n", flag.Name, flag.Value)
-	})
-
 	pflag.Parse()
-
-	pflag.VisitAll(func(flag *pflag.Flag) {
-		fmt.Printf("LA %v : %v \n", flag.Name, flag.Value)
-	})
 
 	//viper.BindFlagValue("main.bloomsky.token")
 	viper.SetConfigType("yaml")
