@@ -74,7 +74,7 @@
 
                 //To show the data 
 
-                
+
 
                 str = evt.data.split("SEPARATOR");
 
@@ -125,7 +125,7 @@
     //CHARTS
 
     google.charts.load('current', {
-        packages: ['corechart', 'line','gauge']
+        packages: ['corechart', 'line', 'gauge']
     });
 
     google.charts.setOnLoadCallback(drawTemperature);
@@ -153,11 +153,11 @@
         ]);
 
         var options = {
-            'legend':'left',
-            'title':'Humidity',
-            'is3D':true,
-            'width':200,
-            'height':300
+            'legend': 'left',
+            'title': 'Humidity',
+            'is3D': true,
+            'width': 200,
+            'height': 300
         }
 
         // Instantiate and draw the chart.
@@ -174,9 +174,9 @@
         data.addRows(arrayPressure);
 
         var options = {
-            'legend':'left',
-            'title':'Pressure',
-            'height':100,
+            'legend': 'left',
+            'title': '{{T "Pressure"}}',
+            'height': 100,
             hAxis: {
                 title: 'Time',
                 format: 'H:m',
@@ -205,10 +205,10 @@
                 }
             },
             vAxis: {
-                title: 'Pressure',
+                title: '{{T "Pressure"}}',
                 format: '#HPa',
                 maxValue: 1500,
-                minValue: 1000   
+                minValue: 1000
             },
             dateFormat: 'MM.dd hh:mm',
             pointSize: 10,
@@ -229,9 +229,9 @@
         data.addRows(arrayTemperature);
 
         var options = {
-            'legend':'left',
-            'title':'Temperature',
-            'height':100,
+            'legend': 'left',
+            'title': '{{T "Temperature"}}',
+            'height': 100,
             hAxis: {
                 title: 'Time',
                 format: 'H:m',
@@ -260,10 +260,10 @@
                 }
             },
             vAxis: {
-                title: 'Temperature',
+                title: '{{T "Temperature"}}',
                 format: '#,##°C',
                 maxValue: 1500,
-                minValue: 1000   
+                minValue: 1000
             },
             dateFormat: 'MM.dd hh:mm',
             pointSize: 10,
@@ -280,14 +280,14 @@
 
         var data = new google.visualization.DataTable();
         data.addColumn('date', 'X');
-        data.addColumn('number', 'Wind Gust');
+        data.addColumn('number', '{{T "Wind Gust"}}');
 
         data.addRows(arrayWindGust);
 
         var options = {
-            'legend':'left',
-            'title':'Wind Gust',
-            'height':100,
+            'legend': 'left',
+            'title': '{{T "Wind Gust"}}',
+            'height': 100,
             hAxis: {
                 title: 'Time',
                 format: 'H:m',
@@ -316,10 +316,10 @@
                 }
             },
             vAxis: {
-                title: 'Wind Gust',
+                title: '{{T "Wind Gust"}}',
                 format: '#km/h',
                 maxValue: 100,
-                minValue: 0   
+                minValue: 0
             },
             dateFormat: 'MM.dd hh:mm',
             pointSize: 10,
@@ -335,14 +335,14 @@
 
         var data = new google.visualization.DataTable();
         data.addColumn('date', 'X');
-        data.addColumn('number', 'Wind Substained');
+        data.addColumn('number', '{{T "Sustained Wind"}}');
 
         data.addRows(arrayWindSubstained);
 
         var options = {
-            'legend':'left',
-            'title':'Wind Substained',
-            'height':100,
+            'legend': 'left',
+            'title': '{{T "Sustained Wind"}}',
+            'height': 100,
             hAxis: {
                 title: 'Time',
                 format: 'H:m',
@@ -371,10 +371,10 @@
                 }
             },
             vAxis: {
-                title: 'Wind Substained',
+                title: '{{T "Sustained Wind"}}',
                 format: '#km/h',
                 maxValue: 100,
-                minValue: 0   
+                minValue: 0
             },
             dateFormat: 'MM.dd hh:mm',
             pointSize: 10,
@@ -395,9 +395,9 @@
         data.addRows(arrayHumidity);
 
         var options = {
-            'legend':'left',
-            'title':'Humidity',
-            'height':100,
+            'legend': 'left',
+            'title': '{{T "Humidity"}}',
+            'height': 100,
             hAxis: {
                 title: 'Time',
                 format: 'H:m',
@@ -408,10 +408,10 @@
                 },
             },
             vAxis: {
-                title: 'Humidity',
+                title: '{{T "Humidity"}}',
                 format: '#,##%',
                 maxValue: 100,
-                minValue: 0   
+                minValue: 0
             },
             dateFormat: 'MM.dd hh:mm',
             pointSize: 10,
@@ -432,9 +432,9 @@
         data.addRows(arrayRainDaily);
 
         var options = {
-            'legend':'left',
-            'title':'Rain daily',
-            'height':100,
+            'legend': 'left',
+            'title': '{{T "Rain Daily"}}',
+            'height': 100,
             hAxis: {
                 title: 'Time',
                 format: 'H:m',
@@ -445,10 +445,10 @@
                 },
             },
             vAxis: {
-                title: 'Rain Daily',
+                title: '{{T "Rain Daily"}}',
                 format: '#mm',
                 maxValue: 100,
-                minValue: 0   
+                minValue: 0
             },
             dateFormat: 'MM.dd hh:mm',
             pointSize: 10,
@@ -469,9 +469,9 @@
         data.addRows(arrayRain);
 
         var options = {
-            'legend':'left',
-            'title':'Rain',
-            'height':100,
+            'legend': 'left',
+            'title': '{{T "Rain"}}',
+            'height': 100,
             hAxis: {
                 title: 'Time',
                 format: 'H:m',
@@ -482,10 +482,10 @@
                 },
             },
             vAxis: {
-                title: 'Rain',
+                title: '{{T "Rain"}}',
                 format: '#mm',
                 maxValue: 100,
-                minValue: 0   
+                minValue: 0
             },
             dateFormat: 'MM.dd hh:mm',
             pointSize: 10,
@@ -506,9 +506,9 @@
         data.addRows(arrayRainRate);
 
         var options = {
-            'legend':'left',
-            'title':'Rain rate',
-            'height':100,
+            'legend': 'left',
+            'title': '{{T "Rain Rate Last hour"}}',
+            'height': 100,
             hAxis: {
                 title: 'Time',
                 format: 'H:m',
@@ -519,10 +519,10 @@
                 },
             },
             vAxis: {
-                title: 'Rain Rate',
+                title: '{{T "Rain Rate Last hour"}}',
                 format: '#mm/h',
                 maxValue: 100,
-                minValue: 0   
+                minValue: 0
             },
             dateFormat: 'MM.dd hh:mm',
             pointSize: 10,
@@ -543,9 +543,9 @@
         data.addRows(arrayUV);
 
         var options = {
-            'legend':'left',
-            'title':'UV',
-            'height':100,
+            'legend': 'left',
+            'title': '{{T "Index UV"}}',
+            'height': 100,
             hAxis: {
                 title: 'Time',
                 format: 'H:m',
@@ -556,10 +556,10 @@
                 },
             },
             vAxis: {
-                title: 'UV',
+                title: '{{T "Index UV"}}',
                 format: '#',
                 maxValue: 11,
-                minValue: 0   
+                minValue: 0
             },
             dateFormat: 'MM.dd hh:mm',
             pointSize: 10,
@@ -574,33 +574,44 @@
     function drawGauge() {
 
         var data = google.visualization.arrayToDataTable([
-          ['Label', 'Value'],
-          ['Humidity', humidity],
+            ['Label', 'Value'],
+            ['Humidity', humidity],
         ]);
 
         var options = {
-          width: 200, height: 80,
-          redFrom: 70, redTo: 100,
-          greenFrom: 40, greenTo: 70,
-          yellowFrom:0, yellowTo: 40,
-          minorTicks: 5, min:0
+            width: 200,
+            height: 80,
+            redFrom: 70,
+            redTo: 100,
+            greenFrom: 40,
+            greenTo: 70,
+            yellowFrom: 0,
+            yellowTo: 40,
+            minorTicks: 5,
+            min: 0
         };
 
         var chart = new google.visualization.Gauge(document.getElementById('humidityGaugeChart'));
 
         chart.draw(data, options);
-        
+
         var data = google.visualization.arrayToDataTable([
-          ['Label', 'Value'],
-          ['Temperature', temperatureC],
+            ['Label', 'Value'],
+            ['Temperature', temperatureC],
         ]);
 
         var options = {
-          width: 200, height: 80,
-          redFrom: 25, redTo: 45,
-          blueFrom:-30, blueTo: 15,
-          greenFrom:15, greenTo: 25,
-          minorTicks: 5, min:-20, max: 45
+            width: 200,
+            height: 80,
+            redFrom: 25,
+            redTo: 45,
+            blueFrom: -30,
+            blueTo: 15,
+            greenFrom: 15,
+            greenTo: 25,
+            minorTicks: 5,
+            min: -20,
+            max: 45
         };
 
         var chart = new google.visualization.Gauge(document.getElementById('temperatureCGaugeChart'));
@@ -608,33 +619,45 @@
         chart.draw(data, options);
 
         var data = google.visualization.arrayToDataTable([
-          ['Label', 'Value'],
-          ['Wind', WindGustkmh]
+            ['Label', 'Value'],
+            ['Wind', WindGustkmh]
         ]);
 
         var options = {
-          width: 200, height: 80,
-       redFrom: 39, redTo: 100,
-          yellowFrom:15, yellowTo: 39,
-          greenFrom:0, greenTo: 15,
-          minorTicks: 5, min:0
+            width: 200,
+            height: 80,
+            redFrom: 39,
+            redTo: 100,
+            yellowFrom: 15,
+            yellowTo: 39,
+            greenFrom: 0,
+            greenTo: 15,
+
+            minorTicks: 5,
+            min: 0
         };
 
         var chart = new google.visualization.Gauge(document.getElementById('windGustkmhGaugeChart'));
 
         chart.draw(data, options);
 
-                var data = google.visualization.arrayToDataTable([
-          ['Label', 'Value'],
-          ['Pressure', pressure]
+        var data = google.visualization.arrayToDataTable([
+            ['Label', 'Value'],
+            ['Pressure', pressure]
         ]);
 
         var options = {
-          width: 200, height: 80,
-          redFrom: 1030, redTo: 1100,
-          yellowFrom:900, yellowTo: 1000,
-          greenFrom:1000, greenTo: 1030,
-          minorTicks: 5, min:900, max: 1100
+            width: 200,
+            height: 80,
+            redFrom: 1020,
+            redTo: 1220,
+            yellowFrom: 200,
+            yellowTo: 1000,
+            greenFrom: 1000,
+            greenTo: 1020,
+            minorTicks: 5,
+            min: 900,
+            max: 1100
         };
 
         var chart = new google.visualization.Gauge(document.getElementById('pressureGaugeChart'));
@@ -642,16 +665,22 @@
         chart.draw(data, options);
 
         var data = google.visualization.arrayToDataTable([
-          ['Label', 'Value'],
-          ['UV', parseInt(uv)]
+            ['Label', 'Value'],
+            ['UV', parseInt(uv)]
         ]);
 
-       var options = {
-          width: 200, height: 80,
-          redFrom: 6, redTo: 11,
-          yellowFrom:3, yellowTo: 6,
-          greenFrom:0, greenTo: 3,
-          minorTicks: 5, min:0, max: 11
+        var options = {
+            width: 200,
+            height: 80,
+            redFrom: 6,
+            redTo: 11,
+            yellowFrom: 3,
+            yellowTo: 6,
+            greenFrom: 0,
+            greenTo: 3,
+            minorTicks: 5,
+            min: 0,
+            max: 11
         };
 
         var chart = new google.visualization.Gauge(document.getElementById('uvGaugeChart'));
@@ -660,6 +689,5 @@
 
 
     }
-    
 </script>
 {{ end }}
