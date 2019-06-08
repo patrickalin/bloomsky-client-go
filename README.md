@@ -114,8 +114,8 @@ docker run -d  --name=bloomsky -e bloomskyAccessToken=ToBECompleted patrickalin/
 
 ### Installation env development
 
-    git clone https://github.com/patrickalin/GobloomskyThermostatAPIRest.git
-    cd GobloomskyThermostatAPIRest
+    git clone https://github.com/patrickalin/bloomsky-client-go.git
+    cd bloomsky-client-go
     export GOPATH=$PWD
     go get -v .
     go build
