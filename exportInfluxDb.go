@@ -39,6 +39,7 @@ func (c *client) sendbloomskyToInfluxDB(onebloomsky bloomsky.Bloomsky) {
 		"SustainedWindSpeedMph": onebloomsky.GetSustainedWindSpeedMph(),
 		"SustainedWindSpeedMs":  onebloomsky.GetSustainedWindSpeedMs(),
 		"WindDirection":         onebloomsky.GetWindDirection(),
+		"WindDirectionDeg":      onebloomsky.GetWindDirectionDeg(),
 		"WindGustkmh":           onebloomsky.GetWindGustkmh(),
 		"WindGustMph":           onebloomsky.GetWindGustMph(),
 		"WindGustMs":            onebloomsky.GetWindGustMs(),
