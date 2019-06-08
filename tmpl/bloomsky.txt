@@ -9,6 +9,7 @@ Bloomsky {{.GetLastCall}}
 {{T "Index UV"}} :			{{.GetIndexUV}}
 {{T "Night"}} :				{{.IsNight}}
 {{T "Wind Direction"}} :		{{.GetWindDirection}}
+{{T "Wind Direction Degrees"}} :		{{.GetWindDirectionDeg}}
 {{T "Wind Gust"}} :			{{.GetWindGustMph}} Mph
 {{T "Sustained Wind"}} :		{{.GetSustainedWindSpeedMph}} Mph
 {{T "Wind Gust"}} :			{{.GetWindGustMs}} Ms
