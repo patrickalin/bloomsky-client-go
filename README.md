@@ -1,7 +1,7 @@
 # BloomSky Client in Go [![Version Status](https://img.shields.io/badge/v1.7-stable-orange.svg)](https://github.com/patrickalin/bloomsky-client-go/releases/tag/v1.7)
 
 [![Build Status](https://travis-ci.org/patrickalin/bloomsky-client-go.svg?branch=master)](https://travis-ci.org/patrickalin/bloomsky-client-go)
-![Build size](https://reposs.herokuapp.com/?path=patrickalin/bloomsky-client-go)
+![Repo size](https://img.shields.io/github/repo-size/patrickalin/bloomsky-client-go.svg)
 [![Go Report Card](https://goreportcard.com/badge/github.com/patrickalin/bloomsky-client-go)](https://goreportcard.com/report/github.com/patrickalin/bloomsky-client-go)
 [![Coverage Status](https://coveralls.io/repos/github/patrickalin/bloomsky-client-go/badge.svg)](https://coveralls.io/github/patrickalin/bloomsky-client-go)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
