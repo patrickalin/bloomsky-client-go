@@ -7,7 +7,7 @@ func Test_funcName(t *testing.T) {
 		name string
 		want string
 	}{
-		{"Ok", "bloomsky-client-go.Test_funcName.func1"},
+		{"Ok", "github.com/patrickalin/bloomsky-client-go.Test_funcName.func1"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
