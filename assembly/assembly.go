@@ -102,7 +102,7 @@ func tmplBloomskyBodyHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/bloomsky/body.html", size: 7276, mode: os.FileMode(420), modTime: time.Unix(1502906699, 0)}
+	info := bindataFileInfo{name: "tmpl/bloomsky/body.html", size: 7276, mode: os.FileMode(420), modTime: time.Unix(1560168292, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -122,7 +122,7 @@ func tmplBloomskyMenuHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/bloomsky/menu.html", size: 1214, mode: os.FileMode(420), modTime: time.Unix(1501768039, 0)}
+	info := bindataFileInfo{name: "tmpl/bloomsky/menu.html", size: 1214, mode: os.FileMode(420), modTime: time.Unix(1560168292, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -142,12 +142,12 @@ func tmplBloomskyScriptHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/bloomsky/script.html", size: 11904, mode: os.FileMode(420), modTime: time.Unix(1501495582, 0)}
+	info := bindataFileInfo{name: "tmpl/bloomsky/script.html", size: 11904, mode: os.FileMode(420), modTime: time.Unix(1560168292, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
-var _tmplBloomskyTxt = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x9c\x93\x5d\x8e\x9b\x30\x14\x85\x9f\x93\x55\x5c\x45\xea\x63\xbb\x80\x3e\x16\x44\x40\x6a\x7e\x94\xbf\x3e\x3b\xe1\x26\x58\xc5\x06\x61\xd3\x36\x42\x77\x4f\x5d\xc3\xac\x6c\x64\x8c\x09\x1e\x98\x8c\x34\x79\x3c\xdf\x77\xee\x41\x91\x3c\xff\x3a\xf5\x9b\xff\xc8\x8b\x42\xa8\xdf\x77\x68\x9a\x6f\x4b\xd4\x3f\x99\xd2\x01\xcb\x73\xa2\x77\xfc\xa6\x39\xc0\xe2\xc0\x05\x2a\xcd\x44\x09\xe7\xae\xbe\x20\x82\xef\xb3\x99\x3d\x62\xf0\xde\x60\x22\xeb\x07\x5c\x3b\xc3\x39\x26\x72\x38\xc4\x3f\xfc\x82\x90\xa4\xce\xb1\x8a\x8d\x93\xd0\x69\xeb\x5a\x9c\xb1\x82\xcd\x15\xa2\x22\xcf\x8b\xbf\x58\x29\x6f\x76\x5d\x8b\xcd\xb5\x47\xae\x95\xc8\x14\xff\xc1\xf1\xe4\xdf\x6e\xd3\xe3\xa9\x3f\xcd\x6f\x99\x1e\x7e\x61\xa2\xda\xc8\xf1\x5f\x5c\xa6\x10\xf2\x0a\x2f\x9a\x17\xd2\x5b\x35\xa8\x27\x9e\xbf\xac\x95\xf6\x57\x4d\x6c\xd2\x55\x99\x11\xc1\xaa\xcc\xac\xbd\xaf\x95\x66\x5c\x62\x0a\x46\xf0\xae\xf7\xc8\x90\x7d\x89\x98\xbe\xe9\x7e\xb4\xa4\x8c\xac\x3e\xb3\x33\x6c\xee\x18\x97\xfe\xdf\x63\x12\x22\x78\x60\x08\x19\xcf\xef\xfe\x57\x98\xbc\x8d\x13\xe3\x72\x39\x7d\xac\x13\x47\x0e\xec\x98\xc6\xf1\x41\x93\x8e\xdd\x67\xeb\x2b\x41\x04\x42\x3c\x5d\x1f\x39\x4f\xd6\x3d\xf7\x80\xa2\xc4\x8a\xe9\xba\x6a\xed\x68\x31\x78\x07\x0f\x14\xb1\xac\x42\x99\x21\xd7\x44\xf0\xf2\x3f\x9a\xec\x06\x83\xad\x01\x0a\x30\x57\xbc\x56\x6d\x31\xb0\xc5\xb8\x16\x3c\x1d\x3c\x2a\xdb\x71\x29\x11\x7c\xb1\xde\xb6\x42\xa5\xba\xeb\x89\x8c\x6f\x03\xd9\x21\x13\x77\x74\xdc\x89\xb7\x6c\xa2\x12\x6f\x99\x65\xf3\xd7\x00\x00\x00\xff\xff\x07\xfe\xa0\xee\x55\x04\x00\x00")
+var _tmplBloomskyTxt = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x9c\x93\x4f\xae\x9b\x30\x10\xc6\xd7\x2f\xa7\x18\x45\xea\xb2\x3d\x40\x97\x05\xf1\x40\x6a\x5e\xa2\xfc\xeb\xda\x09\x13\xb0\x8a\x0d\xb2\x4d\xdb\x08\xcd\x9d\x7a\x86\x9e\xac\x32\xc6\x04\x17\x9a\x4a\x65\xf9\xfd\x7e\xdf\xcc\x08\xc9\xab\xf7\x4b\xdf\xea\x53\x55\xd7\x42\x7f\xbd\x43\xd7\x7d\x78\x45\xf3\x99\x69\x13\xb1\xaa\x22\xfa\x8b\xdf\x75\x47\x58\x1f\xb9\x40\x6d\x98\x68\xe0\x32\xd4\xd7\x44\xf0\xf1\xe5\xc5\x0d\xb1\xf8\x60\x31\x91\xf3\x23\x6e\xbc\xe1\x1d\x1b\x79\x1c\xe3\x37\x7e\x45\xc8\x72\xef\x38\xc5\xc5\x59\xec\xb5\xb7\x56\x5c\x50\xc1\xf6\x06\x49\x5d\x55\xf5\x77\x54\x3a\x58\xfb\xd6\x8a\xed\x6d\x44\xbe\x95\xc9\x1c\x7f\xc0\xe9\x1c\xce\xee\xd3\xd3\x79\x1c\xcd\x8b\xd2\x4c\x2f\xcc\x74\x1f\x79\xfe\x85\xcb\x1c\x62\xae\xf0\x6a\x78\x2d\x83\xad\x16\x8d\x64\xd9\x87\x18\x0b\x85\x38\x5c\xbb\x50\x8b\xb1\x08\x9a\xaf\xad\x36\xe1\xbd\x36\xb6\xe9\xa6\x29\x89\x60\xd3\x94\xce\x3e\xb4\xda\x30\x2e\x31\x07\x2b\x04\x77\x8d\xc8\x92\x43\x83\x98\xff\xd1\xfd\xd7\x26\x6d\x65\xfd\x3f\x7b\xa6\xcd\x3d\xe3\x32\xfc\xb1\x36\x21\x82\x07\x86\x98\xf1\xea\x1e\x5e\x61\xf3\x3e\xce\xac\xcb\xe5\xf2\xb0\x41\x9c\x39\xb0\x67\x06\xe7\x03\x6d\x3a\x77\x9f\x6d\xdf\x08\x22\x10\xe2\xe9\xf6\x99\xf3\x64\x7b\xe0\x1e\x51\x34\xa8\x98\x69\x55\x6f\x27\xeb\xc9\x0b\x7a\xa0\x84\x95\x0a\x65\x89\xdc\x10\xc1\xaf\x9f\xc9\x62\x37\x9a\xec\x9a\xa0\x08\x2b\xcd\x5b\xdd\x17\x23\x57\x4c\x5b\xc1\xf3\xc9\x73\x74\x1d\x9f\x12\xc1\x3b\xe7\xed\x14\x6a\x3d\x4c\xcf\x64\x5a\x4c\x64\x8f\x6c\x3c\xd0\x79\x27\xdd\xb1\x85\x4a\xba\x63\x8e\xad\x7e\x07\x00\x00\xff\xff\xf2\x4f\x9d\x31\x8f\x04\x00\x00")
 
 func tmplBloomskyTxtBytes() ([]byte, error) {
 	return bindataRead(
@@ -162,7 +162,7 @@ func tmplBloomskyTxt() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/bloomsky.txt", size: 1109, mode: os.FileMode(420), modTime: time.Unix(1501495582, 0)}
+	info := bindataFileInfo{name: "tmpl/bloomsky.txt", size: 1167, mode: os.FileMode(420), modTime: time.Unix(1560451844, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -182,7 +182,7 @@ func tmplEndscriptHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/endScript.html", size: 299, mode: os.FileMode(420), modTime: time.Unix(1501495582, 0)}
+	info := bindataFileInfo{name: "tmpl/endScript.html", size: 299, mode: os.FileMode(420), modTime: time.Unix(1560168292, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -202,7 +202,7 @@ func tmplHeaderHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/header.html", size: 1743, mode: os.FileMode(420), modTime: time.Unix(1501774368, 0)}
+	info := bindataFileInfo{name: "tmpl/header.html", size: 1743, mode: os.FileMode(420), modTime: time.Unix(1560168292, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -222,7 +222,7 @@ func tmplHistoryBodyHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/history/body.html", size: 2155, mode: os.FileMode(420), modTime: time.Unix(1501495582, 0)}
+	info := bindataFileInfo{name: "tmpl/history/body.html", size: 2155, mode: os.FileMode(420), modTime: time.Unix(1560168292, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -242,7 +242,7 @@ func tmplHistoryMenuHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/history/menu.html", size: 1212, mode: os.FileMode(420), modTime: time.Unix(1501768068, 0)}
+	info := bindataFileInfo{name: "tmpl/history/menu.html", size: 1212, mode: os.FileMode(420), modTime: time.Unix(1560168292, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -262,7 +262,7 @@ func tmplHistoryScriptHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/history/script.html", size: 19583, mode: os.FileMode(420), modTime: time.Unix(1502908785, 0)}
+	info := bindataFileInfo{name: "tmpl/history/script.html", size: 19583, mode: os.FileMode(420), modTime: time.Unix(1560168292, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -282,7 +282,7 @@ func tmplIndexHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/index.html", size: 186, mode: os.FileMode(420), modTime: time.Unix(1501495582, 0)}
+	info := bindataFileInfo{name: "tmpl/index.html", size: 186, mode: os.FileMode(420), modTime: time.Unix(1560168292, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -302,7 +302,7 @@ func tmplLogBodyHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/log/body.html", size: 721, mode: os.FileMode(420), modTime: time.Unix(1501495582, 0)}
+	info := bindataFileInfo{name: "tmpl/log/body.html", size: 721, mode: os.FileMode(420), modTime: time.Unix(1560168292, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -322,7 +322,7 @@ func tmplLogMenuHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/log/menu.html", size: 1214, mode: os.FileMode(420), modTime: time.Unix(1501768051, 0)}
+	info := bindataFileInfo{name: "tmpl/log/menu.html", size: 1214, mode: os.FileMode(420), modTime: time.Unix(1560168292, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -342,7 +342,7 @@ func tmplLogScriptHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/log/script.html", size: 29, mode: os.FileMode(420), modTime: time.Unix(1501495582, 0)}
+	info := bindataFileInfo{name: "tmpl/log/script.html", size: 29, mode: os.FileMode(420), modTime: time.Unix(1560168292, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -362,7 +362,7 @@ func tmplParameterBodyHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/parameter/body.html", size: 2420, mode: os.FileMode(420), modTime: time.Unix(1501776996, 0)}
+	info := bindataFileInfo{name: "tmpl/parameter/body.html", size: 2420, mode: os.FileMode(420), modTime: time.Unix(1560168292, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -382,7 +382,7 @@ func tmplParameterMenuHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/parameter/menu.html", size: 1215, mode: os.FileMode(420), modTime: time.Unix(1501768456, 0)}
+	info := bindataFileInfo{name: "tmpl/parameter/menu.html", size: 1215, mode: os.FileMode(420), modTime: time.Unix(1560168292, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -402,7 +402,7 @@ func tmplParameterScriptHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/parameter/script.html", size: 48, mode: os.FileMode(420), modTime: time.Unix(1501767973, 0)}
+	info := bindataFileInfo{name: "tmpl/parameter/script.html", size: 48, mode: os.FileMode(420), modTime: time.Unix(1560168292, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -422,7 +422,7 @@ func langEnUsAllJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "lang/en-us.all.json", size: 852, mode: os.FileMode(420), modTime: time.Unix(1501495582, 0)}
+	info := bindataFileInfo{name: "lang/en-us.all.json", size: 852, mode: os.FileMode(420), modTime: time.Unix(1560168292, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -442,7 +442,7 @@ func langFrAllJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "lang/fr.all.json", size: 3189, mode: os.FileMode(420), modTime: time.Unix(1501495582, 0)}
+	info := bindataFileInfo{name: "lang/fr.all.json", size: 3189, mode: os.FileMode(420), modTime: time.Unix(1560168292, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -462,7 +462,7 @@ func testConfigfortestYaml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "test/configForTest.yaml", size: 1105, mode: os.FileMode(420), modTime: time.Unix(1501495582, 0)}
+	info := bindataFileInfo{name: "test/configForTest.yaml", size: 1105, mode: os.FileMode(420), modTime: time.Unix(1560168292, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -482,7 +482,7 @@ func testWrongconfigfortestYaml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "test/wrongConfigForTest.yaml", size: 52, mode: os.FileMode(420), modTime: time.Unix(1501495582, 0)}
+	info := bindataFileInfo{name: "test/wrongConfigForTest.yaml", size: 52, mode: os.FileMode(420), modTime: time.Unix(1560168292, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

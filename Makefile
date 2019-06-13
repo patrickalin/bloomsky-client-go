@@ -36,6 +36,7 @@ getdeps: checks
 	@echo "Installing bindata" && go get -u github.com/jteeuwen/go-bindata/
 	@echo "Installing go-wrk" && go get -u github.com/adjust/go-wrk
 	@echo "Installing goreporter" && go get -u github.com/360EntSecGroup-Skylar/goreporter
+	@echo "Installing go-bindata" && go get -u github.com/jteeuwen/go-bindata
 
 getFlame: 
 	@echo "Installing FlameGraph" && git clone git@github.com:brendangregg/FlameGraph.git ${GOPATH}/src/github/FlameGraph
