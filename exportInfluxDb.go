@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	clientinfluxdb "github.com/influxdata/influxdb/client/v2"
+	clientinfluxdb "github.com/influxdata/influxdb1-client/v2"
 	bloomsky "github.com/patrickalin/bloomsky-api-go"
 )
 
