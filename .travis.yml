@@ -21,7 +21,7 @@ script:
   $COVERALLS_TOKEN"
 before_deploy:
 - "./scripts/travis/compile.sh"
-- ls bin/goBloomsky-darwin-amd64.bin
+- ls -la bin/
 deploy:
   provider: releases
   api_key:

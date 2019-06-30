@@ -1,4 +1,5 @@
 #!/bin/bash -e
+echo mergeScript.sh 
 
 : "${BRANCHES_TO_MERGE_REGEX?}" "${BRANCH_TO_MERGE_INTO?}"
 : "${GITHUB_SECRET_TOKEN?}" "${GITHUB_REPO?}"
