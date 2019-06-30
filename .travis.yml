@@ -11,6 +11,7 @@ install:
 - go get github.com/patrickalin/GoMyLog
 - go get github.com/patrickalin/bloomsky-api-go
 - go get github.com/spf13/viper
+- go get github.com/konsorten/go-windows-terminal-sequences
 - go get .
 script:
 - go test -v -covermode=count -coverprofile=coverage.out
