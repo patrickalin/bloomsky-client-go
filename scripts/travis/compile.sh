@@ -1,7 +1,12 @@
 #!/bin/bash
 LDFLAGS="$(go run scripts/build/gen-ldflags.go)"
-echo "LDFLAGS"
+echo "LDFLAGS build release ID:>"
 echo $LDFLAGS
+
+# In the main.go :>
+#go:generate echo Go Generate!
+#go:generate ./scripts/build/bindata.sh
+#go:generate ./scripts/build/bindata-assetfs.sh
 
 go generate
 
