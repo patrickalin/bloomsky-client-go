@@ -356,7 +356,7 @@ func IsTemporary(err error) bool {
 	return ok && te.Temporary()
 }
 
-/* Validation Funciton  */
+/* Validation Function  */
 func validateHTTPPort(conf *configuration) error {
 	if err := validatePort(conf.hTTPPort); err != nil {
 		return validationError{
