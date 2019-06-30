@@ -152,3 +152,12 @@ In the config file, you can change the log level (panic,fatal,error,warn,info,de
 ## 4] License
 
 The code is licensed under the permissive Apache v2.0 licence. This means you can do what you like with the software, as long as you include the required notices. [Read this](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)) for a summary.
+
+### Release
+
+We have to change the VERSION file and tag the code ./script/git/tag.sh in github.
+
+Travis .travis.yml realises automaticly the build. (./script/travis/compile.sh)
+If it detects a new tag, travis pushs binaries in github. (see .travis.yml)
+
+Everything is automatic.
