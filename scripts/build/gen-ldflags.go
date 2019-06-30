@@ -20,11 +20,11 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
 	"time"
-	"io/ioutil"
 )
 
 func genLDFlags(version string) string {
@@ -41,8 +41,8 @@ func releaseTag(version string) string {
 	//relPrefix := "DEVELOPMENT"
 	dat, err := ioutil.ReadFile("VERSION")
 	if err != nil {
-        panic(err)
-    }
+		panic(err)
+	}
 	relPrefix := strings.Replace(strings.Replace(string(dat), " ", "", -1), "\n", "", -1)
 	/*if prefix := os.Getenv("BLOOMSKY_RELEASE"); prefix != "" {
 		relPrefix = prefix
