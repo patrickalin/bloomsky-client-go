@@ -1,8 +1,10 @@
 // Bloomsky application to export Data bloomsky to console or to influxdb.
 package main
 
-//go:generate echo Go Generate!
+//go:generate echo main.go : Go Generate!
+//go:generate echo main.go : generate ./scripts/build/bindata.sh
 //go:generate ./scripts/build/bindata.sh
+//go:generate echo main.go : generate ./scripts/build/bindata-assetfs.sh
 //go:generate ./scripts/build/bindata-assetfs.sh
 
 import (
