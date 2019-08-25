@@ -302,7 +302,7 @@ func readConfig(configName string, options ...validation) configuration {
 	conf.influxDBServer = influxdb.GetString("server")
 	conf.influxDBServerPort = influxdb.GetString("port")
 	conf.influxDBUsername = influxdb.GetString("username")
-	conf.influxDBActivated = viper.GetBool("activated")
+	conf.influxDBActivated = influxdb.GetBool("activated")
 
 	// configuration validation
 	for _, option := range options {
